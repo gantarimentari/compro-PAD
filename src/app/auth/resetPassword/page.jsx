@@ -48,7 +48,7 @@ export default function ResetPasswordPage() {
     console.log('Reset password:', formData.newPassword);
     
     // Redirect ke login setelah berhasil
-    // router.push('/auth/login');
+    router.push('/auth/login');
   };
 
   return (
@@ -56,11 +56,9 @@ export default function ResetPasswordPage() {
       {/* Header */}
       <div className="text-center">
         <h1 className="text-h-4 font-extrabold text-gray-900">
-          Reset Password
+          Change Password
         </h1>
-        <p className="text-body-2 mt-2 text-gray-600">
-          Masukkan password baru Anda
-        </p>
+
       </div>
 
       {/* Form Reset Password */}
@@ -70,7 +68,7 @@ export default function ResetPasswordPage() {
           id="newPassword"
           name="newPassword"
           type="password"
-          label="Password Baru"
+          label="enter new password"
           placeholder="Masukkan password baru"
           required
           autoComplete="new-password"
@@ -83,7 +81,7 @@ export default function ResetPasswordPage() {
           id="confirmPassword"
           name="confirmPassword"
           type="password"
-          label="Konfirmasi Password"
+          label="confirm password"
           placeholder="Masukkan ulang password baru"
           required
           autoComplete="new-password"
@@ -98,12 +96,7 @@ export default function ResetPasswordPage() {
           </div>
         )}
 
-        {/* Info Password Requirements */}
-        <div className="rounded-lg bg-blue-50 p-3">
-          <p className="text-xs text-blue-800">
-            Password harus minimal 8 karakter
-          </p>
-        </div>
+
 
         {/* Tombol Change Password */}
         <div>
@@ -113,18 +106,7 @@ export default function ResetPasswordPage() {
         </div>
       </form>
 
-      {/* Link kembali ke Login */}
-      <div className="text-center pt-4">
-        <p className="text-sm text-gray-600">
-          Ingat password Anda?{' '}
-          <Link 
-            href="/auth/login" 
-            className="font-medium text-indigo-600 hover:text-indigo-500"
-          >
-            Kembali ke Login
-          </Link>
-        </p>
-      </div>
+
     </AuthLayout>
   );
 }

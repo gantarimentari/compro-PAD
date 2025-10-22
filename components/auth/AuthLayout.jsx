@@ -19,7 +19,7 @@ export default function AuthLayout({ children }) {
       style={backgroundStyle}
     >
       <div className="w-full max-w-[35.375rem]
-       space-y-[0.625rem]    
+      
           rounded-xl bg-white 
           pt-[0.875rem]        
           pr-[1.6rem]         

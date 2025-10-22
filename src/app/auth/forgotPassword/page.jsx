@@ -31,12 +31,10 @@ export default function ForgotPasswordPage() {
     <AuthLayout>
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-h-4 font-extrabold text-gray-900">
+        <h1 className="text-h-4 font-bold text-accent-neutral ">
           Forgot Password
         </h1>
-        <p className="text-body-2 mt-2 text-gray-600">
-          Masukkan email Anda untuk menerima link reset password
-        </p>
+        
       </div>
 
       {isSubmitted ? (
@@ -80,18 +78,7 @@ export default function ForgotPasswordPage() {
         </form>
       )}
 
-      {/* Link kembali ke Login */}
-      <div className="text-center pt-4">
-        <p className="text-sm text-gray-600">
-          Ingat password Anda?{' '}
-          <Link 
-            href="/auth/login" 
-            className="font-medium text-indigo-600 hover:text-indigo-500"
-          >
-            Kembali ke Login
-          </Link>
-        </p>
-      </div>
+      
     </AuthLayout>
   );
 }

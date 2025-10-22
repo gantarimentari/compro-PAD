@@ -29,26 +29,29 @@ export default function Button({
   const variantClasses = {
     primary: `
       border-transparent 
-      bg-accent-yellow-300             /* Oranye/Kuning Aksen */
-      text-accent-neutral-1000          /* Teks Putih */
-      hover:bg-accent-yellow-400       /* Hover sedikit lebih gelap */
+      bg-accent-yellow-300            
+      text-accent-neutral-1000         
+      hover:bg-accent-yellow-400       
       focus:ring-accent-yellow-400     /* Ring fokus menggunakan warna aksen */
     `,
     secondary: `
       border border-accent-neutral-300 
       bg-accent-neutral-100            /* Latar Belakang Putih */
-      text-accent-neutral-800          /* Teks Abu-abu Gelap */
+      text-accent-neutral-800          
       hover:bg-accent-neutral-200
       focus:ring-accent-neutral-400
     `,
     google: `
-      border border-accent-neutral-300 
+      border border-accent-yellow-300
       bg-accent-neutral-100 
       text-black 
       hover:bg-accent-neutral-200
       focus:ring-accent-neutral-400
       text-h-7
-      px-7
+      py-8
+      shadow-e2
+      mb-4
+      
 
     `,
   };

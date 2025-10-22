@@ -8,10 +8,7 @@ import Button from '@ds/auth/Button';
 import Separator from '@ds/auth/Separator';
 import GoogleIcon from '@ds/auth/GoogleIcon';
 
-/**
- * Halaman Login
- * Menggunakan komponen-komponen reusable dan Next.js Link untuk navigasi
- */
+
 export default function LoginPage() {
   const [formData, setFormData] = useState({
     email: '',
@@ -43,7 +40,7 @@ export default function LoginPage() {
     <AuthLayout>
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-h-4 font-bold text-gray-900 ">
+        <h1 className="text-h-4 font-bold text-accent-neutral ">
           Login
         </h1>
       </div>
@@ -89,13 +86,14 @@ export default function LoginPage() {
 
         {/* Tombol Login */}
         <div>
-          <Button type="submit" variant="primary" className="text-body-1">
+          <Button type="submit" variant="primary">
             Login
           </Button>
         </div>
       </form>
 
-      {/* Separator */}
+
+
       <Separator />
 
       {/* Tombol Login dengan Google */}
@@ -111,12 +109,12 @@ export default function LoginPage() {
       </div>
 
       {/* Link ke halaman Register */}
-      <div className="text-center pt-4">
-        <p className="text-sm text-gray-600">
+      <div className="mt-4 pt-4">
+        <p className="text-accent-neutral-700 text-body-1">
           Belum punya akun?{' '}
           <Link 
             href="/auth/register" 
-            className="font-medium text-indigo-600 hover:text-indigo-500"
+            className="text-body-1 text-accent-blue-200 hover:text-indigo-500"
           >
             Daftar Sekarang
           </Link>

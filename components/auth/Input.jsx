@@ -41,12 +41,11 @@ export default function Input({
                       h-[4.125rem]                     
                       border-[0.0625rem] border-accent-yellow-300
                       rounded-[0.625rem]
-                      shadow-e2
                       
                       text-body-1 
                       
                       focus:border-accent-yellow-300 focus:ring-primary-orange
-                      
+                      shadow-e2
                       px-3                           
                     "
         placeholder={placeholder}
