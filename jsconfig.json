@@ -1,0 +1,10 @@
+// jsconfig.json (Pastikan ini yang digunakan)
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"], // Alias untuk folder src
+      "@ds/*": ["components/*"] // Alias untuk folder komponen di root utama
+    }
+  }
+}
