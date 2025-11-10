@@ -8,7 +8,7 @@ export default function AuthLayout({ children }) {
   const svgBackground = "/Background/login.svg";
   
   const baseClasses = "flex min-h-screen items-center justify-center p-4 bg-repeat bg-fixed";
-  
+
   const backgroundStyle = {
     backgroundImage: `url('${svgBackground}')`,
   };

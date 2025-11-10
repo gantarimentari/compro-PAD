@@ -4,7 +4,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"], // Alias untuk folder src
-      "@ds/*": ["components/*"] // Alias untuk folder komponen di root utama
+      "@ds/*": ["components/*"], // Alias untuk folder komponen di root utama
+      "@lib/*": ["lib/*"] // Alias untuk folder lib
     }
   }
 }

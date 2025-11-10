@@ -1,9 +1,4 @@
-// @ds/auth/Button.jsx
 
-/**
- * Komponen Button yang reusable
- * Menggunakan token Design System: Tinggi 60px, Radius 8px
- */
 export default function Button({
   type = 'button',
   variant = 'primary',
@@ -16,11 +11,10 @@ export default function Button({
   // 1. BASE CLASSES: Mengatur tata letak dan ukuran standar dari Design System
   const baseClasses = `
     flex justify-center items-center 
-    text-body-1 font-semibold            /* Font Style dari Design System (misal: 18px Bold) */
-    h-[3.75rem]                          /* Tinggi Tombol: 60px */
-    rounded-[0.5rem]                     /* Radius: 8px */
-    px-8                                 /* Padding horizontal yang cukup */
-    shadow-e1                            /* Menggunakan Shadow E1 kustom */
+    text-body-1 font-semibold            
+    h-[3.75rem]                          
+    rounded-[0.5rem]                     
+    shadow-e1                           
     transition duration-150 
     focus:outline-none focus:ring-2 focus:ring-offset-2
   `; 
