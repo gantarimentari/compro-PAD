@@ -1,12 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import Header from "@ds/layout/Header";
-import Footer from "@ds/layout/Footer";
-import GaleryLayout from "@ds/layout/Galerylayout";
+import Header from "@ds/shared/Header";
+import Footer from "@ds/shared/Footer";
+import GaleryLayout from "layout/Galerylayout";
 import { GaleryFilterButtons } from "@ds/contents/GaleryApp";
+import GaleryApp from '@ds/contents/GaleryApp';
 
-export default function GaleryPage({ children }) {
+export default function GaleryPage() {
     const [activeFilter, setActiveFilter] = useState('all');
     
     const svgBackground = "/Background/bg-greenPaw.svg";
@@ -43,10 +44,11 @@ export default function GaleryPage({ children }) {
                     />
                 </section>
                 
-                <GaleryLayout 
-                    activeFilter={activeFilter} 
-                    onFilterChange={handleFilterChange}
-                />
+                <GaleryLayout> 
+                    <GaleryApp 
+                        activeFilter={activeFilter} 
+                    />
+                </GaleryLayout>
             </main>
 
             <Footer footerClass="bg-accent-green-600 text-white" />

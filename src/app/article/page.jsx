@@ -1,17 +1,14 @@
-import Header from "@ds/layout/Header";
-import Footer from "@ds/layout/Footer";
-import ArticleLayout from "@ds/layout/ArticleLayout";
-
-
+import Header from "@ds/shared/Header";
+import Footer from "@ds/shared/Footer";
+import ArticleLayout from "layout/ArticleLayout";
+import ArticleCMSApp from "@ds/contents/ArticleCMSApp";
 
 export default function ArticlePage() {
   const svgBackground = "/Background/paw-artikel.svg";
   
   const backgroundStyle = {
     backgroundImage: `url('${svgBackground}')`,
-    // backgroundSize: 'cover',
     backgroundPosition: 'center',
-   
   };
 
   return (
@@ -28,7 +25,9 @@ export default function ArticlePage() {
             Semua yang perlu kamu tahu tentang dunia hewan dan dokter hewan - dari kesehatan, perawatan, hingga cerita inspiratif.
           </p>
         </section>
-        <ArticleLayout />
+        <ArticleLayout>
+          <ArticleCMSApp />
+        </ArticleLayout>
       </main>
       <Footer /> 
     </div>

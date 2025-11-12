@@ -1,10 +1,13 @@
 "use client";
 
-import Footer from "@ds/layout/Footer";
+import Footer from "@ds/shared/Footer";
+import HeaderDashboard from "@ds/dashboard/HeaderDashboard";
+// import HeaderDashboard from './path/to/HeaderDashboard';
 
 export default function TestFooterPage() {
   return (
     <div className="min-h-screen bg-gray-50">
+      <HeaderDashboard />
       
       {/* Hero Section untuk Demo */}
       <div className="bg-gradient-to-br from-accent-blue-600 to-accent-blue-500 text-white py-20">

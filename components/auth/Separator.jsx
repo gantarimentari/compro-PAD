@@ -1,9 +1,5 @@
 import React from 'react';
 
-/**
- * Komponen Separator "atau"
-
- */
 export default function Separator({ text = 'atau' }) {
   return (
     <div className="my-0">

@@ -37,6 +37,8 @@ export {
   UserIcon,
   CalendarIcon,
   NotificationIcon,
+  DocumentIcon,
+  AdminUserIcon,
   uiIconsMap,
 } from './UIIcons';
 

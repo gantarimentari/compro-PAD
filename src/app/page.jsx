@@ -1,5 +1,5 @@
-import Header from "@ds/layout/Header";
-import Footer from "@ds/layout/Footer";
+import Header from "@ds/shared/Header";
+import Footer from "@ds/shared/Footer";
 // import ArticleLayout from "@ds/layout/ArticleLayout";
 
 

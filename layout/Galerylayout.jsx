@@ -1,13 +1,10 @@
 import React from 'react';
-import GaleryApp from '@ds/contents/GaleryApp';
 
 /**
  * GaleryLayout - Layout untuk halaman galeri dengan background dan garis putus-putus
  * @param {ReactNode} children - Konten yang akan ditampilkan
- * @param {string} activeFilter - Filter yang aktif saat ini
- * @param {function} onFilterChange - Handler untuk perubahan filter
  */
-export default function GaleryLayout({ children, activeFilter, onFilterChange }) {
+export default function GaleryLayout({ children }) {
   const svgBackground = "/Background/bg-green-bone.svg";
   
   const backgroundStyle = {
@@ -27,8 +24,8 @@ export default function GaleryLayout({ children, activeFilter, onFilterChange })
           x2="100%" 
           y2="1.5" 
           stroke="white" 
-          strokeWidth="3" 
-          strokeDasharray="70 10"
+          strokeWidth="13" 
+          strokeDasharray="70 30"
           strokeLinecap="round"
         />
       </svg>
@@ -40,7 +37,6 @@ export default function GaleryLayout({ children, activeFilter, onFilterChange })
       >
         <div className="container mx-auto px-4">
           {children}
-          <GaleryApp activeFilter={activeFilter} onFilterChange={onFilterChange} />
         </div>
       </div>
       
@@ -52,8 +48,8 @@ export default function GaleryLayout({ children, activeFilter, onFilterChange })
           x2="100%" 
           y2="1.5" 
           stroke="white" 
-          strokeWidth="3" 
-          strokeDasharray="70 10"
+          strokeWidth="13" 
+          strokeDasharray="70 30"
           strokeLinecap="round"
         />
       </svg>

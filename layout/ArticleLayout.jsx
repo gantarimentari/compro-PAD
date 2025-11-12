@@ -1,5 +1,4 @@
 import React from 'react';
-import ArticleCMSApp from '@ds/contents/ArticleCMSApp';
 
 /**
  * ArticleLayout - Layout untuk halaman artikel dengan background
@@ -10,7 +9,7 @@ export default function ArticleLayout({ children }) {
   
   const backgroundStyle = {
     backgroundImage: `url('${svgBackground}')`,
-    backgroundColor: '#4C8CBA', 
+    backgroundColor: '#4C8CBA',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
@@ -23,7 +22,6 @@ export default function ArticleLayout({ children }) {
     >
       <div className="container mx-auto px-4">
         {children}
-        <ArticleCMSApp />
       </div>
     </div>
   );

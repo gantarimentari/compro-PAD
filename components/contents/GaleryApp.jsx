@@ -194,7 +194,7 @@ const PaginationButton = ({ pageNumber, isActive, onClick }) => {
 };
 
 // --- Main Gallery Component ---
-const GaleryApp = ({ activeFilter, onFilterChange }) => {
+const GaleryApp = ({ activeFilter }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedImage, setSelectedImage] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
