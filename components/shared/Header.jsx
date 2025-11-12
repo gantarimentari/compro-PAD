@@ -6,7 +6,7 @@ import { NotificationIcon,UserIcon } from "@ds/icons";
 import Link from "next/link";
 
 export default function Header() {
-  // 💡 SIMULASI STATE LOGIN
+  // SIMULASI STATE LOGIN
     // Ubah nilainya menjadi true untuk melihat tampilan "Sudah Login"
     // Ubah nilainya menjadi false untuk melihat tampilan "Belum Login"
     const [isLoggedIn, setIsLoggedIn] = useState(true);

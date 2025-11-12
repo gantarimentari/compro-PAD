@@ -21,10 +21,12 @@ module.exports = {
           // YELLOW (Aksen utama untuk input field Anda)
           'accent-yellow': {
               100: 'rgb(255, 227, 186)',
+              150: 'rgb(254, 249, 194)',
               200: 'rgb(255, 199, 116)',
               300: 'rgb(255, 171, 47)', // Digunakan untuk border oranye Anda
               400: 'rgb(233, 139, 0)',
               500: 'rgb(164, 98, 0)',
+              550: 'rgb(166, 95, 0)',
           },
 
           // ALPHA ACCENT (Opacity)
@@ -36,10 +38,13 @@ module.exports = {
           // BLUE
           'accent-blue': {
               100: 'rgb(180, 224, 255)',
+              150: 'rgb(205, 228, 245)',
+              175: 'rgb(219, 234, 254)',
               200: 'rgb(106, 193, 255)',
               300: 'rgb(31, 162, 255)',
               350: 'rgb(76,140,186)',
               400: 'rgb(0, 129, 221)',
+              550: 'rgb(1, 68, 126)',
               500: 'rgb(0, 91, 156)',
               600: 'rgb(0, 56, 96)',
           },

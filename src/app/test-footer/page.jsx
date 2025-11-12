@@ -2,12 +2,14 @@
 
 import Footer from "@ds/shared/Footer";
 import HeaderDashboard from "@ds/dashboard/HeaderDashboard";
-// import HeaderDashboard from './path/to/HeaderDashboard';
+import Sidebar from "@ds/dashboard/Sidebar";
 
 export default function TestFooterPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <HeaderDashboard />
+    <div className="min-h-screen bg-gray-50 grid grid-cols-1 lg:grid-cols-[256px_1fr]">
+      <Sidebar />
+      <div className="flex flex-col flex-grow">
+        <HeaderDashboard />
       
       {/* Hero Section untuk Demo */}
       <div className="bg-gradient-to-br from-accent-blue-600 to-accent-blue-500 text-white py-20">
@@ -112,6 +114,10 @@ export default function Page() {
           </div>
         </div>
       </div>
+
+      </div>
+
+      
 
       {/* Anchor untuk scroll */}
       <div id="footer" className="scroll-mt-4"></div>

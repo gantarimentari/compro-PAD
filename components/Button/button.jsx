@@ -1,103 +1,88 @@
-
-'use client'; 
-
+"use client";
 import React from 'react';
-import PropTypes from 'prop-types';
 
-export default function Button({
-  type = 'button',
-  variant = 'primary',
-  size = 'md', // 
-  onClick,
-  children,
-  fullWidth = false,
-  disabled = false,
-  icon,
-  className = '', 
-  ...props
+/**
+ * Button Component
+ * Digunakan untuk tombol dengan icon dan/atau text
+ * Icon akan otomatis diubah menjadi warna putih agar terlihat jelas di atas latar belakang berwarna.
+ */
+export default function Button({ 
+  icon, 
+  color, 
+  onClick, 
+  label, 
+  hoverColor, 
+  focusColor, 
+  size, 
+  rounded = 'full',
+  roundedClass,
+  className = '',
+  children 
 }) {
   
-
-  const baseClasses = `
-    inline-flex items-center justify-center 
-    gap-[8px] 
-    rounded-[6px] 
-    font-medium 
-    transition duration-150 ease-in-out
-    focus:outline-none focus:ring-2 focus:ring-offset-2
-    whitespace-nowrap 
-  `; 
-  
-  // 2. LOGIKA UKURAN (SIZE CLASSES): Mengatur Padding dan Font Size
-  let sizeClasses;
-  
-  switch (size) {
-    case 'sm': // Small: Lebih kecil dari desain Anda
-      sizeClasses = 'py-1.5 px-3 text-sm'; 
-      break;
-    case 'lg': // Large: Lebih besar
-      sizeClasses = 'py-3 px-6 text-lg';
-      break;
-    case 'md': // Medium/Default: Sesuai spesifikasi desain Anda (8px, 14px)
-    default:
-      sizeClasses = 'py-[8px] px-[14px] text-base';
-      break;
+  // Mapping untuk rounded class - gunakan roundedClass jika ada, atau gunakan rounded prop
+  let finalRoundedClass;
+  if (roundedClass) {
+    finalRoundedClass = roundedClass;
+  } else {
+    finalRoundedClass = rounded === 'full' ? 'rounded-full' : rounded === 'lg' ? 'rounded-lg' : 'rounded-md';
   }
   
-  // 3. LOGIKA VARIANT (WARNA, BORDER, SHADOW)
-  const variantClasses = {
-    primary: `
-       bg-accent-blue-400
-      border border-accent-blue-400  text-white
-      shadow-[0_1px_2px_0_rgba(16,24,40,0.05)]
-      hover:bg-blue-600 hover:border-blue-600
-      focus:ring-[#0081DD]
-    `,
-    secondary: `
-      border border-gray-300 bg-white text-gray-800 
-      shadow-sm
-      hover:bg-gray-50
-      focus:ring-gray-400
-    `,
-    // Anda bisa tambahkan 'ghost', 'danger', dll. di sini
-  };
-  
-  // 4. LOGIKA LAIN-LAIN (WIDTH & DISABLED)
-  const widthClass = fullWidth ? 'w-full' : 'w-fit'; 
-  const isDisabled = disabled || props.disabled;
-  
-  const disabledClasses = isDisabled ? 
-    'bg-gray-300 border-gray-300 text-gray-500 cursor-not-allowed opacity-70 shadow-none pointer-events-none' 
-    : variantClasses[variant];
-  
-  
-  // PENTING: Menggabungkan semua class
-  const finalClasses = `${baseClasses} ${sizeClasses} ${widthClass} ${disabledClasses} ${className}`;
-  
+  // Jika tidak ada icon dan tidak ada children, return button kosong
+  if (!icon && !children) {
+    return (
+      <button
+        type="button" 
+        onClick={onClick}
+        aria-label={label}
+        className={` 
+          p-2 ${color} ${finalRoundedClass}
+          flex items-center justify-center text-white
+          transition duration-150 hover:shadow-md
+          focus:outline-none focus:ring-2 focus:ring-accent-blue-150 
+          ${focusColor || ''} 
+          ${hoverColor || ''} 
+          ${size || ''}
+          ${className}
+        `}
+      >
+      </button>
+    );
+  }
+
+  // Kloning icon dan atur warnanya menjadi putih jika icon ada
+  let iconWithColor = null;
+  if (icon) {
+    iconWithColor = React.cloneElement(icon, { 
+      color: 'white',
+      className: icon.props?.className || 'w-5 h-5'
+    });
+  }
+
+  // Jika ada children (text), gunakan padding yang lebih besar
+  const paddingClass = children ? 'px-4 py-2' : 'p-2';
+  // Gunakan gap untuk spacing antara icon dan text
+  const gapClass = icon && children ? 'gap-2' : '';
+
   return (
     <button
-      type={type}
+      type="button" 
       onClick={onClick}
-      disabled={isDisabled}
-      // Semua class digabungkan di sini
-      className={finalClasses} 
-      {...props}
+      aria-label={label || (typeof children === 'string' ? children : undefined)}
+      className={` 
+        ${paddingClass} ${color} ${finalRoundedClass}
+        flex items-center justify-center text-white
+        transition duration-150 hover:shadow-md
+        focus:outline-none focus:ring-2 focus:ring-accent-blue-150 
+        ${focusColor || ''} 
+        ${hoverColor || ''} 
+        ${size || ''}
+        ${gapClass}
+        ${className}
+      `.trim().replace(/\s+/g, ' ')}
     >
-      {icon && <span className="flex-shrink-0">{icon}</span>}
-      <span className="truncate">{children}</span>
+      {iconWithColor}
+      {children}
     </button>
   );
 }
-
-// Tambahkan Size ke PropTypes
-Button.propTypes = {
-    children: PropTypes.node.isRequired,
-    variant: PropTypes.oneOf(['primary', 'secondary']),
-    size: PropTypes.oneOf(['sm', 'md', 'lg']), // <-- Size baru
-    fullWidth: PropTypes.bool,
-    disabled: PropTypes.bool,
-    icon: PropTypes.node,
-    className: PropTypes.string,
-    onClick: PropTypes.func,
-    type: PropTypes.oneOf(['button', 'submit', 'reset']),
-};

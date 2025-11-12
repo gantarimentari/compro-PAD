@@ -40,6 +40,10 @@ export {
   DocumentIcon,
   AdminUserIcon,
   uiIconsMap,
+  GaleryIcon,
+  WarningIcon,
+  TrashIcon,
+  AddIcon, UploadIcon
 } from './UIIcons';
 
 

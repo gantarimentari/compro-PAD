@@ -8,6 +8,7 @@ export default function GaleryLayout({ children }) {
   const svgBackground = "/Background/bg-green-bone.svg";
   
   const backgroundStyle = {
+    backgroundColor: 'rgb(15, 119, 116)', // bg-accent-green-500
     backgroundImage: `url('${svgBackground}')`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',

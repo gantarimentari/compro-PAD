@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Button from '@ds/Button/button';
+import Button from '@ds/Button/Button';
 import { CloseCircleIcon, ChevronLeftIcon, ChevronRightIcon }  from '@ds/icons/UIIcons';
 
 // ---  data dummy ---
@@ -85,7 +85,7 @@ const MOCK_ARTICLES = [
     },
 ].map(article => ({
     ...article,
-    // Summary100 karakter pertama
+    // Summary 100 karakter pertama buat di halaman depannya doang
     summary: article.content[0].substring(0, 100) + (article.content[0].length > 100 ? '...' : ''),
     // fullContent adalah semua content
     fullContent: article.content
