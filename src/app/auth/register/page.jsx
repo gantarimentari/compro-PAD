@@ -1,6 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import Cookies from 'js-cookie';
+import api from '@lib/api.js';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AuthLayout from '@ds/auth/AuthLayout';
 import Input from '@ds/auth/Input';
@@ -19,6 +22,9 @@ export default function RegisterPage() {
     password: ''
   });
 
+  const [error, setError] = useState('');
+  const router = useRouter();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -27,16 +33,29 @@ export default function RegisterPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Implementasi logic register di sini
-    console.log('Register data:', formData);
-    // Setelah berhasil register, bisa redirect ke login atau langsung login
-    // router.push('/auth/login');
+    try{
+      await api.get('/sanctum/csrf-cookie', { withCredentials: true });
+
+      const res = await api.post('/register', formData, {
+        headers: {
+          Accept: 'application/json', 
+          'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN'),
+        },
+        withCredentials: true,
+      });
+      console.log('Register data:', formData);
+    router.push('/auth/login');
+    } catch(err){
+      console.error(err.response?.data);
+      setError(err.response?.data?.message || 'register gagal');
+    }
   };
 
   const handleGoogleRegister = () => {
     // TODO: Implementasi Google OAuth di sini
+    window.location.href = 'http://localhost:8000/auth/google/redirect';
     console.log('Register with Google');
   };
 

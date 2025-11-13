@@ -2,6 +2,9 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Cookies from 'js-cookie';
+import api from '@lib/api.js';
+import { useRouter } from 'next/navigation';
 import AuthLayout from '@ds/auth/AuthLayout';
 import Input from '@ds/auth/Input';
 import Button from '@ds/auth/Button';
@@ -13,18 +16,35 @@ import Button from '@ds/auth/Button';
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
-
-  const handleSubmit = (e) => {
+  
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Implementasi logic kirim email verifikasi di sini
-    console.log('Send verification to:', email);
-    setIsSubmitted(true);
-    
-    // Simulasi: setelah 3 detik kembali ke state awal
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setEmail('');
-    }, 3000);
+    try{
+      await api.get('/sanctum/csrf-cookie', { withCredentials:true });
+
+
+      const res = await api.post('/forgot-password', { email }, {
+        headers: {
+          accept: 'application/json',
+          'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN'),
+        },
+        withCredentials:true,
+      }
+      );
+
+      console.log('response:', res.data);
+      setIsSubmitted(true);
+
+      setTimeout(() => {
+        // setIsSubmitted(false);
+        // setEmail('');
+      }, 3000);
+    }catch(err){
+      console.error(err.response?.data?.message || 'gagal mengirim');
+      alert(err.response?.data?.message || 'gagal mengirim email');
+    }
+    // console.log('Send verification to:', email);
+    // setIsSubmitted(true);
   };
 
   return (

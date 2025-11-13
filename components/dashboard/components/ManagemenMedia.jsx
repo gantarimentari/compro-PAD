@@ -1,5 +1,7 @@
 'use client';
 
+import axios from 'axios';
+import { useEffect } from 'react';
 import React, { useState } from 'react';
 import { SearchIcon, CloseIcon, TrashIcon, AddIcon, WarningIcon, UploadIcon} from '@ds/icons';
 import Button from '@ds/Button';
@@ -52,7 +54,13 @@ const PreviewMediaModal = ({ media, isOpen, onClose }) => {
             <img
               className="max-w-full border-4 max-h-[85vh] object-contain rounded-lg shadow-2xl"
               alt={media.name}
-              src={media.imageUrl || defaultPlaceholder}
+              src={
+                media.image_url
+                  ? media.image_url
+                  : media.file_path
+                    ? `http://localhost:8000/storage/${media.file_path}`
+                    : defaultPlaceholder
+              }
               onError={(e) => { 
                 e.target.onerror = null; 
                 e.target.src = defaultPlaceholder; 
@@ -332,7 +340,14 @@ export default function ManagemenMedia() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [mediaToDelete, setMediaToDelete] = useState(null);
-  const [mediaData, setMediaData] = useState(MOCK_DATA);
+  const [mediaData, setMediaData] = useState([]);
+  useEffect(() => {
+    axios.get('/laravel/api/media', {
+      withCredentials: true,
+    })
+    .then((res) => setMediaData(res.data))
+    .catch((err) => console.error('error fetching media: ', err));
+  }, []);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Filter data based on search query
@@ -340,17 +355,30 @@ export default function ManagemenMedia() {
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleSaveMedia = (formData) => {
+  const handleSaveMedia = async (formData) => {
     // Add new media to the list
-    const newMedia = {
-      id: mediaData.length + 1,
-      name: formData.file ? formData.file.name : `video_${Date.now()}`,
-      date: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }),
-      category: formData.kategori,
-      imageUrl: formData.file ? URL.createObjectURL(formData.file) : null,
-      videoUrl: formData.kategori === 'Video' ? formData.linkYoutube : null
-    };
-    setMediaData([...mediaData, newMedia]);
+    const uploadData = new FormData();
+    uploadData.append('category', formData.kategori);
+    if(formData.file) uploadData.append('file', formData.file);
+    if(formData.linkYoutube) uploadData.append('video_url', formData.linkYoutube);
+    try{
+      const res = await axios.post('/laravel/api/media',uploadData, {
+        headers: { 'Content-Type': 'multipart/form-data'},
+        withCredentials: true,
+      });
+      setMediaData([...mediaData, res.data]);
+    }catch(err){
+      console.error('eror uploading media:', err);
+    }
+    // const newMedia = {
+    //   id: mediaData.length + 1,
+    //   name: formData.file ? formData.file.name : `video_${Date.now()}`,
+    //   date: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+    //   category: formData.kategori,
+    //   imageUrl: formData.file ? URL.createObjectURL(formData.file) : null,
+    //   videoUrl: formData.kategori === 'Video' ? formData.linkYoutube : null
+    // };
+    // setMediaData([...mediaData, newMedia]);
   };
 
   const handleDelete = (id) => {
@@ -358,11 +386,21 @@ export default function ManagemenMedia() {
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (mediaToDelete) {
-      setMediaData(mediaData.filter(item => item.id !== mediaToDelete));
+      try{
+        await axios.delete('http://localhost:8000/api/media/${mediaToDelete}',{
+          withCredentials: true,
+        });
+        setMediaData(mediaData.filter((item) => item.id !== mediaToDelete));
+      } catch(err){
+        console.error('error deleting media:', err);
+      }
       setIsDeleteModalOpen(false);
       setMediaToDelete(null);
+      // setMediaData(mediaData.filter(item => item.id !== mediaToDelete));
+      // setIsDeleteModalOpen(false);
+      // setMediaToDelete(null);
     }
   };
 

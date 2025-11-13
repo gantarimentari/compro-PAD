@@ -1,6 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import api from "@lib/api.js";
+import Cookies from 'js-cookie';
 import Link from 'next/link';
 import AuthLayout from '@ds/auth/AuthLayout';
 import Input from '@ds/auth/Input';
@@ -15,6 +18,9 @@ export default function LoginPage() {
     password: ''
   });
 
+  const [error, setError] = useState('');
+  const router = useRouter();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -23,16 +29,34 @@ export default function LoginPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Implementasi logic login di sini
-    console.log('Login data:', formData);
-    // Setelah berhasil login, bisa redirect ke dashboard
-    // router.push('/dashboard');
+
+    const { email, password } = formData;
+
+    try{
+      await api.get('/sanctum/csrf-cookie',);
+      const res = await api.post('login',{
+        email: formData.email,
+        password: formData.password,
+      },
+    {
+      headers: {
+        accept: 'application/json',
+        'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN'),
+      },
+      withCredentials: true,
+    });
+    console.log('sending', formData)
+    router.push('/dashboardAdmin');
+  } catch(err){
+    console.error(err)
+    setError(err.response?.data?.message || 'login gagal');
+  }
   };
 
   const handleGoogleLogin = () => {
-    // TODO: Implementasi Google OAuth di sini
+    window.location.href = 'http://localhost:8000/auth/google/redirect';
     console.log('Login with Google');
   };
 
