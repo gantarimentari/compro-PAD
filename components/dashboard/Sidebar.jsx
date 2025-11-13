@@ -4,8 +4,14 @@ import { GaleryIcon } from "@ds/icons";
 import Link from "next/link";
 
 export default function Sidebar(){
+  // const [activeLink, setActiveLink] = useState('dashboard');
+  // const menu = [
+  //   }
+  // ]
+
+
     return(
-      <aside className="w-72 bg-white h-screen shadow-md p-6 flex-shrink-0 overflow-y-auto">
+      <aside className="w-72 bg-accent-neutral-225  shadow-md p-6 flex-shrink-0 overflow-y-auto">
         <div className="mb-8">
           <div className="flex items-center gap-3">
             <img

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { SearchIcon, CloseIcon, TrashIcon, AddIcon, WarningIcon, UploadIcon} from '@ds/icons';
 import Button from '@ds/Button';
+import Table from '@ds/Table';
 
 // Mock Data
 const MOCK_DATA = [
@@ -12,6 +13,13 @@ const MOCK_DATA = [
   { id: 4, name: 'img_123456', date: '01/01/2025', category: 'Foto', imageUrl: '/galery/galery-3.jpg' },
 ];
 
+// Columns definition
+const MEDIA_COLUMNS = [
+  { key: 'name', header: 'Nama Gambar' },
+  { key: 'date', header: 'Tanggal Ditambahkan' },
+  { key: 'category', header: 'Kategori Media' },
+  { key: 'actions', header: 'Aksi', isAction: true },
+];
 // Category Tag Component
 const CategoryTag = ({ category }) => {
   const color = category === 'Foto' ? ' bg-accent-yellow-150 text-accent-yellow-550' : 'bg-accent-blue-175 text-accent-blue-550';
@@ -21,6 +29,38 @@ const CategoryTag = ({ category }) => {
     </span>
   );
 };
+
+const renderCell = (item, key, onDelete, onPreview) => {
+  switch (key) {
+    case 'category':
+      return <CategoryTag category={item.category} />;
+    case 'actions':
+      return (
+        <div className="flex justify-center space-x-2">
+                  <Button 
+                    icon={<TrashIcon className="h-4 w-4" />} 
+                    roundedClass="rounded-lg"
+                    color="bg-accent-red-300" 
+                    hoverColor="hover:bg-accent-red-400"
+                    onClick={() => onDelete(item.id)}
+                    label={`Hapus ${item.name}`}
+                  />
+                  
+                  <Button 
+                    icon={<WarningIcon className="h-4 w-4" />} 
+                    roundedClass="rounded-lg"
+                    color="bg-accent-blue-400" 
+                    hoverColor="hover:bg-accent-blue-500"
+                    focusColor="focus:bg-accent-blue-300"
+                    onClick={() => onPreview(item)}
+                    label={`Preview ${item.name}`}
+                  />
+                </div>
+      );
+    default:
+      return item[key];
+  }
+}
 
 // Preview Media Modal Component
 const PreviewMediaModal = ({ media, isOpen, onClose }) => {
@@ -259,71 +299,6 @@ const TambahMediaModal = ({ isOpen, onClose, onSave }) => {
   );
 };
 
-// Management Table Component
-const ManagementTable = ({ data, onDelete, onPreview }) => {
-  return (
-    <div className="bg-white rounded-lg shadow-xl overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-h-8 text-accent-neutral-1000 font-bold  tracking-wider">
-              Nama Gambar
-            </th>
-            <th className="px-6 py-3 text-left text-h-8 text-accent-neutral-1000 font-bold  tracking-wider">
-              Tanggal Ditambahkan
-            </th>
-            <th className="px-6 py-3 text-left text-h-8 text-accent-neutral-1000 font-bold  tracking-wider">
-              Kategori Media
-            </th>
-            <th className="px-6 py-3 text-left text-h-8 text-accent-neutral-1000 font-bold  tracking-wider">
-              Aksi
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {data.map((item) => (
-            <tr key={item.id} className="hover:bg-gray-50 transition duration-150">
-              <td className="px-6 py-4 whitespace-nowrap text-body-2 text-accent-neutral-1000 ">
-                {item.name}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-body-2 text-accent-neutral-1000">
-                {item.date}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-body-2 text-accent-neutral-1000">
-                <CategoryTag category={item.category} />
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                <div className="flex justify-center space-x-2">
-                  <Button 
-                    icon={<TrashIcon className="h-4 w-4" />} 
-                    roundedClass="rounded-lg"
-                    color="bg-accent-red-300" 
-                    hoverColor="hover:bg-accent-red-400"
-                    onClick={() => onDelete(item.id)}
-                    label={`Hapus ${item.name}`}
-                  />
-                  
-                  <Button 
-                    icon={<WarningIcon className="h-4 w-4" />} 
-                    roundedClass="rounded-lg"
-                    color="bg-accent-blue-400" 
-                    hoverColor="hover:bg-blue-500"
-                    focusColor="focus:bg-accent-blue-300"
-                    onClick={() => onPreview(item)}
-                    label={`Preview ${item.name}`}
-                  />
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {data.length === 0 && (
-        <div className="p-6 text-center text-gray-500">Tidak ada data media yang ditemukan.</div>
-      )}
-    </div>
-  );
-};
 
 // Main Component
 export default function ManagemenMedia() {
@@ -383,7 +358,7 @@ export default function ManagemenMedia() {
 
   return (
     <div className="space-y-6">
-      {/* Header dengan Judul dan Tombol Tambah Media */}
+      {/* ini judul  */}
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-h-7 font-bold text-accent-neutral-1000">Manajemen Media</h1>
@@ -420,10 +395,10 @@ export default function ManagemenMedia() {
         </div>
 
         {/* Tabel Data */}
-        <ManagementTable 
-          data={filteredData} 
-          onDelete={handleDelete}
-          onPreview={handlePreview}
+        <Table 
+          columns={MEDIA_COLUMNS}
+          data={filteredData}
+          renderCell={(item, key) => renderCell(item, key, handleDelete, handlePreview)}
         />
       </div>
 
