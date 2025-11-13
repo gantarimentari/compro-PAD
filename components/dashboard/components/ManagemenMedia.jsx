@@ -30,7 +30,7 @@ const PreviewMediaModal = ({ media, isOpen, onClose }) => {
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70 backdrop-blur-sm"
+      className="fixed inset-0 z-50 bg-accent-neutral-225 flex items-center justify-center p-4 bg-black bg-opacity-70 backdrop-blur-sm"
       onClick={onClose}
     >
       <div 
@@ -50,7 +50,7 @@ const PreviewMediaModal = ({ media, isOpen, onClose }) => {
         <div className="relative w-full h-full flex items-center justify-center">
           {media.category === 'Foto' ? (
             <img
-              className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
+              className="max-w-full border-4 max-h-[85vh] object-contain rounded-lg shadow-2xl"
               alt={media.name}
               src={media.imageUrl || defaultPlaceholder}
               onError={(e) => { 
@@ -61,7 +61,7 @@ const PreviewMediaModal = ({ media, isOpen, onClose }) => {
           ) : (
             <div className="w-full max-w-4xl aspect-video bg-black rounded-lg flex items-center justify-center">
               <iframe
-                className="w-full h-full rounded-lg"
+                className="w-full h-full  border-4 rounded-lg"
                 src={media.videoUrl?.replace('watch?v=', 'embed/') || ''}
                 title={media.name}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -69,6 +69,54 @@ const PreviewMediaModal = ({ media, isOpen, onClose }) => {
               />
             </div>
           )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Delete Confirmation Modal Component
+const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div 
+        className="relative bg-white rounded-lg max-w-md w-full shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Modal Content */}
+        <div className="p-6">
+          {/* Title */}
+          <h2 className="text-xl font-bold text-gray-900 mb-4">
+            Hapus Media
+          </h2>
+          
+          {/* Body Text */}
+          <p className="text-sm text-gray-700 mb-6">
+            Apakah Anda yakin ingin menghapus media ini? Tindakan ini tidak dapat dibatalkan.
+          </p>
+          
+          {/* Action Buttons */}
+          <div className="flex justify-end space-x-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition duration-150 font-medium"
+            >
+              Batal
+            </button>
+            <button
+              type="button"
+              onClick={onConfirm}
+              className="px-6 py-2 bg-accent-red-300 text-white rounded-lg hover:bg-accent-red-400 transition duration-150 font-medium shadow-sm"
+            >
+              Hapus
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -281,7 +329,9 @@ const ManagementTable = ({ data, onDelete, onPreview }) => {
 export default function ManagemenMedia() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState(null);
+  const [mediaToDelete, setMediaToDelete] = useState(null);
   const [mediaData, setMediaData] = useState(MOCK_DATA);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -304,9 +354,21 @@ export default function ManagemenMedia() {
   };
 
   const handleDelete = (id) => {
-    if (window.confirm('Apakah Anda yakin ingin menghapus media ini?')) {
-      setMediaData(mediaData.filter(item => item.id !== id));
+    setMediaToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (mediaToDelete) {
+      setMediaData(mediaData.filter(item => item.id !== mediaToDelete));
+      setIsDeleteModalOpen(false);
+      setMediaToDelete(null);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false);
+    setMediaToDelete(null);
   };
 
   const handlePreview = (media) => {
@@ -377,6 +439,13 @@ export default function ManagemenMedia() {
         media={selectedMedia}
         isOpen={isPreviewModalOpen}
         onClose={handleClosePreview}
+      />
+
+      {/* Modal Konfirmasi Hapus */}
+      <DeleteConfirmationModal 
+        isOpen={isDeleteModalOpen}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
       />
     </div>
   );
