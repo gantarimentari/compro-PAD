@@ -1,8 +1,69 @@
 "use client";
 
+import React from "react";
+// Impor komponen mock dan generik yang relevan (TIDAK DIUBAH)
 import Footer from "@ds/shared/Footer";
 import HeaderDashboard from "@ds/dashboard/HeaderDashboard";
 import Sidebar from "@ds/dashboard/Sidebar";
+import Table from "@ds/Table"; // Menggunakan nama Table sesuai kode Anda
+// Impor ikon yang diperlukan (Tambahkan MockButton dan CategoryTag yang Hilang)
+// Karena Anda tidak mendefinisikannya, saya tambahkan versi mock sederhana agar kode berjalan.
+import { WarningIcon, TrashIcon } from "@ds/icons"; 
+
+
+// --- MOCK DATA, KOMPONEN & FUNGSI (DIPERBAIKI URUTANNYA) ---
+
+const MOCK_DATA = [
+    { id: 1, name: 'File A', date: '01/01/2025', category: 'Foto' },
+    { id: 2, name: 'File B', date: '01/01/2025', category: 'Video' },
+];
+
+const MEDIA_COLUMNS = [
+    { key: 'name', header: 'Nama Gambar' },
+    { key: 'date', header: 'Tanggal Ditambahkan' },
+    { key: 'category', header: 'Kategori Media' },
+    { key: 'actions', header: 'Aksi', isAction: true },
+];
+
+// Mock Komponen Pembantu (Hanya untuk keperluan demo tabel)
+const CategoryTag = ({ category }) => (
+    <span className="px-4 py-1 text-xs rounded-lg bg-blue-100 text-blue-800">
+        {category}
+    </span>
+);
+
+const MockButton = ({ children }) => (
+    <button className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition">
+        {children}
+    </button>
+);
+
+
+// ✅ DEFINISI FUNGSI RENDER CELL (HARUS DI ATAS PENGGUNAANNYA)
+const renderDemoCell = (item, key) => {
+    switch (key) {
+        case 'category':
+            return <CategoryTag category={item.category} />;
+        case 'actions':
+            return (
+                <div className="flex justify-start space-x-2">
+                    <MockButton>Edit</MockButton>
+                    <MockButton>Hapus</MockButton>
+                </div>
+            );
+        default:
+            // Mengakses properti objek item
+            return item[key]; 
+    }
+};
+
+// FIX 1: filteredData seharusnya berisi data, bukan kolom.
+const filteredData = MOCK_DATA; 
+// FIX 2: renderMediaCell langsung menunjuk ke renderDemoCell, tidak perlu penugasan ulang.
+const renderMediaCell = renderDemoCell; 
+
+
+// --- Komponen Utama ---
 
 export default function TestFooterPage() {
   return (
@@ -10,6 +71,16 @@ export default function TestFooterPage() {
       <Sidebar />
       <div className="flex flex-col flex-grow">
         <HeaderDashboard />
+        
+        <div className="max-w-7xl mx-auto px-4 py-8 w-full">
+            <h2 className="text-2xl font-bold mb-4 text-gray-800">Demo Generic Table</h2>
+            <Table 
+                    columns={MEDIA_COLUMNS} 
+                    data={filteredData} 
+                    renderCell={renderMediaCell} 
+                />
+        </div>
+              
       
       {/* Hero Section untuk Demo */}
       <div className="bg-gradient-to-br from-accent-blue-600 to-accent-blue-500 text-white py-20">

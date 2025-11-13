@@ -42,7 +42,7 @@ export {
   uiIconsMap,
   GaleryIcon,
   WarningIcon,
-  TrashIcon,
+  TrashIcon, PenIcon,
   AddIcon, UploadIcon
 } from './UIIcons';
 

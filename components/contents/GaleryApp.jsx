@@ -18,7 +18,7 @@ const MOCK_IMAGES = [
 
 const IMAGES_PER_PAGE = 6;
 
-// --- Helper Function untuk Filter Dinamis ---
+// --- Filter Galery by day ---
 const filterImagesByDays = (images, days) => {
     const now = new Date();
     const cutoffDate = new Date(now.getTime() - (days * 24 * 60 * 60 * 1000));

@@ -305,7 +305,7 @@ const ArticleCard = ({ article, onReadClick }) => {
                       variant="primary"
                       size="sm"
                       onClick={onReadClick}
-                      className="rounded-[9px] px-6 py-3 bg-accent-blue-400 border-accent-blue-400 hover:bg-accent-blue-500 active:scale-[0.98] "
+                      className="rounded-lg px-6 py-3 bg-accent-blue-400 border-accent-blue-400 hover:bg-accent-blue-500 active:scale-[0.98] "
                     >
                         Baca disini
                     </Button>
