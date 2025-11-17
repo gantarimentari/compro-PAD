@@ -15,7 +15,7 @@ export default function RootLayout({ children }) {
  >
        <Header />
         <main className="flex-grow">
-          <p>halo</p>
+          <p>halo simingit lili</p>
 
         </main>
         
@@ -23,7 +23,7 @@ export default function RootLayout({ children }) {
         <Footer
         footerSvg="/Background/footer-landingPage.svg"
         footerClass="text-white bg-accent-blue-500"
-        
+          
       />
     </div>
 

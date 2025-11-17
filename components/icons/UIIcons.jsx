@@ -311,22 +311,22 @@ export const UserIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
 );
 
 
-export const CalendarIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
-  <svg 
-    className={className}
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke={color}
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-    <line x1="16" y1="2" x2="16" y2="6"/>
-    <line x1="8" y1="2" x2="8" y2="6"/>
-    <line x1="3" y1="10" x2="21" y2="10"/>
-  </svg>
-);
+// export const CalendarIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
+//   <svg 
+//     className={className}
+//     viewBox="0 0 24 24" 
+//     fill="none" 
+//     stroke={color}
+//     strokeWidth="2"
+//     strokeLinecap="round"
+//     strokeLinejoin="round"
+//   >
+//     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+//     <line x1="16" y1="2" x2="16" y2="6"/>
+//     <line x1="8" y1="2" x2="8" y2="6"/>
+//     <line x1="3" y1="10" x2="21" y2="10"/>
+//   </svg>
+// );
 
 export const NotificationIcon = ({ className = "w-6 h-6" }) => (
   <svg
@@ -355,7 +355,7 @@ export const uiIconsMap = {
   check: CheckIcon,
   search: SearchIcon,
   user: UserIcon,
-  calendar: CalendarIcon,
+  // calendar: CalendarIcon,
   notification: NotificationIcon,
 };
 export const DocumentIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
@@ -439,7 +439,7 @@ export const WarningIcon = ({ className = "w-6 h-6", color = "currentColor" }) =
 export const UploadIcon= ({className = "w-6 h-6", color = "currentColor" }) => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M12 16.349V3.87C12.1972 3.87017 12.3923 3.90921 12.5744 3.98488C12.7565 4.06055 12.9218 4.17137 13.061 4.311L17.882 9.132M6.118 9.132L10.939 4.311C11.232 4.018 11.616 3.871 12 3.871M20.75 16.515V17.45C20.75 18.3252 20.4023 19.1646 19.7835 19.7834C19.1646 20.4023 18.3252 20.75 17.45 20.75H6.55C5.67479 20.75 4.83542 20.4023 4.21655 19.7834C3.59768 19.1646 3.25 18.3252 3.25 17.45V16.515" 
-stroke="#333333" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>
 
 );
@@ -482,7 +482,7 @@ export const DogIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
 );
 export const PawIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
   <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_216_10853)">
+<g clipPath="url(#clip0_216_10853)">
 <path d="M9.16667 5.00001C10.0871 5.00001 10.8333 4.25381 10.8333 3.33334C10.8333 2.41286 10.0871 1.66667 9.16667 1.66667C8.24619 1.66667 7.5 2.41286 7.5 3.33334C7.5 4.25381 8.24619 5.00001 9.16667 5.00001Z" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
 <path d="M15.0007 8.33333C15.9211 8.33333 16.6673 7.58714 16.6673 6.66667C16.6673 5.74619 15.9211 5 15.0007 5C14.0802 5 13.334 5.74619 13.334 6.66667C13.334 7.58714 14.0802 8.33333 15.0007 8.33333Z" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
 <path d="M16.6667 15C17.5871 15 18.3333 14.2538 18.3333 13.3333C18.3333 12.4129 17.5871 11.6667 16.6667 11.6667C15.7462 11.6667 15 12.4129 15 13.3333C15 14.2538 15.7462 15 16.6667 15Z" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
@@ -493,6 +493,26 @@ export const PawIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
 <rect width="20" height="20" fill="white"/>
 </clipPath>
 </defs>
+</svg>
+
+);
+export const CalendarIcon =({ className = "w-6 h-6", color = "currentColor" }) => (
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M6.66602 1.66667V5.00001" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M13.334 1.66667V5.00001" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M15.8333 3.33333H4.16667C3.24619 3.33333 2.5 4.07952 2.5 4.99999V16.6667C2.5 17.5871 3.24619 18.3333 4.16667 18.3333H15.8333C16.7538 18.3333 17.5 17.5871 17.5 16.6667V4.99999C17.5 4.07952 16.7538 3.33333 15.8333 3.33333Z" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M2.5 8.33334H17.5" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+
+);
+
+export const FileIcon= ({ className = "w-6 h-6", color = "currentColor" })=> (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12.5007 1.66666H5.00065C4.55862 1.66666 4.1347 1.84225 3.82214 2.15481C3.50958 2.46737 3.33398 2.8913 3.33398 3.33332V16.6667C3.33398 17.1087 3.50958 17.5326 3.82214 17.8452C4.1347 18.1577 4.55862 18.3333 5.00065 18.3333H15.0007C15.4427 18.3333 15.8666 18.1577 16.1792 17.8452C16.4917 17.5326 16.6673 17.1087 16.6673 16.6667V5.83332L12.5007 1.66666Z" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M11.666 1.66666V4.99999C11.666 5.44202 11.8416 5.86594 12.1542 6.1785C12.4667 6.49106 12.8907 6.66666 13.3327 6.66666H16.666" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M8.33268 7.5H6.66602" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M13.3327 10.8333H6.66602" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M13.3327 14.1667H6.66602" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>
 
 );

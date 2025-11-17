@@ -5,7 +5,7 @@ import React from "react";
 import Footer from "@ds/shared/Footer";
 import HeaderDashboard from "@ds/dashboard/HeaderDashboard";
 import Sidebar from "@ds/dashboard/Sidebar";
-import Table from "@ds/Table"; // Menggunakan nama Table sesuai kode Anda
+import Table from "@ds/dashboard/components/Table"; // Menggunakan nama Table sesuai kode Anda
 // Impor ikon yang diperlukan (Tambahkan MockButton dan CategoryTag yang Hilang)
 // Karena Anda tidak mendefinisikannya, saya tambahkan versi mock sederhana agar kode berjalan.
 import { WarningIcon, TrashIcon } from "@ds/icons"; 
@@ -38,8 +38,7 @@ const MockButton = ({ children }) => (
     </button>
 );
 
-
-// ✅ DEFINISI FUNGSI RENDER CELL (HARUS DI ATAS PENGGUNAANNYA)
+)
 const renderDemoCell = (item, key) => {
     switch (key) {
         case 'category':
