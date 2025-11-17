@@ -316,6 +316,7 @@ export default function ManagemenMedia() {
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [mediaToDelete, setMediaToDelete] = useState(null);
   const [mediaData, setMediaData] = useState([]);
+
   useEffect(() => {
     axios.get('/laravel/api/media', {
       withCredentials: true,

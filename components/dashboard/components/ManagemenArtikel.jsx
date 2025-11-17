@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import api from "@lib/api.js";
 import { SearchIcon, CloseIcon, TrashIcon, AddIcon, PenIcon, UploadIcon} from '@ds/icons';
 import Button from '@ds/Button';
 import Table from '@ds/Table';
@@ -101,11 +102,35 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
     status: 'Draft'
   });
 
-  if (!isOpen) return null;
+  
+  React.useEffect(() => {
+    if (!isOpen) return;
 
-  const handleSubmit = (e) => {
+  const loadQuill = async () => {
+    const Quill = (await import('quill')).default;
+
+    const quill = new Quill("#editor-tambah", {
+      theme: "snow",
+    });
+
+    quill.on("text-change", () => {
+      setFormData(prev => ({
+        ...prev,
+        isiArtikel: quill.root.innerHTML,
+      }));
+    });
+  };
+
+  loadQuill();
+}, [isOpen]);
+
+if (!isOpen) return null;
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave(formData);
+
+    try{
+      await onSave(formData);
     // Reset form
     setFormData({
       judul: '',
@@ -115,6 +140,9 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
       status: 'Draft'
     });
     onClose();
+  }catch(err){
+    console.error('error submitting form:', err);
+    }
   };
 
   const handleFileChange = (e) => {
@@ -189,14 +217,24 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Isi Artikel
             </label>
-            <textarea
+            {/* <textarea
               value={formData.isiArtikel}
               onChange={(e) => setFormData({ ...formData, isiArtikel: e.target.value })}
               placeholder="Tulis konten artikel disini..."
               rows={6}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 resize-none"
               required
-            />
+            /> */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+              </label>
+
+              <div id="editor-tambah" style={{
+                height:"350px",
+                border:"1px solid #ddd",
+                borderRadius:"6px"
+              }}></div>
+            </div>
           </div>
 
           {/* Upload Media */}
@@ -268,25 +306,45 @@ const EditArtikelModal = ({ isOpen, onClose, onSave, article }) => {
     file: null,
     status: 'Draft'
   });
+ 
+  // React.useEffect(() => {
+  //   // fetchArticles();
+  //   fetchCsrfAndArticles();
+  // }, []);
 
   React.useEffect(() => {
-    if (article) {
-      setFormData({
-        judul: article.title || '',
-        kategori: article.category || '',
-        isiArtikel: article.content || '',
-        file: null,
-        status: article.status || 'Draft'
-      });
-    }
-  }, [article]);
+    if (!isOpen || !article) return;
+
+    const loadQuill = async () => {
+      const Quill = (await import("quill")).default;
+
+      const quill = new Quill('#editor-edit', { theme: 'snow' });
+    
+    };
+    
+    loadQuill();
+  
+    quill.root.innerHTML = article.content || '';
+    
+    quill.on('text-change', () => {
+      setFormData(prev => ({
+        ...prev,
+        isiArtikel: quill.root.innerHTML,
+      }));
+    });
+  }, [isOpen, article]);
+
 
   if (!isOpen || !article) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave(article.id, formData);
-    onClose();
+    try {
+      await onSave(article.id, formData);
+      onClose();
+    } catch (err) {
+      console.error("error karena: ", err?.response?.data || err);
+    }
   };
 
   const handleFileChange = (e) => {
@@ -361,14 +419,7 @@ const EditArtikelModal = ({ isOpen, onClose, onSave, article }) => {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Isi Artikel
             </label>
-            <textarea
-              value={formData.isiArtikel}
-              onChange={(e) => setFormData({ ...formData, isiArtikel: e.target.value })}
-              placeholder="Tulis konten artikel disini..."
-              rows={6}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 resize-none"
-              required
-            />
+            <div id="editor-edit" className="h-40 border border-gray-300 rounded-lg"></div>
           </div>
 
           {/* Upload Media */}
@@ -472,8 +523,42 @@ export default function ManagemenArtikel() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [articleToDelete, setArticleToDelete] = useState(null);
-  const [articleData, setArticleData] = useState(MOCK_DATA);
+  const [articleData, setArticleData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Helper function to get XSRF token from cookie
+  const getXsrfToken = () => {
+    const token = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('XSRF-TOKEN='))
+      ?.split('=')[1];
+    return token ? decodeURIComponent(token) : '';
+  };
+
+  const fetchCsrfAndArticles = async() =>{
+    try {
+    await api.get("/sanctum/csrf-cookie");
+    const res = await api.get("/api/articles");
+
+    const formatted = res.data.map(item => ({
+      id: item.id,
+      title: item.title,
+      category: item.category,
+      status: item.status,
+      date: new Date(item.created_at).toLocaleDateString('id-ID'),
+      imageUrl: item.image ? process.env.NEXT_PUBLIC_STORAGE_URL + item.image : "/images/default.png",
+      content: item.content
+    }));
+
+    setArticleData(formatted);
+  } catch (err) {
+    console.error(err);
+  }
+  };
+
+  React.useEffect(()=>{
+    fetchCsrfAndArticles();
+  }, []);
 
   // Filter data based on search query
   const filteredData = articleData.filter(item =>
@@ -481,34 +566,66 @@ export default function ManagemenArtikel() {
     item.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleSaveArtikel = (formData) => {
-    // Add new article to the list
-    const newArticle = {
-      id: articleData.length + 1,
-      title: formData.judul,
-      date: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }),
-      category: formData.kategori,
-      status: formData.status,
-      imageUrl: formData.file ? URL.createObjectURL(formData.file) : '/images/gambarkucingarticle.png',
-      content: formData.isiArtikel
-    };
-    setArticleData([...articleData, newArticle]);
+  const handleSaveArtikel = async (formData) => {
+    try {
+      // Refresh CSRF token before mutation
+      await api.get('/sanctum/csrf-cookie');
+      
+      const data = new FormData();
+      data.append("title", formData.judul);
+      data.append("category", formData.kategori);
+      data.append("content", formData.isiArtikel);
+      data.append("status", formData.status);
+      if (formData.file) data.append("image", formData.file);
+
+      await api.post("/api/articles", data, {
+        headers: {
+          'X-XSRF-TOKEN': getXsrfToken()
+        }
+      });
+
+      await fetchCsrfAndArticles(); // refresh data
+    } catch (err) {
+      console.error('Error details:', {
+        message: err.message,
+        status: err.response?.status,
+        data: err.response?.data,
+        headers: err.response?.headers
+      });
+      alert(`Gagal menyimpan artikel: ${err.response?.data?.message || err.message}`);
+    }
   };
 
-  const handleEditArtikel = (id, formData) => {
-    // Update article in the list
-    setArticleData(articleData.map(item => 
-      item.id === id 
-        ? {
-            ...item,
-            title: formData.judul,
-            category: formData.kategori,
-            status: formData.status,
-            content: formData.isiArtikel,
-            imageUrl: formData.file ? URL.createObjectURL(formData.file) : item.imageUrl
-          }
-        : item
-    ));
+  const handleEditArtikel = async (id, formData) => {
+    try {
+      // Refresh CSRF token before mutation
+      await api.get('/sanctum/csrf-cookie');
+
+      const data = new FormData();
+      data.append("title", formData.judul);
+      data.append("category", formData.kategori);
+      data.append("content", formData.isiArtikel);
+      data.append("status", formData.status);
+      if (formData.file) data.append("image", formData.file);
+
+      data.append("_method", "PUT");
+
+      await api.post(`/api/articles/${id}`, data, {
+        headers: {
+          'X-XSRF-TOKEN': getXsrfToken()
+        }
+      });
+
+      await fetchCsrfAndArticles();
+    } catch (err) {
+      console.error('Error details:', {
+        message: err.message,
+        status: err.response?.status,
+        data: err.response?.data,
+        headers: err.response?.headers
+      });
+      alert(`Gagal mengupdate artikel: ${err.response?.data?.message || err.message}`);
+    }
   };
 
   const handleDelete = (article) => {
