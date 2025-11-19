@@ -8,9 +8,10 @@ import ManagemenMedia from "@ds/dashboard/components/ManagemenMedia";
 import ManagementPasien from "@ds/dashboard/components/ManagementPasien";
 import ManagementHewan from "@ds/dashboard/components/ManagementHewan";
 import JenisHewan from "@ds/dashboard/components/JenisHewan";
+import Reservasi from "@ds/dashboard/components/Reservasi";
 
 export default function DashboardAdminPage() {
-  const [activeMenu, setActiveMenu] = useState('media');
+  const [activeMenu, setActiveMenu] = useState('reservasi');
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -24,6 +25,7 @@ export default function DashboardAdminPage() {
           {activeMenu === 'artikel' && <ManagemenArtikel />}
           {activeMenu === 'media' && <ManagemenMedia />}
           {activeMenu === 'pasien' && <ManagementPasien />}
+          {activeMenu === 'reservasi' && <Reservasi />}
         
           
         </main>

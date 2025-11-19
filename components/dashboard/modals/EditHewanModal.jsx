@@ -29,7 +29,7 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave }) => {
   const [formData, setFormData] = useState({
     petName: hewan?.petName || '',
     species: hewan?.species || '',
-    ownerName: hewan?.ownerName || hewan?.name || '',
+    ownerName: hewan?.name || '',
   });
 
   useEffect(() => {
@@ -37,7 +37,7 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave }) => {
       setFormData({
         petName: hewan.petName,
         species: hewan.species,
-        ownerName: hewan.ownerName || hewan.name,
+        ownerName: hewan.name,
       });
     }
   }, [hewan]);

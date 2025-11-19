@@ -43,7 +43,7 @@ const flattenHewanData = (ownerData) => {
       owner.pets.forEach(pet => {
         flattened.push({
           id: pet.petId,
-          petName: pet.petName || `Hewan ${pet.petId}`, // Fallback jkalau ada petName
+          petName: pet.petName || `Hewan ${pet.petId}`, // Fallback jkalau ga  ada petName, sama ini jujur aku males ngisinya hehe nanti dihapus aja  kode || dan setelahnya
           species: pet.species,
           ownerName: owner.name,
           ownerId: owner.id
