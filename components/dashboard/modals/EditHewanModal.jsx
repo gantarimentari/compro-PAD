@@ -1,46 +1,66 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import BaseModal from './BaseModal';
 import Button from '@ds/Button';
 
-// Data dummy untuk dropdown pemilik (nanti akan diambil dari ManagementPasien)
-const DUMMY_PEMILIK = [
-  { id: 1, name: 'andi' },
-  { id: 2, name: 'budi' },
-  { id: 3, name: 'cinta' },
-  { id: 4, name: 'dina' },
-  { id: 5, name: 'eko' },
-];
-
-// Data dummy untuk dropdown jenis hewan
-const JENIS_HEWAN = [
-  'Kucing',
-  'Anjing',
-  'Burung',
-  'Hamster',
-  'Kelinci',
-  'Ikan',
-  'Reptil',
-  'Lainnya'
-];
-
-const EditHewanModal = ({ isOpen, onClose, hewan, onSave }) => {
+const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerData = [] }) => {
   const [formData, setFormData] = useState({
     petName: hewan?.petName || '',
     species: hewan?.species || '',
-    ownerName: hewan?.name || '',
+    ownerName: hewan?.ownerName || '',
   });
 
   useEffect(() => {
     if (hewan) {
       setFormData({
-        petName: hewan.petName,
-        species: hewan.species,
-        ownerName: hewan.name,
+        petName: hewan.petName || '',
+        species: hewan.species || '',
+        ownerName: hewan.ownerName || '',
       });
     }
   }, [hewan]);
+
+  // Ambil daftar pemilik dari ownerData
+  const availableOwners = useMemo(() => {
+    if (ownerData && ownerData.length > 0) {
+      return ownerData.map(owner => ({ id: owner.id, name: owner.name }));
+    }
+    return [];
+  }, [ownerData]);
+
+  //  jenis hewan berdasarkan pemilik yang dipilih
+  const availableSpecies = useMemo(() => {
+    if (!formData.ownerName) {
+      return [];
+    }
+    
+    // Cari owner berdasarkan nama
+    const selectedOwner = ownerData.find(owner => owner.name === formData.ownerName);
+    
+    if (selectedOwner && selectedOwner.pets && selectedOwner.pets.length > 0) {
+      // cari jenis hewan yagn dimiliki owner
+      const speciesSet = new Set(selectedOwner.pets.map(pet => pet.species));
+      return Array.from(speciesSet);
+    }
+    
+    return [];
+  }, [formData.ownerName, ownerData]);
+
+  
+  useEffect(() => {
+    // Hanya reset jika ownerName berubah dan bukan saat initial load
+    if (formData.ownerName && hewan && formData.ownerName !== hewan.ownerName) {
+      // Cek apakah species yang sekarang masih valid untuk owner baru
+      const selectedOwner = ownerData.find(owner => owner.name === formData.ownerName);
+      const isValidSpecies = selectedOwner?.pets?.some(pet => pet.species === formData.species);
+      
+      // Reset species jika tidak valid untuk owner baru
+      if (!isValidSpecies) {
+        setFormData(prev => ({ ...prev, species: '' }));
+      }
+    }
+  }, [formData.ownerName, hewan, ownerData, formData.species]);
 
   if (!isOpen || !hewan) return null;
 
@@ -59,6 +79,24 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave }) => {
       maxWidth="max-w-lg"
     >
       <form onSubmit={handleSubmit} className="p-6 space-y-2">
+        <div>
+          <label className="block text-h-8 font-bold text-accent-neutral-1000">
+            Nama Pemilik
+          </label>
+          <select
+            value={formData.ownerName}
+            onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
+            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
+            required 
+          >
+            <option value="">Pilih nama pemilik</option>
+            {availableOwners.map((pemilik) => (
+              <option key={pemilik.id} value={pemilik.name}>
+                {pemilik.name}
+              </option>
+            ))}
+          </select>
+        </div>
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Nama Hewan
@@ -81,10 +119,17 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave }) => {
             value={formData.species}
             onChange={(e) => setFormData({ ...formData, species: e.target.value })}
             className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
-            required        
+            required
+            disabled={!formData.ownerName || availableSpecies.length === 0}
           >
-            <option value="">Pilih jenis hewan</option>
-            {JENIS_HEWAN.map((jenis, index) => (
+            <option value="">
+              {!formData.ownerName 
+                ? 'Pilih nama pemilik terlebih dahulu' 
+                : availableSpecies.length === 0 
+                  ? 'Pemilik ini belum memiliki hewan' 
+                  : 'Pilih jenis hewan'}
+            </option>
+            {availableSpecies.map((jenis, index) => (
               <option key={index} value={jenis}>
                 {jenis}
               </option>
@@ -92,24 +137,7 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave }) => {
           </select>
         </div>
 
-        <div>
-          <label className="block text-h-8 font-bold text-accent-neutral-1000">
-            Nama Pemilik
-          </label>
-          <select
-            value={formData.ownerName}
-            onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
-            required 
-          >
-            <option value="">Pilih nama pemilik</option>
-            {DUMMY_PEMILIK.map((pemilik) => (
-              <option key={pemilik.id} value={pemilik.name}>
-                {pemilik.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        
 
         <div className="flex justify-end space-x-3 pt-4">
           <button

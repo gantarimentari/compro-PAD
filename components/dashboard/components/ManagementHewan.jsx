@@ -205,6 +205,7 @@ export default function ManagementHewan() {
         }}
         hewan={selectedHewan}
         onSave={handleEditHewan}
+        ownerData={HewanData}
       />
 
       <DeleteConfirmModal

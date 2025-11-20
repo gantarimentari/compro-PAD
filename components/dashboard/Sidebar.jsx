@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { GaleryIcon, FileIcon, PeopleIcon,DogIcon, PawIcon, CalendarIcon } from "@ds/icons"; 
+import { GaleryIcon, FileIcon, PromoIcon, PeopleIcon,DogIcon, PawIcon, CalendarIcon } from "@ds/icons"; 
 import Link from "next/link";
 
 export default function Sidebar({ activeMenu, setActiveMenu }){
@@ -12,7 +12,7 @@ export default function Sidebar({ activeMenu, setActiveMenu }){
     {id: 'artikel', icon: FileIcon, label: 'Manajemen Artikel'},
     {id: 'media', icon: GaleryIcon, label: 'Manajemen Media'},
     {id: 'admin', icon: PeopleIcon, label: 'Manajemen Admin'},
-    {id: 'prommo', icon: PawIcon, label: 'Managemen Promo'},
+    {id: 'prommo', icon: PromoIcon, label: 'Managemen Promo'},
     {id: 'system', icon: PawIcon, label: 'System Info'},
     
     

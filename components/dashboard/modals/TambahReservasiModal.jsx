@@ -114,7 +114,7 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave, ownerData = [] }) => {
            </div>
            <div>
             <label className='block text-h-8 font-bold text-accent-neutral-1000'>
-              Tanggal
+              Tanggal Reservasi
             </label>
             <input
             type="date"

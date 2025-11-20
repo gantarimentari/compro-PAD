@@ -45,7 +45,7 @@ export {
   TrashIcon, PenIcon,
   AddIcon, UploadIcon,
   HomeIcon, PeopleIcon, DogIcon, PawIcon, 
-  FileIcon,
+  FileIcon, ChevronDownIcon, PromoIcon
 } from './UIIcons';
 
 

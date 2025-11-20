@@ -19,7 +19,7 @@ export default function GenericTable({ columns, data, renderCell }) {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-xl overflow-x-auto">
+    <div className="bg-white rounded-lg shadow-xl overflow-x-auto overflow-y-visible">
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
@@ -43,7 +43,7 @@ export default function GenericTable({ columns, data, renderCell }) {
               {columns.map((column, colIndex) => (
                 <td 
                   key={colIndex} 
-                  className="px-6 py-4 whitespace-nowrap text-body-2 text-accent-neutral-1000"
+                  className="px-6 py-4 whitespace-nowrap text-body-2 text-accent-neutral-1000 relative"
                 >
                   {/* Panggil fungsi renderCell untuk konten yang spesifik */}
                   {renderCell(item, column.key)}

@@ -23,4 +23,5 @@ export { default as EditHewanModal } from './EditHewanModal';
 export { default as TambahJenisHewanModal } from './TambahJenisHewanModal';
 export { default as EditJenisHewanModal } from './EditJenisHewanModal';
 export { default as TambahReservasiModal } from './TambahReservasiModal';
-
+// reservasi
+export { default as EditReservasiModal } from './EditReservasiModal';
