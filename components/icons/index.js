@@ -43,7 +43,9 @@ export {
   GaleryIcon,
   WarningIcon,
   TrashIcon, PenIcon,
-  AddIcon, UploadIcon
+  AddIcon, UploadIcon,
+  HomeIcon, PeopleIcon, DogIcon, PawIcon, 
+  FileIcon,
 } from './UIIcons';
 
 

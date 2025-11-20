@@ -17,7 +17,8 @@ export default function Button({
   rounded = 'full',
   roundedClass,
   className = '',
-  children 
+  children,
+  type = 'button'
 }) {
   
   // Mapping untuk rounded class - gunakan roundedClass jika ada, atau gunakan rounded prop
@@ -32,7 +33,7 @@ export default function Button({
   if (!icon && !children) {
     return (
       <button
-        type="button" 
+        type={type} 
         onClick={onClick}
         aria-label={label}
         className={` 
@@ -66,7 +67,7 @@ export default function Button({
 
   return (
     <button
-      type="button" 
+      type={type} 
       onClick={onClick}
       aria-label={label || (typeof children === 'string' ? children : undefined)}
       className={` 
