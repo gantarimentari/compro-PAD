@@ -11,16 +11,18 @@ export default function PageHeader({ title, description, onAddClick, addButtonTe
               <p className="text-body-2 text-accent-neutral-800">{description}</p>
           </div>
           {/* {actionButton && actionButton} */}
-          <Button 
-          icon={<AddIcon />} 
-          color="bg-accent-blue-400" 
-          hoverColor="hover:bg-accent-blue-500"
-          focusColor="focus:bg-accent-blue-300"
-          roundedClass="rounded-lg"
-          onClick={onAddClick}
-        >
-          {addButtonText}
-        </Button>
+          {onAddClick && addButtonText && (
+            <Button 
+              icon={<AddIcon />} 
+              color="bg-accent-blue-400" 
+              hoverColor="hover:bg-accent-blue-500"
+              focusColor="focus:bg-accent-blue-300"
+              roundedClass="rounded-lg"
+              onClick={onAddClick}
+            >
+              {addButtonText}
+            </Button>
+          )}
       </div>
   );
 }

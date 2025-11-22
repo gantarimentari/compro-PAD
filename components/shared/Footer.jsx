@@ -26,7 +26,7 @@ export default function Footer({
   // let footerStyle override svg defaults (so per-page settings take effect)
   const combinedStyle = { ...svgStyle, ...(footerStyle || {}) };
 
-  // Default data (menyesuaikan cms)
+  // Default data (menyesuaikan cms) mock data
   const defaultData = {
     clinicName: "KLINIK DOKTER HEWAN FANINA",
     address:

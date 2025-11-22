@@ -10,6 +10,8 @@ import ManagementHewan from "@ds/dashboard/components/ManagementHewan";
 import JenisHewan from "@ds/dashboard/components/JenisHewan";
 import Reservasi from "@ds/dashboard/components/Reservasi";
 import ManagemenPromo from "@ds/dashboard/components/ManagemenPromo";
+import ManagemenAdmin from "@ds/dashboard/components/ManagemenAdmin";
+import SystemInfo from "@ds/dashboard/components/SystemInfo";
 
 export default function DashboardAdminPage() {
   const [activeMenu, setActiveMenu] = useState('reservasi');
@@ -28,6 +30,9 @@ export default function DashboardAdminPage() {
           {activeMenu === 'pasien' && <ManagementPasien />}
           {activeMenu === 'reservasi' && <Reservasi />}
           {activeMenu === 'promo' && <ManagemenPromo />}
+          {activeMenu === 'admin'&& <ManagemenAdmin/>}
+          {activeMenu === 'system' && <SystemInfo />}
+
           
         </main>
       </div>

@@ -37,12 +37,12 @@ export default function GenericTable({ columns, data, renderCell }) {
         
         <tbody className="bg-white divide-y divide-gray-200">
           {/* RENDER DATA BARIS */}
-          {data.map((item) => (
-            <tr key={item.id} className="hover:bg-gray-50 transition duration-150">
+          {data.map((item, rowIndex) => (
+            <tr key={`${item.id}-${rowIndex}`} className="hover:bg-gray-50 transition duration-150">
               {/* RENDER SEL BERDASARKAN DEFINISI KOLOM */}
               {columns.map((column, colIndex) => (
                 <td 
-                  key={colIndex} 
+                  key={`${item.id}-${rowIndex}-${colIndex}`} 
                   className="px-6 py-4 whitespace-nowrap text-body-2 text-accent-neutral-1000 relative"
                 >
                   {/* Panggil fungsi renderCell untuk konten yang spesifik */}

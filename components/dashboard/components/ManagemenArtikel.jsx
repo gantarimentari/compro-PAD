@@ -67,16 +67,16 @@ const renderCell = (item, key, onEdit, onDelete) => {
                     color="bg-accent-yellow-300" 
                     hoverColor="hover:bg-accent-yellow-500"
                     focusColor="focus:bg-accent-yellow-400"
-            onClick={() => onEdit(item)}
-            label={`Edit ${item.title}`}
+                    onClick={() => onEdit(item)}
+                    label={`Edit ${item.title}`}
                   />
                  <Button 
                     icon={<TrashIcon className="h-4 w-4" />} 
                     roundedClass="rounded-lg"
                     color="bg-accent-red-300" 
                     hoverColor="hover:bg-accent-red-400"
-            onClick={() => onDelete(item)}
-            label={`Hapus ${item.title}`}
+                    onClick={() => onDelete(item)}
+                    label={`Hapus ${item.title}`}
                   />
               </div>
           );
