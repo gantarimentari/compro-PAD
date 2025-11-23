@@ -4,95 +4,127 @@ import React, { useState, useMemo, useEffect } from 'react';
 import BaseModal from './BaseModal';
 
 
-const TambahHewanModal = ({ isOpen, onClose, onSave, ownerData = [] }) => {
+const TambahHewanModal = ({ 
+  isOpen, 
+  onClose, 
+  onSave, 
+  ownerOptions = [],         // ✅ Rename dari ownerData
+  jenisHewanOptions = []     // ✅ Tambahkan prop ini
+}) => {
   const [formData, setFormData] = useState({
     petName: '',
-    species: '',
-    ownerName: ''
+    speciesId: '',    // ✅ Ubah dari species ke speciesId
+    ownerId: '',      // ✅ Ubah dari ownerName ke ownerId
+    birthDate: '',    // ✅ Tambahkan field ini
   });
 
-  // Ambil daftar pemilik dari ownerData
-  const availableOwners = useMemo(() => {
-    if (ownerData && ownerData.length > 0) {
-      return ownerData.map(owner => ({ id: owner.id, name: owner.name }));
-    }
-    return [];
-  }, [ownerData]);
-
-  // Filter jenis hewan berdasarkan pemilik yang dipilih
-  const availableSpecies = useMemo(() => {
-    if (!formData.ownerName) {
-      return [];
-    }
-    
-    // Cari owner berdasarkan nama
-    const selectedOwner = ownerData.find(owner => owner.name === formData.ownerName);
-    
-    if (selectedOwner && selectedOwner.pets && selectedOwner.pets.length > 0) {
-      // Ambil semua jenis hewan unik yang dimiliki pemilik tersebut
-      const speciesSet = new Set(selectedOwner.pets.map(pet => pet.species));
-      return Array.from(speciesSet);
-    }
-    
-    return [];
-  }, [formData.ownerName, ownerData]);
-
-  // Reset species ketika pemilik berubah
   useEffect(() => {
-    if (formData.ownerName) {
-      setFormData(prev => ({ ...prev, species: '' }));
-    }
-  }, [formData.ownerName]);
+    console.log('📦 TambahHewanModal Props:', {
+      ownerOptions,
+      jenisHewanOptions,
+      ownerOptionsLength: ownerOptions?.length,
+      jenisHewanOptionsLength: jenisHewanOptions?.length
+    });
+    const invalidJenis = jenisHewanOptions?.filter(j => !j.id_jenisHewan);
+    if (invalidJenis && invalidJenis.length > 0) {
+      console.error('❌ Invalid Jenis Hewan Data:', invalidJenis);
+  }
+  }, [ownerOptions, jenisHewanOptions]);
 
-  // Reset form ketika modal ditutup
   useEffect(() => {
     if (!isOpen) {
       setFormData({
         petName: '',
-        species: '',
-        ownerName: ''
+        speciesId: '',
+        ownerId: '',
+        birthDate: '',
+        age: ''
       });
     }
   }, [isOpen]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSave(formData);
-    setFormData({
-      petName: '',
-      species: '',
-      ownerName: ''
-    });
-    onClose();
+  const calculateAge = (birthDate) => {
+    if (!birthDate) return '-';
+    
+    const birth = new Date(birthDate);
+    const today = new Date();
+    
+    let years = today.getFullYear() - birth.getFullYear();
+    let months = today.getMonth() - birth.getMonth();
+    
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
+    
+    if (years > 0) {
+      return months > 0 ? `${years} tahun ${months} bulan` : `${years} tahun`;
+    } else if (months > 0) {
+      return `${months} bulan`;
+    } else {
+      const days = Math.floor((today - birth) / (1000 * 60 * 60 * 24));
+      return `${days} hari`;
+    }
   };
 
-  return (
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    console.log('📤 Submitting Form Data:', formData);
+    
+    onSave(formData);
+    
+    // Reset form
+    setFormData({
+      petName: '',
+      speciesId: '',
+      ownerId: '',
+      birthDate: '',
+      age: ''
+    });
+  };
+
+   return (
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Tambah Hewan"
-      description="Masukkan data hewan baru"
+      title="Tambah Hewan Baru"
+      description="Masukkan data hewan pasien"
       maxWidth="max-w-lg"
     >
-      <form onSubmit={handleSubmit} className="p-6 space-y-2">
-      <div>
+      <form onSubmit={handleSubmit} className="p-6 space-y-3">
+        
+        {/* ✅ Dropdown Pemilik */}
+        <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Nama Pemilik
           </label>
           <select
-            value={formData.ownerName}
-            onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
+            value={formData.ownerId}
+            onChange={(e) => {
+              console.log('Selected Owner ID:', e.target.value);
+              setFormData({ ...formData, ownerId: e.target.value });
+            }}
+            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
             required 
           >
             <option value="">Pilih nama pemilik</option>
-            {availableOwners.map((pemilik) => (
-              <option key={pemilik.id} value={pemilik.name}>
-                {pemilik.name}
-              </option>
-            ))}
+            {ownerOptions && ownerOptions.length > 0 ? (
+              ownerOptions.map((owner) => (
+                <option key={`owner-${owner.id}`} value={owner.id}>
+                  {owner.name} - {owner.email}
+                </option>
+              ))
+            ) : (
+              <option key="no-owner" disabled>Tidak ada data pemilik</option>
+            )}
           </select>
+          <p className="text-xs text-gray-500 mt-1">
+            Total pemilik: {ownerOptions?.length || 0}
+          </p>
         </div>
+
+        {/* Nama Hewan */}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Nama Hewan
@@ -107,30 +139,55 @@ const TambahHewanModal = ({ isOpen, onClose, onSave, ownerData = [] }) => {
           />
         </div>
 
+        {/* ✅ Dropdown Jenis Hewan */}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Jenis Hewan
           </label>
           <select
-            value={formData.species}
-            onChange={(e) => setFormData({ ...formData, species: e.target.value })}
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
+            value={formData.speciesId}
+            onChange={(e) => setFormData({ ...formData, speciesId: e.target.value })}
+            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
             required
-            disabled={!formData.ownerName || availableSpecies.length === 0}
           >
-            <option value="">
-              {!formData.ownerName 
-                ? 'Pilih nama pemilik terlebih dahulu' 
-                : availableSpecies.length === 0 
-                  ? 'Pemilik ini belum memiliki hewan' 
-                  : 'Pilih jenis hewan'}
-            </option>
-            {availableSpecies.map((jenis, index) => (
-              <option key={index} value={jenis}>
-                {jenis}
-              </option>
-            ))}
+            <option value="">Pilih jenis hewan</option>
+            {jenisHewanOptions && jenisHewanOptions.length > 0 ? (
+              jenisHewanOptions
+                .filter(jenis => jenis.id_jenisHewan) // ✅ Filter data undefined
+                .map((jenis) => (
+                  <option 
+                    key={`jenis-${jenis.id_jenisHewan}`} 
+                    value={jenis.id_jenisHewan}
+                  >
+                    {jenis.nama_jenis}
+                </option>
+              ))
+          ) : (
+            <option disabled>Tidak ada data jenis hewan</option>
+          )}
           </select>
+          <p className="text-xs text-gray-500 mt-1">
+            Total jenis hewan: {jenisHewanOptions?.length || 0}
+          </p>
+        </div>
+
+        {/* Tanggal Lahir */}
+        <div>
+          <label className="block text-h-8 font-bold text-accent-neutral-1000">
+            Tanggal Lahir (Opsional)
+          </label>
+          <input 
+            type="date"
+            value={formData.birthDate}
+            onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
+            max={new Date().toISOString().split('T')[0]}
+            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {formData.birthDate && (
+            <p className="text-sm text-blue-600 mt-1">
+              Umur: {calculateAge(formData.birthDate)}
+            </p>
+          )}
         </div>
 
         <div className="flex justify-end space-x-3 pt-3">
@@ -152,6 +209,8 @@ const TambahHewanModal = ({ isOpen, onClose, onSave, ownerData = [] }) => {
     </BaseModal>
   );
 };
+
+
 
 export default TambahHewanModal;
 

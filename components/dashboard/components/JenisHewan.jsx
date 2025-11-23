@@ -1,5 +1,6 @@
 'use client';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '@lib/api';
 import Button from '@ds/Button';
 import { TrashIcon, PenIcon} from '@ds/icons';
 import Table from '@ds/dashboard/components/Table';
@@ -9,25 +10,32 @@ import {TambahJenisHewanModal, EditJenisHewanModal,DeleteConfirmModal} from '@ds
 // import { headers } from 'next/headers';
 
 
-const MOCK_DATA = [
-  {id: 1, name: "andi",
-    pets: [
-      { petId: 101, species: "Kucing" },
-      { petId: 102, species: "Anjing" },
-      { petId: 107, species: "Ikan" } ],
-    },
-    {id: 2, name: "budi",
-    pets: [
-      { petId: 104, species: "Kucing" }, 
-      { petId: 105, species: "Anjing" },
-      { petId: 103, species: "Ikan" } ],
-    },
-    {id: 3, name: "cinta",
-    pets: [
-      { petId: 106, species: "Kucing" }, 
-      { petId: 109, species: "Anjing" },
-      { petId: 10, species: "Ikan" } ],
-}];
+const flattenJenisHewan = (data) => {
+  const flattened = [];
+  data.forEach(jenis => {
+    if (jenis.pemilik && jenis.pemilik.length > 0) {
+      jenis.pemilik.forEach(pemilik => {
+        flattened.push({
+          id: `${jenis.id}-${pemilik.id_pemilik}`,
+          jenisHewanId: jenis.id,
+          species: jenis.nama_jenis,
+          name: pemilik.nama_pemilik,
+          pemilikId: pemilik.id_pemilik,
+        });
+      });
+    } else {
+      // Jika jenis hewan belum ada pemilik
+      flattened.push({
+        id: `${jenis.id}-0`,
+        jenisHewanId: jenis.id,
+        species: jenis.nama_jenis,
+        name: '-',
+        pemilikId: null,
+      });
+    }
+  });
+  return flattened;
+};
 
 const Species_COLUMNS = [
   {key: 'species', header: 'Jenis Hewan'},
@@ -35,18 +43,7 @@ const Species_COLUMNS = [
   { key: 'actions', header: 'Aksi', isAction: true },
   
 ];
-const flattenPets = (data) => {
-  return data.flatMap(owner => 
-      owner.pets?.map(pet => ({
-          id: `${owner.id}-${pet.petId}`, // Kombinasi ownerId dan petId untuk key unik
-          petId: pet.petId,          
-          species: pet.species,   
-          name: owner.name,        
-          ownerId: owner.id,       
-          
-      })) || []
-  );
-};
+
 const renderCell = (item,key, onEdit, onDelete) => {
   switch(key){
     case 'actions':
@@ -77,119 +74,105 @@ const renderCell = (item,key, onEdit, onDelete) => {
 }
 
 export default function JenisHewan() {
-  const [ownerData, setOwnerData] = useState(MOCK_DATA);
+  const [jenisHewanData, setJenisHewanData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedPet, setSelectedPet] = useState(null);
+  const [selectedJenis, setSelectedJenis] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [petToDelete, setPetToDelete] = useState(null);
+  const [jenisToDelete, setJenisToDelete] = useState(null);
 
-  const flattenedSpecies = useMemo(() => flattenPets(ownerData), [ownerData]);
-  const filteredData = flattenedSpecies.filter(item =>
-    item.species.toLowerCase().includes(searchQuery.toLowerCase())
+  const fetchJenisHewan = async () => {
+    try {
+      await api.get('/sanctum/csrf-cookie');
+      const res = await api.get('/api/jenis-hewan');
+      
+      console.log('📦 Jenis Hewan Data:', res.data);
+      setJenisHewanData(res.data);
+    } catch (err) {
+      console.error('Error fetching jenis hewan:', err);
+      alert('Gagal memuat data jenis hewan');
+    }
+  };
+
+  useEffect(() => {
+    fetchJenisHewan();
+  }, []);
+
+  // ✅ Flatten dan filter
+  const flattenedData = flattenJenisHewan(jenisHewanData);
+  const filteredData = flattenedData.filter(item =>
+    item.species.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleSaveSpecies = (formData) => {
-    // Cari owner berdasarkan nama
-    const existingOwnerIndex = ownerData.findIndex(owner => owner.name === formData.ownerName);
-    
-    if (existingOwnerIndex !== -1) {
-      // Jika owner sudah ada, tambahkan pet baru ke array pets
-      const existingPets = ownerData[existingOwnerIndex].pets || [];
-      const newPetId = existingPets.length > 0 
-        ? Math.max(...existingPets.map(p => p.petId), 0) + 1 
-        : 1;
-      const updatedOwnerData = [...ownerData];
-      updatedOwnerData[existingOwnerIndex] = {
-        ...updatedOwnerData[existingOwnerIndex],
-        pets: [
-          ...existingPets,
-          { petId: newPetId, species: formData.species }
-        ]
+
+  const handleSaveSpecies = async (formData) => {
+    try {
+      await api.get('/sanctum/csrf-cookie');
+
+      const payload = {
+        nama_jenis: formData.species, // Sesuaikan dengan field di modal
       };
-      setOwnerData(updatedOwnerData);
-    } else {
-      // Jika owner belum ada, buat owner baru dengan pet
-      const newOwnerId = ownerData.length > 0 
-        ? Math.max(...ownerData.map(o => o.id), 0) + 1 
-        : 1;
-      const newOwner = {
-        id: newOwnerId,
-        name: formData.ownerName,
-        pets: [{ petId: 1, species: formData.species }]
-      };
-      setOwnerData([...ownerData, newOwner]);
+
+      console.log('📤 Sending payload:', payload);
+
+      await api.post('/api/jenis-hewan', payload);
+      await fetchJenisHewan();
+      setIsModalOpen(false);
+      alert('✅ Jenis hewan berhasil ditambahkan!');
+    } catch (err) {
+      console.error('Error saving jenis hewan:', err);
+      alert(`❌ Gagal menyimpan: ${err.response?.data?.message || err.message}`);
     }
   };
 
   const handleEdit = (item) => {
-    setSelectedPet(item);
+    setSelectedJenis({
+      id: item.jenisHewanId,
+      species: item.species,
+      ownerName: item.name,
+    });
     setIsEditModalOpen(true);
   };
 
-  const handleUpdateSpecies = (id, formData) => {
-    // Parse id yang berbentuk "ownerId-petId"
-    const [ownerId, petId] = id.split('-').map(Number);
-    
-    // Cari owner berdasarkan ownerId
-    const ownerIndex = ownerData.findIndex(owner => owner.id === ownerId);
-    
-    if (ownerIndex !== -1) {
-      const updatedOwnerData = [...ownerData];
-      const petIndex = updatedOwnerData[ownerIndex].pets.findIndex(p => p.petId === petId);
-      
-      if (petIndex !== -1) {
-        // Update species pet
-        updatedOwnerData[ownerIndex].pets[petIndex].species = formData.species;
-        
-        // Jika owner name berubah, update owner name
-        if (formData.ownerName !== updatedOwnerData[ownerIndex].name) {
-          // Cari apakah owner dengan nama baru sudah ada
-          const existingOwnerIndex = ownerData.findIndex(owner => owner.name === formData.ownerName);
-          
-          if (existingOwnerIndex !== -1) {
-            // Pindahkan pet ke owner yang sudah ada
-            const petToMove = updatedOwnerData[ownerIndex].pets[petIndex];
-            updatedOwnerData[existingOwnerIndex].pets.push(petToMove);
-            // Hapus pet dari owner lama
-            updatedOwnerData[ownerIndex].pets.splice(petIndex, 1);
-          } else {
-            // Update nama owner
-            updatedOwnerData[ownerIndex].name = formData.ownerName;
-          }
-        }
-        
-        setOwnerData(updatedOwnerData);
-      }
+  const handleUpdateSpecies = async (id, formData) => {
+    try {
+      await api.get('/sanctum/csrf-cookie');
+
+      const payload = {
+        nama_jenis: formData.species,
+      };
+
+      await api.put(`/api/jenis-hewan/${id}`, payload);
+      await fetchJenisHewan();
+      setIsEditModalOpen(false);
+      setSelectedJenis(null);
+      alert('✅ Jenis hewan berhasil diupdate!');
+    } catch (err) {
+      console.error('Error updating jenis hewan:', err);
+      alert(`❌ Gagal mengupdate: ${err.response?.data?.message || err.message}`);
     }
-    
-    setIsEditModalOpen(false);
-    setSelectedPet(null);
   };
 
   const handleDelete = (item) => {
-    setPetToDelete(item);
+    setJenisToDelete(item);
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
-    if (petToDelete) {
-
-      const [ownerId, petId] = petToDelete.id.split('-').map(Number);
-      const ownerIndex = ownerData.findIndex(owner => owner.id === ownerId);
-      
-      if (ownerIndex !== -1) {
-        const updatedOwnerData = [...ownerData];
-        updatedOwnerData[ownerIndex].pets = updatedOwnerData[ownerIndex].pets.filter(
-          pet => pet.petId !== petId
-        );
-        
-        setOwnerData(updatedOwnerData);
+  const handleConfirmDelete = async () => {
+    if (jenisToDelete) {
+      try {
+        await api.get('/sanctum/csrf-cookie');
+        await api.delete(`/api/jenis-hewan/${jenisToDelete.jenisHewanId}`);
+        await fetchJenisHewan();
+        setIsDeleteModalOpen(false);
+        setJenisToDelete(null);
+        alert('✅ Jenis hewan berhasil dihapus!');
+      } catch (err) {
+        console.error('Error deleting jenis hewan:', err);
+        alert(`❌ ${err.response?.data?.message || 'Gagal menghapus jenis hewan'}`);
       }
-      
-      setIsDeleteModalOpen(false);
-      setPetToDelete(null);
     }
   };
 
@@ -224,19 +207,19 @@ export default function JenisHewan() {
         isOpen={isEditModalOpen}
         onClose={() => {
           setIsEditModalOpen(false);
-          setSelectedPet(null);
+          setSelectedJenis(null);
         }}
         onSave={handleUpdateSpecies}
-        jenisHewan={selectedPet}
+        jenisHewan={selectedJenis}
       />
       <DeleteConfirmModal 
         isOpen={isDeleteModalOpen}
         onClose={() => {
           setIsDeleteModalOpen(false);
-          setPetToDelete(null);
+          setJenisToDelete(null);
         }}
         onConfirm={handleConfirmDelete}
-        itemName={petToDelete?.species || ''}
+        itemName={jenisToDelete?.species || ''}
         itemType="jenis hewan"
       />
 

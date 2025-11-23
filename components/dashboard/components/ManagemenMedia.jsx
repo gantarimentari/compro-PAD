@@ -14,14 +14,6 @@ import {
   DeleteConfirmModal
 } from '@ds/dashboard/modals';
 
-// Mock Data
-const MOCK_DATA = [
-  { id: 1, name: 'img_123', date: '01/01/2025', category: 'Foto', imageUrl: '/images/gambarkucingarticle.png' },
-  { id: 2, name: 'img_1234', date: '01/01/2025', category: 'Foto', imageUrl: '/images/hamster.png' },
-  { id: 3, name: 'img_12345', date: '01/01/2025', category: 'Video', videoUrl: 'https://www.youtube.com/watch?v=example' },
-  { id: 4, name: 'img_123456', date: '01/01/2025', category: 'Foto', imageUrl: '/galery/galery-3.jpg' },
-];
-
 // Columns 
 const MEDIA_COLUMNS = [
   { key: 'name', header: 'Nama Gambar' },

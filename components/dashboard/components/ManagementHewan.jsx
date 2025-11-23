@@ -1,38 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '@lib/api';
 import { TrashIcon, PenIcon} from '@ds/icons';
 import Button from '@ds/Button';
 import Table from '@ds/dashboard/components/Table';
 import SearchBar from '@ds/dashboard/layouts/ManagementSearch';
 import PageHeader from '@ds/dashboard/layouts/PageHeader';
 import {TambahHewanModal,EditHewanModal,DeleteConfirmModal} from '@ds/dashboard/modals';
-
-const MOCK_DATA = [
-  {id: 1, name: "andi",
-    pets: [
-      { petId: 101, species: "Kucing", petName: "guguk" },
-      { petId: 102, species: "Anjing" },
-      { petId: 107, species: "Ikan" } ],
-    },
-    {id: 2, name: "budi",
-    pets: [
-      { petId: 104, species: "Kucing" }, 
-      { petId: 105, species: "Anjing" },
-      { petId: 103, species: "Ikan" } ],
-    },
-    {id: 3, name: "cinta",
-    pets: [
-      { petId: 106, species: "Kucing" }, 
-      { petId: 109, species: "Anjing" },
-      ],
-  },
-  {id: 4, name: "Falah",
-    pets: [
-      { petId: 201, species: "Kucing" } ],
-  },
-];
-
 
 
 // Fungsi untuk flatten data dari owner dengan pets menjadi array hewan
@@ -46,7 +21,10 @@ const flattenHewanData = (ownerData) => {
           petName: pet.petName || `Hewan ${pet.petId}`, // Fallback jkalau ada petName
           species: pet.species,
           ownerName: owner.name,
-          ownerId: owner.id
+          ownerId: owner.id,
+          speciesId:pet.speciesId,
+          birthDate:pet.birthDate,
+          age:pet.age || '-',
         });
       });
     }
@@ -57,17 +35,98 @@ const HEWAN_COLUMNS = [
   {key: 'petName', header: 'Nama Hewan'},
   {key: 'species', header: 'Jenis Hewan'},
   {key: 'ownerName', header: 'Pemilik'},
+  {key: 'birthDate', header: 'Tanggal Lahir'},
+  {key: 'age', header: 'Umur'},
   {key: 'actions', header: 'Aksi', isAction: true},
   ];
 
 export default function ManagementHewan() {
-  const [HewanData, setHewanData] = useState(MOCK_DATA);
+  const [HewanData, setHewanData] = useState([]);
+  const [jenisHewanOptions, setJenisHewanOptions] = useState([]);
+  const [ownerOptions, setOwnerOptions] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedHewan, setSelectedHewan] = useState(null);
   const [hewanToDelete, setHewanToDelete] = useState(null);
+
+  useEffect(() => {
+    fetchJenisHewan();
+    fetchOwners();
+    fetchHewan();
+  }, []);
+
+  const fetchJenisHewan = async () => {
+  try {
+    await api.get('/sanctum/csrf-cookie');
+    const res = await api.get('/api/jenis-hewan');
+    
+    console.log('📦 Raw Jenis Hewan Data:', res.data);
+    
+    // ✅ Pastikan mapping benar
+    const formatted = res.data.map(jenis => ({
+      id_jenisHewan: jenis.id || jenis.id_jenisHewan, // ✅ Cek kedua field
+      nama_jenis: jenis.nama_jenis,
+    }));
+    
+    console.log('✅ Formatted Jenis Hewan:', formatted);
+    
+    setJenisHewanOptions(formatted);
+  } catch (err) {
+    console.error('Error fetching jenis hewan:', err);
+    setJenisHewanOptions([]); // ✅ Set empty array jika error
+  }
+};
+
+  const fetchOwners = async () => {
+    try {
+      await api.get('/sanctum/csrf-cookie');
+      const res = await api.get('/api/patients');
+      
+      // ✅ Format sesuai struktur dropdown
+      const formatted = res.data.map(patient => ({
+        id: patient.id,
+        name: patient.username, // ← Sesuaikan dengan field database
+        email: patient.email,
+        phone_number: patient.phone_number
+      }));
+      
+      console.log('owner options:', formatted);
+      setOwnerOptions(formatted);
+    } catch (err) {
+      console.error('Error fetching owners:', err);
+      console.error('Response:', err.response?.data);
+    }
+  };
+
+  const fetchHewan = async () => {
+    try {
+      await api.get('/sanctum/csrf-cookie');
+      const res = await api.get('/api/patients'); // Ambil patients dengan hewans
+      
+      // Transform ke struktur owner dengan pets
+      const formatted = res.data.map(patient => ({
+        id: patient.id,
+        name: patient.username,
+        email: patient.email,
+        phoneNumber: patient.phone_number,
+        pets: patient.hewans?.map(hewan => ({
+          petId: hewan.id_hewan,
+          petName: hewan.nama_hewan,
+          species: hewan.jenis_hewan?.nama_jenis || '-',
+          speciesId: hewan.id_jenisHewan,
+          birthDate: hewan.tanggal_lahir_hewan,
+          age: hewan.umur || '-',
+        })) || []
+      }));
+
+      setHewanData(formatted);
+    } catch (err) {
+      console.error('Error fetching hewan:', err);
+      alert('Gagal memuat data hewan');
+    }
+  };
 
   // Flatten data untuk ditampilkan di tabel
   const flattenedData = flattenHewanData(HewanData);
@@ -77,44 +136,49 @@ export default function ManagementHewan() {
     item.species.toLowerCase().includes(searchQuery.toLowerCase()) ||
     item.petName.toLowerCase().includes(searchQuery.toLowerCase())
   );  
-  const handleSaveHewan = (formData) => {
-    // Cari owner yang dipilih
-    const owner = HewanData.find(o => o.name === formData.ownerName);
-    if (owner) {
-      // Generate petId baru
-      const maxPetId = Math.max(...HewanData.flatMap(o => o.pets?.map(p => p.petId) || [0]), 0);
-      const newPet = {
-        petId: maxPetId + 1,
-        petName: formData.petName,
-        species: formData.species
+  const handleSaveHewan = async (formData) => {
+    try{
+      await api.get('/sanctum/csrf-cookie');
+
+      const payload = {
+        id_pasien: formData.ownerId,
+        id_jenisHewan: formData.speciesId,
+        nama_hewan: formData.petName,
+        tanggal_lahir_hewan:formData.birthDate || null,
       };
-      
-      // Update owner dengan pet baru
-      setHewanData(HewanData.map(o => 
-        o.id === owner.id 
-          ? { ...o, pets: [...(o.pets || []), newPet] }
-          : o
-      ));
+
+      await api.post('/api/hewan',  payload);
+
+      await fetchHewan();
+
+      setIsModalOpen(false);
+      alert('hewan  berhasil ditambahkan');
+    } catch (err){
+      console.error('error saving hewan:', err);
+      alert(`gagal menyimpan hewan: ${err.response?.data?.message || err.message}`);
     }
   };
 
-  const handleEditHewan = (id, formData) => {
-    // Update pet dalam owner
-    setHewanData(HewanData.map(owner => {
-      if (owner.pets && owner.pets.some(pet => pet.petId === id)) {
-        return {
-          ...owner,
-          pets: owner.pets.map(pet => 
-            pet.petId === id 
-              ? { ...pet, petName: formData.petName, species: formData.species }
-              : pet
-          )
-        };
-      }
-      return owner;
-    }));
-    setIsEditModalOpen(false);
-    setSelectedHewan(null);
+  const handleEditHewan = async (id, formData) => {
+    try {
+      await api.get('/sanctum/csrf-cookie');
+
+      const payload = {
+        id_pasien: formData.ownerId,
+        id_jenisHewan: formData.speciesId,
+        nama_hewan: formData.petName,
+        tanggal_lahir_hewan: formData.birthDate || null,
+      };
+
+      await api.put(`/api/hewan/${id}`, payload);
+      await fetchHewan(); // ✅ Refresh data
+      setIsEditModalOpen(false);
+      setSelectedHewan(null);
+      alert('✅ Hewan berhasil diupdate!');
+    } catch (err) {
+      console.error('Error updating hewan:', err);
+      alert(`❌ Gagal mengupdate hewan: ${err.response?.data?.message || err.message}`);
+    }
   };
 
   const handleDelete = (id) => {
@@ -124,14 +188,18 @@ export default function ManagementHewan() {
     setIsDeleteModalOpen(true);
   };
 
-  const confirmDelete = () => {
-    // Hapus pet dari owner
-    setHewanData(HewanData.map(owner => ({
-      ...owner,
-      pets: owner.pets?.filter(pet => pet.petId !== hewanToDelete.id) || []
-    })));
-    setIsDeleteModalOpen(false);
-    setHewanToDelete(null);
+  const confirmDelete = async () => {
+    try {
+      await api.get('/sanctum/csrf-cookie');
+      await api.delete(`/api/hewan/${hewanToDelete.id}`);
+      await fetchHewan(); // ✅ Refresh data
+      setIsDeleteModalOpen(false);
+      setHewanToDelete(null);
+      alert('✅ Hewan berhasil dihapus!');
+    } catch (err) {
+      console.error('Error deleting hewan:', err);
+      alert('❌ Gagal menghapus hewan');
+    }
   };
 
   const handleEdit = (item) => {
@@ -194,7 +262,8 @@ export default function ManagementHewan() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={handleSaveHewan}
-        ownerData={MOCK_DATA}
+        ownerOptions={ownerOptions}
+        jenisHewanOptions={jenisHewanOptions}
       />
 
       <EditHewanModal
@@ -205,6 +274,8 @@ export default function ManagementHewan() {
         }}
         hewan={selectedHewan}
         onSave={handleEditHewan}
+        ownerOptions={ownerOptions}
+        jenisHewanOptions={jenisHewanOptions}
       />
 
       <DeleteConfirmModal

@@ -13,26 +13,6 @@ import {
   DeleteConfirmModal
 } from '@ds/dashboard/modals';
 
-// Mock Data
-const MOCK_DATA = [
-  { 
-    id: 1, title: "Manfaat Memelihara Kucing", date: '01/01/2025', category: 'Foto',status: 'Draft',imageUrl: "/images/gambarkucingarticle.png",
-    content: "-"
-  },
-  { 
-    id: 2, title: "Manfaat Memelihara Kucing", date: '01/01/2025', category: 'Fun Fact',status: 'Draft', imageUrl: "/images/hamster.png",
-    content: "-"
-  },
-  { 
-    id: 3, title: "Pentingnya Vaksinasi Hewan", date: '01/01/2025', category: 'Vaksinasi',status: 'Draft',imageUrl: "/images/gambarkucingarticle.png",
-    content: "-"
-  },
-  { 
-    id: 4, title: "Makanan Terbaik untuk Parkit", date: '01/01/2025', category: 'Nutrisi', status: 'Publish', imageUrl: "/images/hamster.png",
-    content: "-"
-  },
-];
-
 // Columns definition
 const ARTICLE_COLUMNS = [
   { key: 'title', header: 'Judul' },
