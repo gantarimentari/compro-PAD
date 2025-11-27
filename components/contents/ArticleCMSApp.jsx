@@ -395,8 +395,6 @@ const ArticleCMSApp = () => {
         <>
             <div className="p-4 sm:p-8 flex justify-center">
                 <div className="w-full max-w-6xl flex flex-col items-center gap-10">
-     
-                    
                     {/* Article Grid */}
                     <div className="w-full grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
                         {paginatedArticles.map(article => (

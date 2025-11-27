@@ -1,10 +1,11 @@
 "use client";
 import React from "react";
-import { GaleryIcon, FileIcon, PromoIcon, PeopleIcon,DogIcon, PawIcon, CalendarIcon, SettingsIcon } from "@ds/icons"; 
+import { GaleryIcon, FileIcon, PromoIcon, PeopleIcon,DogIcon, PawIcon, CalendarIcon, SettingsIcon, DBHomeIcon } from "@ds/icons"; 
 import Link from "next/link";
 
 export default function Sidebar({ activeMenu, setActiveMenu }){
   const menu = [
+    {id: 'home', icon: DBHomeIcon, label: 'Home'},
     {id: 'users', icon: PeopleIcon, label: 'Manajemen Pasien'},
     {id: 'hewan', icon: DogIcon, label: 'Manajemen Hewan'},
     {id: 'jenisHewan', icon: PawIcon, label: 'Jenis Hewan'},

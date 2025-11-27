@@ -342,7 +342,7 @@ export default function SystemInfo() {
               <select
                 value={newSocialMedia.platform}
                 onChange={(e) => setNewSocialMedia({ ...newSocialMedia, platform: e.target.value })}
-                className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
+                className="w-full bg-accent-neutral-275 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
               >
                 <option value="" className="text-body-2 text-accent-neutral-800">Pilih platform</option>
                 {platformOptions.map((option) => (
@@ -361,7 +361,7 @@ export default function SystemInfo() {
                 value={newSocialMedia.url}
                 onChange={(e) => setNewSocialMedia({ ...newSocialMedia, url: e.target.value })}
                 placeholder="https://..."
-                className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+                className="w-full bg-accent-neutral-275 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
               />
             </div>
           </div>
