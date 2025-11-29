@@ -104,4 +104,3 @@ const EditPasienModal = ({ isOpen, onClose, pasien, onSave }) => {
 };
 
 export default EditPasienModal;
-

@@ -1,46 +1,43 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import BaseModal from './BaseModal';
 import Button from '@ds/Button';
 
-// Data dummy untuk dropdown pemilik (nanti akan diambil dari ManagementPasien)
-const DUMMY_PEMILIK = [
-  { id: 1, name: 'andi' },
-  { id: 2, name: 'budi' },
-  { id: 3, name: 'cinta' },
-  { id: 4, name: 'dina' },
-  { id: 5, name: 'eko' },
-];
-
-// Data dummy untuk dropdown jenis hewan
-const JENIS_HEWAN = [
-  'Kucing',
-  'Anjing',
-  'Burung',
-  'Hamster',
-  'Kelinci',
-  'Ikan',
-  'Reptil',
-  'Lainnya'
-];
-
-const EditHewanModal = ({ isOpen, onClose, hewan, onSave }) => {
+const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerOptions = [], jenisHewanOptions = [] }) => {
   const [formData, setFormData] = useState({
     petName: hewan?.petName || '',
-    species: hewan?.species || '',
-    ownerName: hewan?.ownerName || hewan?.name || '',
+    speciesId: hewan?.speciesId || '',
+    ownerId: hewan?.ownerId || '',
+    birthDate: hewan?.birthDate || '',
   });
 
   useEffect(() => {
     if (hewan) {
       setFormData({
-        petName: hewan.petName,
-        species: hewan.species,
-        ownerName: hewan.ownerName || hewan.name,
+        petName: hewan.petName || '',
+        speciesId: hewan.speciesId || '',
+        ownerId: hewan.ownerId || '',
+        birthDate: hewan.birthDate || '',
       });
     }
   }, [hewan]);
+
+  // Ambil daftar pemilik dari ownerOptions (dari backend /api/patients)
+  const availableOwners = useMemo(() => {
+    if (ownerOptions && ownerOptions.length > 0) {
+      return ownerOptions.map(owner => ({ id: owner.id, name: owner.name }));
+    }
+    return [];
+  }, [ownerOptions]);
+
+  // Ambil daftar jenis hewan dari jenisHewanOptions (dari backend /api/jenis-hewan)
+  const availableSpecies = useMemo(() => {
+    if (jenisHewanOptions && jenisHewanOptions.length > 0) {
+      return jenisHewanOptions;
+    }
+    return [];
+  }, [jenisHewanOptions]);
 
   if (!isOpen || !hewan) return null;
 
@@ -61,6 +58,24 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave }) => {
       <form onSubmit={handleSubmit} className="p-6 space-y-2">
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
+            Nama Pemilik
+          </label>
+          <select
+            value={formData.ownerId}
+            onChange={(e) => setFormData({ ...formData, ownerId: e.target.value })}
+            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
+            required 
+          >
+            <option value="">Pilih nama pemilik</option>
+            {availableOwners.map((pemilik) => (
+              <option key={pemilik.id} value={pemilik.id}>
+                {pemilik.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Nama Hewan
           </label>
           <input 
@@ -78,38 +93,21 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave }) => {
             Jenis Hewan
           </label>
           <select
-            value={formData.species}
-            onChange={(e) => setFormData({ ...formData, species: e.target.value })}
+            value={formData.speciesId}
+            onChange={(e) => setFormData({ ...formData, speciesId: e.target.value })}
             className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
-            required        
+            required
           >
             <option value="">Pilih jenis hewan</option>
-            {JENIS_HEWAN.map((jenis, index) => (
-              <option key={index} value={jenis}>
-                {jenis}
+            {availableSpecies.map((jenis) => (
+              <option key={jenis.id_jenisHewan} value={jenis.id_jenisHewan}>
+                {jenis.nama_jenis}
               </option>
             ))}
           </select>
         </div>
 
-        <div>
-          <label className="block text-h-8 font-bold text-accent-neutral-1000">
-            Nama Pemilik
-          </label>
-          <select
-            value={formData.ownerName}
-            onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
-            required 
-          >
-            <option value="">Pilih nama pemilik</option>
-            {DUMMY_PEMILIK.map((pemilik) => (
-              <option key={pemilik.id} value={pemilik.name}>
-                {pemilik.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        
 
         <div className="flex justify-end space-x-3 pt-4">
           <button

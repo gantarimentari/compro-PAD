@@ -22,4 +22,13 @@ export { default as EditHewanModal } from './EditHewanModal';
 // Jenis Hewan Modals
 export { default as TambahJenisHewanModal } from './TambahJenisHewanModal';
 export { default as EditJenisHewanModal } from './EditJenisHewanModal';
+export { default as TambahReservasiModal } from './TambahReservasiModal';
+// reservasi
+export { default as EditReservasiModal } from './EditReservasiModal';
+// Promo Modals
+export { default as TambahPromoModal } from './TambahPromoModal';
+export { default as EditPromoModal } from './EditPromoModal';
+export { default as PreviewPromoModal } from './PreviewPromoModal';
 
+export { default as TambahAdminModal } from './TambahAdminModal';
+export { default as EditAdminModal } from './EditAdminModal';

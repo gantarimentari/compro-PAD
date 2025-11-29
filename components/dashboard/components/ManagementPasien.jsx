@@ -199,10 +199,18 @@ export default function ManagementPasien(){
     setIsDeleteModalOpen(true);
   };
 
-  const confirmDelete = () => {
-    setPasienData(pasienData.filter(item => item.id !== pasienToDelete.id));
-    setIsDeleteModalOpen(false);
-    setPasienToDelete(null);
+  const confirmDelete = async () => {
+    try {
+      await api.delete(`/api/patients/${pasienToDelete.id}`);
+      
+      // Refresh data setelah berhasil delete
+      await fetchPatients();
+      setIsDeleteModalOpen(false);
+      setPasienToDelete(null);
+    } catch (err) {
+      console.error('Error deleting patient:', err);
+      alert(`Gagal menghapus pasien: ${err.response?.data?.message || err.message}`);
+    }
   };
 
   const handlePreview = (item) => {

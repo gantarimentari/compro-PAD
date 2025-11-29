@@ -20,6 +20,7 @@ export {
   WhatsappIcon,
   FacebookIcon,
   socialIconsMap,
+  YoutubeDBIcon
 } from './SocialIcons';
 
 // Export semua UI icons
@@ -45,7 +46,7 @@ export {
   TrashIcon, PenIcon,
   AddIcon, UploadIcon,
   HomeIcon, PeopleIcon, DogIcon, PawIcon, 
-  FileIcon,
+  FileIcon, ChevronDownIcon, PromoIcon, SettingsIcon, DiskSaveIcon
 } from './UIIcons';
 
 

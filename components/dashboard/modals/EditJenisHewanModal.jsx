@@ -3,20 +3,34 @@
 import React, { useState, useEffect } from 'react';
 import BaseModal from './BaseModal';
 import Button from '@ds/Button';
-// Data dummy dropdown pemilik 
-const DUMMY_JENIS = [
-  { id: 1, name: 'andi'  },
-  { id: 2, name: 'budi' },
-  { id: 3, name: 'cinta' },
-  { id: 4, name: 'dina' },
-  { id: 5, name: 'eko' },
-];
+import api from '@lib/api';
 
 const EditJenisHewanModal = ({ isOpen, onClose, jenisHewan, onSave }) => {
   const [formData, setFormData] = useState({
     species: jenisHewan?.species || '',
     ownerName: jenisHewan?.name || '',
   });
+  const [pemilikList, setPemilikList] = useState([]);
+  const [loading, setLoading] = useState(false);
+  
+  // Fetch daftar pemilik dari backend
+  useEffect(() => {
+    if (isOpen) {
+      fetchPemilik();
+    }
+  }, [isOpen]);
+  
+  const fetchPemilik = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get('/api/patients'); // Ambil semua pasien
+      setPemilikList(response.data);
+    } catch (err) {
+      console.error('Error fetching pemilik:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
   
   useEffect(() => {
     if (jenisHewan) {
@@ -53,11 +67,14 @@ const EditJenisHewanModal = ({ isOpen, onClose, jenisHewan, onSave }) => {
             onChange={(e) => setFormData({...formData, ownerName: e.target.value})}
             className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
             required 
+            disabled={loading}
           >
-            <option value="">Pilih nama pemilik</option>
-            {DUMMY_JENIS.map((pemilik) => (
-              <option key={pemilik.id} value={pemilik.name}>
-                {pemilik.name}
+            <option value="">
+              {loading ? 'Memuat data...' : 'Pilih nama pemilik'}
+            </option>
+            {pemilikList.map((pemilik) => (
+              <option key={pemilik.id} value={pemilik.username}>
+                {pemilik.username}
               </option>
             ))}
           </select>
