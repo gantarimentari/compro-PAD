@@ -177,7 +177,7 @@ export default function Content() {
         <div className="mt-12 md:mt-16 w-full relative">
           <div 
             ref={scrollContainerRef}
-            className="flex gap-10 overflow-x-auto scroll-smooth snap-x snap-mandatory p-6 [&::-webkit-scrollbar]:hidden"
+            className="flex gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory p-6 [&::-webkit-scrollbar]:hidden"
             style={{
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',

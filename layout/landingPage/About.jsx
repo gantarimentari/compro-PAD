@@ -11,7 +11,7 @@ export default function About() {
   return (
 
     <div
-      className="relative w-full bg-accent-blue-500 py-4 md:py-10 overflow-hidden"
+      className="relative w-full bg-accent-blue-500 py-4 md:py-4 overflow-hidden"
       style={{
         // Dua background: kiri & kanan. Digeser ke luar agar hanya setengah yang kelihatan.
         backgroundImage:
