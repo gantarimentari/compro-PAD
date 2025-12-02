@@ -150,7 +150,7 @@ export default function Home() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Clinic Summary Panel */}
         <div className="bg-white rounded-2xl shadow-xl p-6">
-          <h3 className="text-h-7 font-bold text-accent-neutral-1000 mb-6">
+          <h3 className="text-h-8 font-bold text-accent-neutral-1000 mb-6">
             Ringkasan Klinik
           </h3>
           
@@ -252,7 +252,7 @@ export default function Home() {
         {/* Latest Transactions Panel */}
         <div className="bg-white rounded-2xl shadow-xl p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-h-6 font-bold text-accent-neutral-800">
+            <h3 className="text-h-8 font-bold text-accent-neutral-1000">
               Transaksi Terbaru
             </h3>
             <div className="relative">
@@ -280,14 +280,14 @@ export default function Home() {
                   </span>
                 </div>
                 <div className="flex-1">
-                  <p className="text-body-1 font-medium text-accent-neutral-800">
+                  <p className="text-body-1 font-medium text-accent-neutral-1000">
                     {transaction.petName}
                   </p>
                   <p className="text-body-2 text-accent-neutral-700">
                     {transaction.animalType}
                   </p>
                 </div>
-                <p className="text-body-2 text-accent-neutral-700">
+                <p className="text-body-2 text-accent-neutral-800">
                   {transaction.date}
                 </p>
               </div>
@@ -306,7 +306,7 @@ export default function Home() {
                 className={`p-2 rounded-lg transition-colors ${
                   currentPage === 1
                     ? 'bg-accent-neutral-225 text-accent-neutral-400 cursor-not-allowed'
-                    : 'bg-white text-accent-neutral-800 hover:bg-accent-neutral-225 border border-accent-neutral-400'
+                    : 'bg-white text-accent-neutral-800 hover:bg-accent-neutral-225 border border-[#E6E6E6]'
                 }`}
               >
                 <ChevronLeftIcon className="w-4 h-4" />
@@ -328,10 +328,10 @@ export default function Home() {
                   <button
                     key={pageNum}
                     onClick={() => handlePageChange(pageNum)}
-                    className={`px-3 py-2 rounded-lg text-body-2 font-medium transition-colors ${
+                    className={`px-4 py-2 rounded-xl text-body-2 font-medium transition-colors ${
                       currentPage === pageNum
                         ? 'bg-accent-blue-300 text-white'
-                        : 'bg-white text-accent-neutral-800 hover:bg-accent-neutral-225 border border-accent-neutral-400'
+                        : 'bg-white text-accent-neutral-800 hover:bg-accent-neutral-225 border border-[#E6E6E6]'
                     }`}
                   >
                     {pageNum}

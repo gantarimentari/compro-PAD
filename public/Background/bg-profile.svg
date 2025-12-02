@@ -1,0 +1,62 @@
+<svg width="1440" height="718" viewBox="0 0 1440 718" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="box pattern_inner" data-figma-trr="l6u1-0f_l3u1-0f">
+<path opacity="0.2" d="M12.2991 0H11.7006L11.7006 239.079H12.2991L12.2991 0Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M24.2994 0H23.7009L23.7009 239.079H24.2994L24.2994 0Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M36.2992 0H35.7007L35.7007 239.079H36.2992L36.2992 0Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M48.2992 0H47.7007L47.7007 239.079H48.2992L48.2992 0Z" fill="#BBBBBB"/>
+<path opacity="0.5" d="M60.2992 0H59.7007L59.7007 239.079H60.2992L60.2992 0Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M72.2991 0H71.7006V239.079H72.2991V0Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M84.2993 0H83.7008V239.079H84.2993V0Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M96.2992 0H95.7007V239.079H96.2992V0Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M108.299 0H107.701V239.079H108.299V0Z" fill="#BBBBBB"/>
+<path opacity="0.5" d="M120.299 0H119.701V239.079H120.299V0Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M132.299 0H131.701V239.079H132.299V0Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M144.299 0H143.701V239.079H144.299V0Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M156.299 0H155.701V239.079H156.299V0Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M168.299 0H167.701V239.079H168.299V0Z" fill="#BBBBBB"/>
+<path opacity="0.5" d="M180.299 0H179.701V239.079H180.299V0Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M192.299 0H191.701V239.079H192.299V0Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M204.299 0H203.701V239.079H204.299V0Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M216.299 0H215.701V239.079H216.299V0Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M228.299 0H227.701V239.079H228.299V0Z" fill="#BBBBBB"/>
+<path opacity="0.5" d="M240 0.298828H239.402V238.781H240V0.298828Z" fill="#BBBBBB"/>
+<path opacity="0.5" d="M239.701 0L0.299316 0V0.596206H239.701V0Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M240 11.6565H0L0 12.2527H240V11.6565Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M240 23.6113H0L0 24.2075H240V23.6113Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M240 35.5627H0L0 36.159H240V35.5627Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M240 47.5173L0 47.5173L0 48.1135L240 48.1135V47.5173Z" fill="#BBBBBB"/>
+<path opacity="0.5" d="M240 59.4722L0 59.4722L0 60.0684L240 60.0684V59.4722Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M240 71.4263L0 71.4263L0 72.0225L240 72.0225V71.4263Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M240 83.3809L0 83.3809L0 83.9771L240 83.9771V83.3809Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M240 95.333L0 95.333L0 95.9292L240 95.9292V95.333Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M240 107.288H0L0 107.884H240V107.288Z" fill="#BBBBBB"/>
+<path opacity="0.5" d="M240 119.242L0 119.242L0 119.838L240 119.838V119.242Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M240 131.197H0L0 131.793H240V131.197Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M240 143.151H0L0 143.747H240V143.151Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M240 155.103L0 155.103L0 155.699L240 155.699V155.103Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M240 167.057L0 167.057L0 167.654L240 167.654V167.057Z" fill="#BBBBBB"/>
+<path opacity="0.5" d="M240 179.011L0 179.011L0 179.607L240 179.607V179.011Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M240 190.966H0L0 191.562H240V190.966Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M240 202.921L0 202.921L0 203.517L240 203.517V202.921Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M240 214.873H0L0 215.469H240V214.873Z" fill="#BBBBBB"/>
+<path opacity="0.2" d="M240 226.826H0L0 227.423H240V226.826Z" fill="#BBBBBB"/>
+<path opacity="0.5" d="M239.701 238.483H0.299316V239.079H239.701V238.483Z" fill="#BBBBBB"/>
+</g>
+<use xlink:href="#box%20pattern_inner" transform="translate(240)"/>
+<use xlink:href="#box%20pattern_inner" transform="translate(480)"/>
+<use xlink:href="#box%20pattern_inner" transform="translate(720)"/>
+<use xlink:href="#box%20pattern_inner" transform="translate(960)"/>
+<use xlink:href="#box%20pattern_inner" transform="translate(1200)"/>
+<use xlink:href="#box%20pattern_inner" transform="translate(0 239.079)"/>
+<use xlink:href="#box%20pattern_inner" transform="translate(240 239.079)"/>
+<use xlink:href="#box%20pattern_inner" transform="translate(480 239.079)"/>
+<use xlink:href="#box%20pattern_inner" transform="translate(720 239.079)"/>
+<use xlink:href="#box%20pattern_inner" transform="translate(960 239.079)"/>
+<use xlink:href="#box%20pattern_inner" transform="translate(1200 239.079)"/>
+<use xlink:href="#box%20pattern_inner" transform="translate(0 478.159)"/>
+<use xlink:href="#box%20pattern_inner" transform="translate(240 478.159)"/>
+<use xlink:href="#box%20pattern_inner" transform="translate(480 478.159)"/>
+<use xlink:href="#box%20pattern_inner" transform="translate(720 478.159)"/>
+<use xlink:href="#box%20pattern_inner" transform="translate(960 478.159)"/>
+<use xlink:href="#box%20pattern_inner" transform="translate(1200 478.159)"/>
+</svg>

@@ -18,7 +18,10 @@ export default function Button({
   roundedClass,
   className = '',
   children,
-  type = 'button'
+  type = 'button',
+  textColor = 'text-white',  // ← Tambah prop textColor dengan default white
+  textSize = '',  // ← Tambah prop textSize
+  iconPosition = 'left'  // ← Tambah prop iconPosition dengan default 'left'
 }) {
   
   // Mapping untuk rounded class - gunakan roundedClass jika ada, atau gunakan rounded prop
@@ -72,18 +75,20 @@ export default function Button({
       aria-label={label || (typeof children === 'string' ? children : undefined)}
       className={` 
         ${paddingClass} ${color} ${finalRoundedClass}
-        flex items-center justify-center text-white
+        flex items-center justify-center ${textColor}
         transition duration-150 hover:shadow-md
         focus:outline-none focus:ring-2 focus:ring-accent-blue-150 
         ${focusColor || ''} 
         ${hoverColor || ''} 
         ${size || ''}
         ${gapClass}
+        ${textSize}
         ${className}
       `.trim().replace(/\s+/g, ' ')}
     >
-      {iconWithColor}
+      {iconPosition === 'left' && iconWithColor}
       {children}
+      {iconPosition === 'right' && iconWithColor}
     </button>
   );
 }

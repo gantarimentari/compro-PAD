@@ -5,7 +5,8 @@
     "paths": {
       "@/*": ["src/*"], // Alias untuk folder src
       "@ds/*": ["components/*"], // Alias untuk folder komponen di root utama
-      "@lib/*": ["lib/*"] // Alias untuk folder lib
+      "@lib/*": ["lib/*"], // Alias untuk folder lib
+      "@layout/*": ["layout/*"] // Alias untuk folder layout
     }
   }
 }

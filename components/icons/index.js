@@ -47,7 +47,9 @@ export {
   AddIcon, UploadIcon,
   HomeIcon, PeopleIcon, DogIcon, PawIcon, 
   FileIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, PromoIcon, SettingsIcon, DiskSaveIcon, DBHomeIcon,
-  TotalHewanIcon, TotalKunjunganIcon, KunjunganBaruIcon, RekamMedisIcon, WaveHandIcon
+  TotalHewanIcon, TotalKunjunganIcon, KunjunganBaruIcon, RekamMedisIcon, WaveHandIcon,
+  RightArrowIcon
+  
 } from './UIIcons';
 
 

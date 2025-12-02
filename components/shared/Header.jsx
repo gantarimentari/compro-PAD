@@ -1,7 +1,7 @@
 "use client";
 
 // import React from "react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NotificationIcon,UserIcon } from "@ds/icons";
 import Link from "next/link";
 
@@ -10,16 +10,30 @@ export default function Header() {
     // Ubah nilainya menjadi true untuk melihat tampilan "Sudah Login"
     // Ubah nilainya menjadi false untuk melihat tampilan "Belum Login"
     const [isLoggedIn, setIsLoggedIn] = useState(true);
+    const [isScrolled, setIsScrolled] = useState(false);
 
     // Fungsi simulasi logout
     const handleLogout = () => {
-        setIsLoggedIn(false);
-
+        setIsLoggedIn(false);  
     };
+    useEffect(() => {
+      const handleScroll = () => {
+        setIsScrolled(window.scrollY > 0);
+      }
+      handleScroll(); // Cek posisi scroll saat komponen dimount
+      window.addEventListener('scroll', handleScroll, {passive: true});
+      return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+    
 
   return (
-    <header className="w-full bg-white shadow-e2 rounded-b-[14px] overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-16">
+    <header className={`${
+      isScrolled 
+        ? " sticky top-4 mx-auto scale-95 rounded-[14px]" 
+        : " scale-100"
+    } w-full bg-white shadow-e2 rounded-b-[14px] overflow-hidden shadow-e4 transition-all duration-1000 ease-in-out z-50 origin-center`}>
+      
+      <div className=" mx-auto px-4 sm:px-6 ">
         <div className="flex items-center justify-between h-20">
           {/* Logo and Company Name Section */}
           <div className="flex items-center gap-3">

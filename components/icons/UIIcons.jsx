@@ -626,5 +626,12 @@ export const WaveHandIcon = ({ className = "w-6 h-6", color = "currentColor" }) 
     <path d="M12 8C12 8 13 7 14 7C15 7 16 8 16 8" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
+export const RightArrowIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
+  <svg className={className} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M5.27142 14.6784L14.6282 5.32161M14.6282 5.32161C14.8545 5.54789 14.9941 5.86078 14.9941 6.20491L14.9941 12.9106M14.6282 5.32161C14.4019 5.09534 14.089 4.95568 13.7449 4.95568L7.03919 4.95569" 
+stroke="#333333" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+
+)
 
 
