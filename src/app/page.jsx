@@ -3,6 +3,7 @@ import Footer from "@ds/shared/Footer";
 import Profile from '@layout/landingPage/Profile';
 import About from '@layout/landingPage/About';
 import Content from '@layout/landingPage/Content';
+import Sevices from '@layout/landingPage/Services';
 // import ArticleLayout from "@ds/layout/ArticleLayout";
 
 
@@ -25,6 +26,7 @@ const blobSvg = "/Assets/blob.svg";
           <Profile />
           <Content />
           <About />  
+          <Sevices/>
         </main>
         
         

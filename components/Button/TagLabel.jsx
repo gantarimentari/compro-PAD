@@ -31,26 +31,35 @@ export default function TagLabel({
     >
       {showDashed && (
         <svg
-          className="absolute inset-0 z-0 pointer-events-none p-1 block"
-          viewBox="0 0 100 40"
-          fill="none"
+          className="absolute pointer-events-none block"
+          style={{
+            left: '4px',
+            top: '4px',
+            right: '4px',
+            bottom: '4px',
+            width: 'calc(100% - 8px)',
+            height: 'calc(100% - 8px)',
+          }}
           preserveAspectRatio="none"
         >
           <rect
             x="1"
             y="1"
-            width="98"
-            height="38"
+            width="calc(100% - 2px)"
+            height="calc(100% - 2px)"
             rx="5"
+            ry="5"
             stroke={strokeColor}
-            strokeWidth="1.2"
-            strokeDasharray="10 4 3 6 6 4"
+            strokeWidth="1"
+            strokeDasharray="20 4 3 6 6 4"
+            fill="none"
+            vectorEffect="non-scaling-stroke"
           />
         </svg>
       )}
 
       <button
-        className={`relative z-10 shadow-none hover:shadow-none focus:ring-0 whitespace-nowrap ${textClass} ${buttonClass}`}
+        className={`relative z-10 shadow-none hover:shadow-none focus:ring-0 ${textClass} ${buttonClass}`}
       >
         {label}
       </button>

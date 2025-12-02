@@ -33,7 +33,7 @@ const dummyVideos = [
   },
   {
     id: 3,
-    youtubeLink: "https://www.youtube.com/watch?v=9bZkp7q19f0"
+    youtubeLink: "https://youtu.be/ULME6eS9vsM?si=kY10LjlFgV-_lfzk"
   },
   {
     id: 4,
@@ -92,8 +92,8 @@ export default function Content() {
       <div 
         className="absolute pointer-events-none z-[1]"
         style={{
-          left: '65px',
-          top: '310px',
+          left: '60px',
+          top: '285px',
           width: '300px',
           height: '300px',
           backgroundImage: "url('/Assets/ornamen-content.svg')",
@@ -108,8 +108,8 @@ export default function Content() {
       <div 
         className="absolute pointer-events-none z-[1]"
         style={{
-          right: '30px',
-          top: '310px',
+          right: '40px',
+          top: '285px',
           width: '300px',
           height: '300px',
           backgroundImage: "url('/Assets/ornamen-content.svg')",
@@ -120,17 +120,7 @@ export default function Content() {
         }}
       />
       
-      {/* Keyframe CSS untuk rotasi */}
-      <style jsx>{`
-        @keyframes rotate {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
+      
 
       <div className="container max-w-7xl mx-auto px-4 py-6 md:py-10 relative z-[5]">
         <div className="flex flex-col items-center gap-2">
@@ -157,7 +147,7 @@ export default function Content() {
             </svg>
             
             {/* Teks */}
-            <span className="relative z-10 text-white text-h-5 md:text-h-4 font-bold whitespace-nowrap">
+            <span className="relative z-10 text-white text-h-6  font-bold whitespace-nowrap">
               Selamat Datang
             </span>
           </div>
@@ -177,7 +167,7 @@ export default function Content() {
         <div className="mt-12 md:mt-16 w-full relative">
           <div 
             ref={scrollContainerRef}
-            className="flex gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory p-6 [&::-webkit-scrollbar]:hidden"
+            className=" flex  gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory p-6 [&::-webkit-scrollbar]:hidden"
             style={{
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',

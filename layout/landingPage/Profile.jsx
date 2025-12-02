@@ -43,7 +43,7 @@ export default function Profile() {
             <Button 
               icon={<RightArrowIcon className="h-4 w-4" />} 
               iconPosition="right"
-              roundedClass="rounded-lg"
+              roundedClass="rounded-md"
               color="bg-accent-yellow-300" 
               hoverColor="hover:bg-accent-yellow-500"
               focusColor="focus:bg-accent-yellow-400"
