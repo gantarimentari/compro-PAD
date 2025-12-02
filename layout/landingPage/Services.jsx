@@ -39,7 +39,7 @@ export default function Services() {
         className="absolute pointer-events-none z-[1]"
         style={{
           right: '-200px',
-          top: '250px',
+          top: '200px',
           width: '450px',
           height: '450px',
           backgroundImage: "url('/Assets/ornamen-services.svg')",
