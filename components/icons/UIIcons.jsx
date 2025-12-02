@@ -518,7 +518,7 @@ export const DogIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
 
 );
 export const PawIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
-  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg className={className} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clipPath="url(#clip0_216_10853)">
 <path d="M9.16667 5.00001C10.0871 5.00001 10.8333 4.25381 10.8333 3.33334C10.8333 2.41286 10.0871 1.66667 9.16667 1.66667C8.24619 1.66667 7.5 2.41286 7.5 3.33334C7.5 4.25381 8.24619 5.00001 9.16667 5.00001Z" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
 <path d="M15.0007 8.33333C15.9211 8.33333 16.6673 7.58714 16.6673 6.66667C16.6673 5.74619 15.9211 5 15.0007 5C14.0802 5 13.334 5.74619 13.334 6.66667C13.334 7.58714 14.0802 8.33333 15.0007 8.33333Z" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
@@ -561,6 +561,70 @@ export const FileIcon= ({ className = "w-6 h-6", color = "currentColor" })=> (
 <path d="M13.3327 14.1667H6.66602" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>
 
+);
+
+export const DBHomeIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M7.5 2.5H3.33333C2.8731 2.5 2.5 2.8731 2.5 3.33333V9.16667C2.5 9.6269 2.8731 10 3.33333 10H7.5C7.96024 10 8.33333 9.6269 8.33333 9.16667V3.33333C8.33333 2.8731 7.96024 2.5 7.5 2.5Z" 
+stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M16.667 2.5H12.5003C12.0401 2.5 11.667 2.8731 11.667 3.33333V5.83333C11.667 6.29357 12.0401 6.66667 12.5003 6.66667H16.667C17.1272 6.66667 17.5003 6.29357 17.5003 5.83333V3.33333C17.5003 2.8731 17.1272 2.5 16.667 2.5Z" 
+stroke={color}strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M16.667 10H12.5003C12.0401 10 11.667 10.3731 11.667 10.8333V16.6667C11.667 17.1269 12.0401 17.5 12.5003 17.5H16.667C17.1272 17.5 17.5003 17.1269 17.5003 16.6667V10.8333C17.5003 10.3731 17.1272 10 16.667 10Z" 
+stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M7.5 13.333H3.33333C2.8731 13.333 2.5 13.7061 2.5 14.1663V16.6663C2.5 17.1266 2.8731 17.4997 3.33333 17.4997H7.5C7.96024 17.4997 8.33333 17.1266 8.33333 16.6663V14.1663C8.33333 13.7061 7.96024 13.333 7.5 13.333Z" 
+stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+
+)
+
+export const HouseIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
+  <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M17.5 24.5V15.1667C17.5 14.8572 17.3771 14.5605 17.1583 14.3417C16.9395 14.1229 16.6428 14 16.3333 14H11.6667C11.3572 14 11.0605 14.1229 10.8417 14.3417C10.6229 14.5605 10.5 14.8572 10.5 15.1667V24.5" stroke="white" strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M3.5 11.6669C3.49992 11.3275 3.57389 10.9921 3.71675 10.6842C3.85962 10.3763 4.06793 10.1033 4.32717 9.88423L12.4938 2.88423C12.915 2.52829 13.4486 2.33301 14 2.33301C14.5514 2.33301 15.085 2.52829 15.5062 2.88423L23.6728 9.88423C23.9321 10.1033 24.1404 10.3763 24.2832 10.6842C24.4261 10.9921 24.5001 11.3275 24.5 11.6669V22.1669C24.5 22.7857 24.2542 23.3792 23.8166 23.8168C23.379 24.2544 22.7855 24.5002 22.1667 24.5002H5.83333C5.21449 24.5002 4.621 24.2544 4.18342 23.8168C3.74583 23.3792 3.5 22.7857 3.5 22.1669V11.6669Z" stroke="white" strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+
+);
+
+// Dashboard Icons
+export const TotalHewanIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M9 11C11.2091 11 13 9.20914 13 7C13 4.79086 11.2091 3 9 3C6.79086 3 5 4.79086 5 7C5 9.20914 6.79086 11 9 11Z" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89318 18.7122 8.75608 18.1676 9.45769C17.623 10.1593 16.8604 10.6597 16 10.88" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+export const TotalKunjunganIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M9 22V12H15V22" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+export const KunjunganBaruIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M16 2V6" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M8 2V6" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M3 10H21" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+export const RekamMedisIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M22 12H18L15 21L9 3L6 12H2" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+export const WaveHandIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M7 11.5C7 11.5 7.5 10.5 9 10.5C10.5 10.5 11 11.5 11 11.5" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M13 11.5C13 11.5 13.5 10.5 15 10.5C16.5 10.5 17 11.5 17 11.5" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12Z" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M8 8C8 8 9 7 10 7C11 7 12 8 12 8" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M12 8C12 8 13 7 14 7C15 7 16 8 16 8" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
 );
 
 

@@ -13,6 +13,16 @@ const TambahMediaModal = ({ isOpen, onClose, onSave }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!formData.file && !formData.linkYoutube) {
+      alert('Harap upload file atau masukkan link YouTube!');
+      return;
+    }
+
+    // ✅ Validasi: jika kategori Video, harus ada link YouTube
+    if (formData.kategori === 'Video' && !formData.linkYoutube) {
+      alert('Harap masukkan link YouTube untuk kategori Video!');
+      return;
+    }
     onSave(formData);
     setFormData({
       kategori: 'Video',

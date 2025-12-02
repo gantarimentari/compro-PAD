@@ -79,23 +79,48 @@ export default function ManagemenMedia() {
   // ✅ Fetch media dari database
   const fetchMedia = async () => {
     try {
+      console.log('🔄 Fetching media from API...');
       await api.get('/sanctum/csrf-cookie');
       const res = await api.get('/api/media');
       
-      console.log('📦 Media Data:', res.data);
+      console.log('📦 Raw API Response:', res.data);
+      console.log('📊 Response type:', typeof res.data);
+      console.log('📊 Is Array:', Array.isArray(res.data));
       
-      const formatted = res.data.map(item => ({
-        id: item.id,
-        name: item.name || item.filename || 'Untitled',
-        date: new Date(item.created_at).toLocaleDateString('id-ID'),
-        category: item.category || 'Foto',
-        imageUrl: item.file_path ? `${process.env.NEXT_PUBLIC_STORAGE_URL}/${item.file_path}` : null,
-        videoUrl: item.video_url || null
-      }));
+      if (res.data && res.data.length > 0) {
+        console.log('🔍 First item structure:', res.data[0]);
+        console.log('🔍 First item keys:', Object.keys(res.data[0]));
+      }
       
+      const formatted = res.data.map((item, index) => {
+        console.log(`\n📝 Processing item ${index + 1}:`, {
+          id: item.id,
+          name: item.name,
+          category: item.category,
+          imageUrl: item.imageUrl,
+          videoUrl: item.videoUrl,
+          date: item.date,
+          timeStamp: item.timeStamp,
+          // ✅ Cek juga snake_case
+          image_url: item.image_url,
+          video_url: item.video_url
+        });
+        
+        return {
+          id: item.id,
+          name: item.name || 'Untitled',
+          date: item.date || item.timeStamp || new Date().toLocaleDateString('id-ID'),
+          category: item.category || 'Foto',
+          imageUrl: item.imageUrl || null,
+          videoUrl: item.videoUrl || null
+        };
+      });
+      
+      console.log('✅ Formatted Data:', formatted);
       setMediaData(formatted);
     } catch (err) {
-      console.error('Error fetching media:', err);
+      console.error('❌ Error fetching media:', err);
+      console.error('❌ Error response:', err.response?.data);
     }
   };
 

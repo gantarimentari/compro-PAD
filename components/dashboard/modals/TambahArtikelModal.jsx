@@ -30,7 +30,7 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData({ ...formData, file });
+      setFormData(prev => ({ ...prev, file }));
     }
   };
 
@@ -50,7 +50,7 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
           <input
             type="text"
             value={formData.judul}
-            onChange={(e) => setFormData({ ...formData, judul: e.target.value })}
+            onChange={(e) => setFormData(prev => ({ ...prev, judul: e.target.value }))}
             placeholder="Masukkan judul artikel"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
             required
@@ -63,7 +63,7 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
           </label>
           <select
             value={formData.kategori}
-            onChange={(e) => setFormData({ ...formData, kategori: e.target.value })}
+            onChange={(e) => setFormData(prev => ({ ...prev, kategori: e.target.value }))}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none bg-white"
             required
           >
@@ -81,7 +81,7 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
           </label>
           <QuillEditor
             value={formData.isiArtikel}
-            onChange={(html) => setFormData({ ...formData, isiArtikel: html })}
+            onChange={(html) => setFormData(prev => ({ ...prev, isiArtikel: html }))}
           />
         </div>
 
@@ -105,6 +105,11 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
               </div>
             </div>
           </div>
+          {formData.file && (
+            <p className="mt-2 text-sm text-gray-600">
+              File terpilih: {formData.file.name}
+            </p>
+          )}
         </div>
 
         <div>
@@ -113,7 +118,7 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
           </label>
           <select
             value={formData.status}
-            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+            onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value }))}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none bg-white"
           >
             <option value="Draft">Draft</option>

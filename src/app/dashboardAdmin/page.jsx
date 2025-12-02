@@ -12,9 +12,10 @@ import Reservasi from "@ds/dashboard/components/Reservasi";
 import ManagemenPromo from "@ds/dashboard/components/ManagemenPromo";
 import ManagemenAdmin from "@ds/dashboard/components/ManagemenAdmin";
 import SystemInfo from "@ds/dashboard/components/SystemInfo";
+import Home from "@ds/dashboard/components/Home";
 
 export default function DashboardAdminPage() {
-  const [activeMenu, setActiveMenu] = useState('reservasi');
+  const [activeMenu, setActiveMenu] = useState('home');
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -32,6 +33,7 @@ export default function DashboardAdminPage() {
           {activeMenu === 'promo' && <ManagemenPromo />}
           {activeMenu === 'admin'&& <ManagemenAdmin/>}
           {activeMenu === 'system' && <SystemInfo />}
+          {activeMenu === 'home' && <Home />}
 
           
         </main>
