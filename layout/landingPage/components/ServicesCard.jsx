@@ -67,7 +67,7 @@ const ServicesCard = ({
                       key={index}
                       className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
                         index === currentIndex
-                          ? 'bg-accent-yellow-400 w-8'
+                          ? 'bg-accent-yellow-400 '
                           : 'bg-accent-neutral-300'
                       }`}
                     />
