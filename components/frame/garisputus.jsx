@@ -63,12 +63,12 @@ const ModalDashedBorder = ({ className="stroke-accent-yellow-300" }) => (
       y="7.9"
       width="645.2"
       height="282.2"
-      rx="5.1"
+      rx="8.1"
       className={className}
       strokeWidth="1.8"
       strokeLinecap="square"
       strokeLinejoin="round"
-      strokeDasharray="18 8"
+      strokeDasharray="45 10"
       vectorEffect="non-scaling-stroke"
     />
     </svg>

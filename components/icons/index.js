@@ -32,6 +32,7 @@ export {
   MapIcon,
   MenuIcon,
   CloseIcon,
+  CloseCircleIcon,
   ArrowRightIcon,
   CheckIcon,
   SearchIcon,

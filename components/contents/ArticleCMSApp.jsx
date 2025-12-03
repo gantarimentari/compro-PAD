@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Button from '@ds/Button/Button';
+import { ModalDashedBorder } from '@ds/frame/garisputus';
 import { CloseCircleIcon, ChevronLeftIcon, ChevronRightIcon }  from '@ds/icons/UIIcons';
 
 // ---  data dummy ---
@@ -94,32 +95,32 @@ const MOCK_ARTICLES = [
 const ARTICLES_PER_PAGE = 6;
 
 
-const ModalDashedBorder = ({ className }) => (
-    <svg 
-        className={className}
-        width="100%" 
-        height="100%" 
-        viewBox="0 0 663 297" 
-        fill="none" 
-        xmlns="http://www.w3.org/2000/svg"
-        preserveAspectRatio="none"
-    >
+// const ModalDashedBorder = ({ className }) => (
+//     <svg 
+//         className={className}
+//         width="100%" 
+//         height="100%" 
+//         viewBox="0 0 663 297" 
+//         fill="none" 
+//         xmlns="http://www.w3.org/2000/svg"
+//         preserveAspectRatio="none"
+//     >
     
-    <rect
-      x="8.9"
-      y="7.9"
-      width="645.2"
-      height="282.2"
-      rx="5.1"
-      className="stroke-accent-yellow-300"
-      strokeWidth="1.8"
-      strokeLinecap="square"
-      strokeLinejoin="round"
-      strokeDasharray="18 8"
-      vectorEffect="non-scaling-stroke"
-    />
-    </svg>
-);
+//     <rect
+//       x="8.9"
+//       y="7.9"
+//       width="645.2"
+//       height="282.2"
+//       rx="5.1"
+//       className="stroke-accent-yellow-300"
+//       strokeWidth="1.8"
+//       strokeLinecap="square"
+//       strokeLinejoin="round"
+//       strokeDasharray="45 10"
+//       vectorEffect="non-scaling-stroke"
+//     />
+//     </svg>
+// );
 
 // --- Article Detail Modal Component ---
 const ArticleModal = ({ article, isOpen, onClose, onNavigate }) => {
@@ -199,7 +200,7 @@ const ArticleModal = ({ article, isOpen, onClose, onNavigate }) => {
 
                             <div className="relative bg-white p-8 rounded-lg border-2 border-accent-yellow-300 " >
                                 {/* Modal Border SVG */}
-                                <ModalDashedBorder className="absolute inset-0 pointer-events-none p-1" />
+                                <ModalDashedBorder className="absolute inset-0 pointer-events-none p-1 stroke-accent-yellow-300" />
                                 <div className="relative z-10 text-body-2 text-accent-neutral-1000 leading-relaxed space-y-4">
                                     {/* Tampilkan semua konten lengkap */}
                                     {contentSections.map((paragraph, index) => (
@@ -240,12 +241,7 @@ const ArticleModal = ({ article, isOpen, onClose, onNavigate }) => {
                                     </button>
                                 </div>
                             </div>
-                            
-
-                            
-
-                            
-                            
+                                 
                         </div>
                     </div>
                     {/* Divider */}
@@ -282,7 +278,7 @@ const ArticleCard = ({ article, onReadClick }) => {
             {/* Content Section - PERBAIKAN: Hapus height tetap, biarkan auto */}
             <div className="relative pt-4 px-4 pb-0 flex flex-col flex-grow ">
                 {/* ini tu svg yang garis itu */}
-              <ModalDashedBorder className="absolute inset-0 w-full h-full z-0 pointer-events-none p-2"/>
+              <ModalDashedBorder className="absolute inset-0  z-0 pointer-events-none p-2 "/>
 
               
                 
