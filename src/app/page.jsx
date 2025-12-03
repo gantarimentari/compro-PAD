@@ -4,6 +4,7 @@ import Profile from '@layout/landingPage/Profile';
 import About from '@layout/landingPage/About';
 import Content from '@layout/landingPage/Content';
 import Sevices from '@layout/landingPage/Services';
+import Promo from "@layout/landingPage/Promo";
 // import ArticleLayout from "@ds/layout/ArticleLayout";
 
 
@@ -27,11 +28,12 @@ const blobSvg = "/Assets/blob.svg";
           <Content />
           <About />  
           <Sevices/>
+          <Promo />
         </main>
         
         
         <Footer
-        footerSvg="/Background/footer-landingPage.svg"
+        footerSvg="/Background/bg-bone-blue.svg"
         footerClass="text-white bg-accent-blue-500"
           
       />

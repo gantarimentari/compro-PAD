@@ -22,7 +22,7 @@ export default function TagLabel({
   bgClass = 'bg-white',
   borderClass = 'border-accent-yellow-300',
   strokeColor = 'rgb(255, 171, 47)',
-  buttonClass = 'px-3 py-2',
+  buttonClass = 'px-4 py-2',
   showDashed = true,
 }) {
   return (
