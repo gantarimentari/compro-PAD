@@ -10,7 +10,6 @@ import Button from '@ds/auth/Button';
 
 /**
  * Component untuk form reset password
- * Dipisah karena useSearchParams() harus di dalam Suspense
  */
 function ResetPasswordForm() {
   const router = useRouter();
@@ -38,10 +37,10 @@ function ResetPasswordForm() {
       setFormData(prev => ({ 
         ...prev, 
         token, 
-        email 
+        email: decodeURIComponent(email) // ✅ Decode email dari URL
       }));
     } else {
-      setError('Link reset password tidak valid atau sudah kadaluarsa.');
+      setError('Link reset password tidak valid. Silakan request link baru.');
     }
   }, [searchParams]);
 
@@ -51,7 +50,6 @@ function ResetPasswordForm() {
       ...prev,
       [name]: value
     }));
-    // Clear error saat user mengetik
     if (error) setError('');
   };
 
@@ -90,24 +88,41 @@ function ResetPasswordForm() {
       console.log('✅ Password reset successful:', res.data);
       setSuccess(true);
 
-      // Redirect ke login setelah 2 detik
+      // Redirect ke login setelah 3 detik
       setTimeout(() => {
         router.push('/auth/login');
-      }, 2000);
+      }, 3000);
 
     } catch (err) {
       console.error('❌ Error resetting password:', err);
+      console.error('❌ Error response:', err.response?.data);
       
-      if (err.response?.data?.errors?.email) {
-        setError(err.response.data.errors.email[0]);
-      } else if (err.response?.data?.errors?.password) {
-        setError(err.response.data.errors.password[0]);
-      } else if (err.response?.data?.errors?.token) {
-        setError('Token reset password tidak valid atau sudah kadaluarsa.');
+      // ✅ Enhanced error handling
+      if (err.response?.data?.errors) {
+        const errors = err.response.data.errors;
+        
+        if (errors.email) {
+          setError(errors.email[0]);
+        } else if (errors.password) {
+          setError(errors.password[0]);
+        } else if (errors.token) {
+          setError('Token reset password tidak valid atau sudah kadaluarsa. Silakan request link baru.');
+        } else {
+          setError(Object.values(errors)[0][0]); // First error message
+        }
       } else if (err.response?.data?.message) {
-        setError(err.response.data.message);
+        // Handle message dari backend (e.g. "passwords.token" atau "passwords.user")
+        const message = err.response.data.message;
+        
+        if (message.includes('token') || message.includes('invalid')) {
+          setError('Link reset password tidak valid atau sudah kadaluarsa. Silakan request link baru.');
+        } else if (message.includes('user') || message.includes('email')) {
+          setError('Email tidak ditemukan dalam sistem.');
+        } else {
+          setError(message);
+        }
       } else {
-        setError('Gagal mereset password. Silakan coba lagi atau minta link baru.');
+        setError('Gagal mereset password. Silakan coba lagi atau request link baru.');
       }
     } finally {
       setLoading(false);
@@ -119,7 +134,7 @@ function ResetPasswordForm() {
       {/* Header */}
       <div className="text-center">
         <h1 className="text-h-4 font-extrabold text-gray-900">
-          Change Password
+          Reset Password
         </h1>
         <p className="mt-2 text-body-2 text-accent-neutral-700">
           Masukkan password baru Anda
@@ -127,7 +142,7 @@ function ResetPasswordForm() {
       </div>
 
       {success ? (
-        // Success Message
+        // ✅ Success Message
         <div className="mt-8">
           <div className="rounded-lg bg-green-50 p-4 border border-green-200">
             <div className="flex">
@@ -138,11 +153,11 @@ function ResetPasswordForm() {
               </div>
               <div className="ml-3">
                 <h3 className="text-sm font-medium text-green-800">
-                  Password Berhasil Direset!
+                  Password Berhasil Direset! 🎉
                 </h3>
                 <div className="mt-2 text-sm text-green-700">
                   <p>Password Anda telah berhasil diubah.</p>
-                  <p className="mt-1">Mengarahkan ke halaman login...</p>
+                  <p className="mt-1">Mengarahkan ke halaman login dalam 3 detik...</p>
                 </div>
               </div>
             </div>
@@ -162,6 +177,15 @@ function ResetPasswordForm() {
                 </div>
                 <div className="ml-3">
                   <p className="text-sm text-red-800">{error}</p>
+                  {/* ✅ Tambahkan link ke forgot password jika token invalid */}
+                  {error.includes('tidak valid') || error.includes('kadaluarsa') ? (
+                    <Link 
+                      href="/auth/forgotPassword"
+                      className="mt-2 text-sm font-medium text-red-600 hover:text-red-500 inline-block"
+                    >
+                      Request link baru →
+                    </Link>
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -174,6 +198,7 @@ function ResetPasswordForm() {
             type="email"
             label="E-mail"
             value={formData.email}
+            onChange={handleChange}
             readOnly
             disabled
             className="bg-gray-50"
@@ -184,7 +209,7 @@ function ResetPasswordForm() {
             id="password"
             name="password"
             type="password"
-            label="Enter New Password"
+            label="Password Baru"
             placeholder="Minimal 8 karakter"
             required
             autoComplete="new-password"
@@ -198,7 +223,7 @@ function ResetPasswordForm() {
             id="password_confirmation"
             name="password_confirmation"
             type="password"
-            label="Confirm Password"
+            label="Konfirmasi Password"
             placeholder="Ulangi password baru"
             required
             autoComplete="new-password"
@@ -209,13 +234,41 @@ function ResetPasswordForm() {
 
           {/* Password Requirements */}
           <div className="text-sm text-accent-neutral-700 bg-accent-neutral-100 p-3 rounded-lg">
-            <p className="font-medium mb-1">Password harus:</p>
-            <ul className="list-disc list-inside space-y-1">
-              <li className={formData.password.length >= 8 ? 'text-green-600' : ''}>
-                Minimal 8 karakter
+            <p className="font-medium mb-2">Password harus:</p>
+            <ul className="space-y-1">
+              <li className="flex items-center gap-2">
+                <span className={`w-4 h-4 rounded-full flex items-center justify-center ${
+                  formData.password.length >= 8 ? 'bg-green-500' : 'bg-gray-300'
+                }`}>
+                  {formData.password.length >= 8 && (
+                    <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </span>
+                <span className={formData.password.length >= 8 ? 'text-green-700 font-medium' : ''}>
+                  Minimal 8 karakter
+                </span>
               </li>
-              <li className={formData.password === formData.password_confirmation && formData.password ? 'text-green-600' : ''}>
-                Sama dengan konfirmasi password
+              <li className="flex items-center gap-2">
+                <span className={`w-4 h-4 rounded-full flex items-center justify-center ${
+                  formData.password === formData.password_confirmation && formData.password && formData.password_confirmation 
+                    ? 'bg-green-500' 
+                    : 'bg-gray-300'
+                }`}>
+                  {formData.password === formData.password_confirmation && formData.password && formData.password_confirmation && (
+                    <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </span>
+                <span className={
+                  formData.password === formData.password_confirmation && formData.password && formData.password_confirmation
+                    ? 'text-green-700 font-medium' 
+                    : ''
+                }>
+                  Sama dengan konfirmasi password
+                </span>
               </li>
             </ul>
           </div>
@@ -227,7 +280,17 @@ function ResetPasswordForm() {
               variant="primary"
               disabled={loading || !formData.token}
             >
-              {loading ? 'Memproses...' : 'Change Password'}
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                  </svg>
+                  Memproses...
+                </span>
+              ) : (
+                'Reset Password'
+              )}
             </Button>
           </div>
 
@@ -248,7 +311,6 @@ function ResetPasswordForm() {
 
 /**
  * Main component dengan Suspense wrapper
- * Required karena useSearchParams() harus di dalam Suspense boundary
  */
 export default function ResetPasswordPage() {
   return (
@@ -256,8 +318,14 @@ export default function ResetPasswordPage() {
       <AuthLayout>
         <div className="text-center">
           <h1 className="text-h-4 font-extrabold text-gray-900">
-            Change Password
+            Reset Password
           </h1>
+          <div className="mt-8 flex justify-center">
+            <svg className="animate-spin h-8 w-8 text-accent-blue-400" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+            </svg>
+          </div>
           <p className="mt-4 text-body-2 text-accent-neutral-700">
             Loading...
           </p>

@@ -38,7 +38,7 @@ const handleSubmit = async (e) => {
     try{
       await api.get('/sanctum/csrf-cookie', { withCredentials: true });
 
-      const res = await api.post('/register', formData, {
+      const res = await api.post('/api/register', formData, {
         headers: {
           Accept: 'application/json', 
           'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN'),
