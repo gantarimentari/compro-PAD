@@ -5,6 +5,7 @@ import About from '@layout/landingPage/About';
 import Content from '@layout/landingPage/Content';
 import Sevices from '@layout/landingPage/Services';
 import Promo from "@layout/landingPage/Promo";
+import Article from "@layout/landingPage/Article";
 // import ArticleLayout from "@ds/layout/ArticleLayout";
 
 
@@ -29,14 +30,27 @@ const blobSvg = "/Assets/blob.svg";
           <About />  
           <Sevices/>
           <Promo />
+          <Article />
         </main>
         
-        
-        <Footer
-        footerSvg="/Background/bg-bone-blue.svg"
-        footerClass="text-white bg-accent-blue-500"
-          
-      />
+        {/* Paw Footer Pattern - positioned above footer */}
+        <div className="relative w-full">
+          <div 
+            className="absolute w-full left-0 z-0"
+            style={{
+              backgroundImage: 'url(/Assets/paw-footer.svg)',
+              backgroundRepeat: 'repeat-x',
+              backgroundSize: 'auto 250px', // auto untuk lebar (mempertahankan aspect ratio), 100px untuk tinggi
+              backgroundPosition: 'center top',
+              height: '130px',
+              top: '-90px', // Nilai NEGATIF untuk naik ke atas footer. Semakin kecil (lebih negatif) = lebih turun, semakin besar (mendekati 0) = lebih naik
+            }}
+          />
+          <Footer
+            footerSvg="/Background/bg-bone-blue.svg"
+            footerClass="text-white bg-accent-blue-500 relative z-10"
+          />
+        </div>
       
       
     </div>

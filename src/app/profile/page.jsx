@@ -20,11 +20,16 @@ export default function RootLayout({ children }) {
            />
         </main>
         
-        
-        <Footer
+        <div>
+          <img
+      src='/Assets/paw-footer.svg'/>
+       <Footer
         footerClass="text-white bg-accent-blue-600"
         
       />
+
+        </div>
+       
     </div>
 
   );
