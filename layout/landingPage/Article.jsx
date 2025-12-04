@@ -32,6 +32,7 @@ export default function Article() {
   return (
     <div className='min-h-screen flex flex-col relative overflow-hidden'
       style={{
+      minHeight: '60vh',
       backgroundImage: "url('/Background/bg-paw-profile.svg')",
       backgroundRepeat: 'no-repeat',
       backgroundPosition: 'center',
@@ -71,7 +72,7 @@ export default function Article() {
         }}
       />
       
-      <div className="container max-w-7xl mx-auto p-8 relative z-[5]">
+      <div className="container max-w-7xl mx-auto p-8 relative z-[5] min-h-[85vh]">
         {/* Header Section */}
         <div className='flex flex-row items-center gap-6 py-10 px-0justify-center'>
           <TagLabel label='Artikel' className='shadow-e4' />
@@ -95,7 +96,7 @@ export default function Article() {
         </div>
 
         {/* Article Cards Section */}
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-8 '>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-8  '>
           {recentArticles.map((article) => (
             <ArticleCard
               key={article.id}
