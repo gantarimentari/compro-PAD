@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Button from '@ds/Button/Button';
+import Button from '@ds/Button';
 import { ModalDashedBorder } from '@ds/frame/garisputus';
 import { CloseCircleIcon, ChevronLeftIcon, ChevronRightIcon }  from '@ds/icons/UIIcons';
 
