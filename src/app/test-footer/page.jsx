@@ -38,7 +38,6 @@ const MockButton = ({ children }) => (
     </button>
 );
 
-)
 const renderDemoCell = (item, key) => {
     switch (key) {
         case 'category':
