@@ -66,7 +66,7 @@ const ArticleModal = ({ article, isOpen, onClose, onNavigate, allArticles }) => 
     };
 
     // biar ga kebalik imageurl
-    const imageUrl = article.imageUrl
+    const imageUrl = article.imageUrl;
 
     return (
         <div 
@@ -102,8 +102,9 @@ const ArticleModal = ({ article, isOpen, onClose, onNavigate, allArticles }) => 
                                     alt={article.title || "Article image"}
                                     src={imageUrl || defaultPlaceholder}
                                     onError={(e) => { 
+                                        console.error('❌ Modal image failed:', imageUrl);
                                         e.target.onerror = null; 
-                                        e.target.src = defaultPlaceholder; 
+                                        e.target.src = "/images/gambarkucingarticle.png"; 
                                     }}
                                 />
                             </div>
@@ -112,15 +113,27 @@ const ArticleModal = ({ article, isOpen, onClose, onNavigate, allArticles }) => 
                         {/* Content Section */}
                         <div className="md:w-2/3 flex flex-col gap-4">
                             <div className="relative bg-white p-8 rounded-lg border-2 border-accent-yellow-300">
-                                <ModalDashedBorder className="absolute inset-0 pointer-events-none p-1" />
-                                {/* render html dengan dangerouslysetinnerhtml */}
+                                <ModalDashedBorder className="absolute inset-0 pointer-events-none p-1 stroke-accent-yellow-300" />
+                                
+                                {/* ✅ Option 1: Render HTML safely */}
                                 <div 
-                                    className="relative z-10 text-body-2 text-accent-neutral-1000 leading-relaxed prose prose-sm max-w-none
-                                        prose-p:my-3 prose-headings:font-bold prose-h1:text-xl prose-h2:text-lg 
-                                        prose-ul:list-disc prose-ul:ml-4 prose-ol:list-decimal prose-ol:ml-4
-                                        prose-strong:font-bold prose-em:italic"
+                                    className="relative z-10 text-body-2 text-accent-neutral-1000 leading-relaxed space-y-4 prose prose-sm max-w-none"
                                     dangerouslySetInnerHTML={{ __html: article.content }}
                                 />
+
+                                {/* ✅ Option 2: Plain text with paragraphs (safer)
+                                <div className="relative z-10 text-body-2 text-accent-neutral-1000 leading-relaxed space-y-4">
+                                    {stripHtmlTags(article.content)
+                                        .split('\n')
+                                        .filter(p => p.trim())
+                                        .map((paragraph, index) => (
+                                            <p key={index} className="text-justify">
+                                                {paragraph}
+                                            </p>
+                                        ))
+                                    }
+                                </div>
+                                */}
                             </div>
 
                             {/* Navigation Between Articles */}
@@ -152,6 +165,7 @@ const ArticleModal = ({ article, isOpen, onClose, onNavigate, allArticles }) => 
                                     </button>
                                 </div>
                             </div>
+                                 
                         </div>
                     </div>
                     
@@ -183,8 +197,12 @@ const ArticleCard = ({ article, onReadClick }) => {
                 />
             </div>
               
-            <div className="relative pt-4 px-4 pb-0 flex flex-col flex-grow">
-                <ModalDashedBorder className="absolute inset-0 w-full h-full z-0 pointer-events-none p-2"/>
+            {/* Content Section - PERBAIKAN: Hapus height tetap, biarkan auto */}
+            <div className="relative pt-4 px-4 pb-0 flex flex-col flex-grow ">
+                {/* ini tu svg yang garis itu */}
+              <ModalDashedBorder className="absolute inset-0  z-0 pointer-events-none p-2 "/>
+
+              
                 
                 <div className="relative z-10 flex flex-col gap-1 pt-2 px-2">
                     <p className="text-body-1 font-bold text-accent-neutral-1000 line-clamp-2">

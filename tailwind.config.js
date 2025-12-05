@@ -6,6 +6,7 @@ module.exports = {
     './components/**/*.{js,ts,jsx,tsx,mdx}', // Untuk Komponen DS di luar src
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './layout/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     // Gunakan 'extend' untuk menambahkan Design Tokens Anda

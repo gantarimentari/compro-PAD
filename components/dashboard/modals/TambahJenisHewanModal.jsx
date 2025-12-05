@@ -1,11 +1,12 @@
 'use client';
+
 import React, { useState, useEffect } from 'react';
 import BaseModal from './BaseModal';
 import api from '@lib/api';
 
 const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState({
-    ownerName: '',
+    ownerId: '', // ✅ Change from ownerName to ownerId
     species: '',
   });
   const [pemilikOptions, setPemilikOptions] = useState([]);
@@ -25,7 +26,7 @@ const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
       // Format data untuk dropdown
       const formatted = res.data.map(patient => ({
         id: patient.id,
-        name: patient.username,
+        name: patient.username || patient.name,
         email: patient.email,
       }));
       
@@ -33,13 +34,14 @@ const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
       console.log('📦 Pemilik Options:', formatted);
     } catch (err) {
       console.error('Error fetching pemilik:', err);
+      setPemilikOptions([]);
     }
   };
 
   // ✅ Reset form saat modal ditutup
   useEffect(() => {
     if (!isOpen) {
-      setFormData({ ownerName: '', species: '' });
+      setFormData({ ownerId: '', species: '' });
     }
   }, [isOpen]);
 
@@ -51,7 +53,7 @@ const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
     onSave(formData); // Kirim ke parent (JenisHewan.jsx)
     
     // Reset form
-    setFormData({ ownerName: '', species: '' });
+    setFormData({ ownerId: '', species: '' });
   };
 
   return (
@@ -69,15 +71,15 @@ const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
             Nama Pemilik
           </label>
           <select
-            value={formData.ownerName}
-            onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
+            value={formData.ownerId}
+            onChange={(e) => setFormData({ ...formData, ownerId: e.target.value })}
             className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
             required
           >
             <option value="">Pilih nama pemilik</option>
             {pemilikOptions && pemilikOptions.length > 0 ? (
               pemilikOptions.map((pemilik) => (
-                <option key={pemilik.id} value={pemilik.name}>
+                <option key={pemilik.id} value={pemilik.id}>
                   {pemilik.name} - {pemilik.email}
                 </option>
               ))
@@ -99,10 +101,13 @@ const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
             type="text"
             value={formData.species}
             onChange={(e) => setFormData({ ...formData, species: e.target.value })}
-            placeholder="Masukkan jenis hewan"
+            placeholder="Contoh: Kucing, Anjing, Hamster"
             className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
             required
           />
+          <p className="text-xs text-gray-500 mt-1">
+            Jenis hewan ini akan menjadi milik pemilik yang dipilih
+          </p>
         </div>
 
         {/* ✅ Buttons */}

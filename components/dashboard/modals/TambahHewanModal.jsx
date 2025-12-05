@@ -1,47 +1,54 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import BaseModal from './BaseModal';
-
+import api from '@lib/api';
 
 const TambahHewanModal = ({ 
   isOpen, 
   onClose, 
   onSave, 
-  ownerOptions = [],         // ✅ Rename dari ownerData
-  jenisHewanOptions = []     // ✅ Tambahkan prop ini
+  ownerOptions = [],
 }) => {
   const [formData, setFormData] = useState({
     petName: '',
-    speciesId: '',    // ✅ Ubah dari species ke speciesId
-    ownerId: '',      // ✅ Ubah dari ownerName ke ownerId
-    birthDate: '',    // ✅ Tambahkan field ini
+    speciesId: '',
+    ownerId: '',
+    birthDate: '',
   });
+  
+  const [jenisHewanOptions, setJenisHewanOptions] = useState([]);
 
-  useEffect(() => {
-    console.log('📦 TambahHewanModal Props:', {
-      ownerOptions,
-      jenisHewanOptions,
-      ownerOptionsLength: ownerOptions?.length,
-      jenisHewanOptionsLength: jenisHewanOptions?.length
+  // ✅ Fetch jenis hewan saat owner dipilih
+  const handleOwnerChange = async (ownerId) => {
+    console.log('👤 Owner selected:', ownerId);
+    setFormData({ 
+      ...formData, 
+      ownerId,
+      speciesId: '' // Reset species
     });
-    const invalidJenis = jenisHewanOptions?.filter(j => !j.id_jenisHewan);
-    if (invalidJenis && invalidJenis.length > 0) {
-      console.error('❌ Invalid Jenis Hewan Data:', invalidJenis);
-  }
-  }, [ownerOptions, jenisHewanOptions]);
-
-  useEffect(() => {
-    if (!isOpen) {
-      setFormData({
-        petName: '',
-        speciesId: '',
-        ownerId: '',
-        birthDate: '',
-        age: ''
-      });
+    
+    if (ownerId) {
+      // ✅ Fetch jenis hewan milik owner ini
+      try {
+        await api.get('/sanctum/csrf-cookie');
+        const res = await api.get(`/api/jenis-hewan?id_pasien=${ownerId}`);
+        
+        const formatted = res.data.map(jenis => ({
+          id_jenisHewan: jenis.id_jenisHewan,
+          nama_jenis: jenis.nama_jenis,
+        }));
+        
+        console.log('📦 Jenis Hewan for this owner:', formatted);
+        setJenisHewanOptions(formatted);
+      } catch (err) {
+        console.error('❌ Error fetching jenis hewan:', err);
+        setJenisHewanOptions([]);
+      }
+    } else {
+      setJenisHewanOptions([]);
     }
-  }, [isOpen]);
+  };
 
   const calculateAge = (birthDate) => {
     if (!birthDate) return '-';
@@ -80,11 +87,10 @@ const TambahHewanModal = ({
       speciesId: '',
       ownerId: '',
       birthDate: '',
-      age: ''
     });
   };
 
-   return (
+  return (
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
@@ -94,17 +100,14 @@ const TambahHewanModal = ({
     >
       <form onSubmit={handleSubmit} className="p-6 space-y-3">
         
-        {/* ✅ Dropdown Pemilik */}
+        {/* Dropdown Pemilik */}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Nama Pemilik
           </label>
           <select
             value={formData.ownerId}
-            onChange={(e) => {
-              console.log('Selected Owner ID:', e.target.value);
-              setFormData({ ...formData, ownerId: e.target.value });
-            }}
+            onChange={(e) => handleOwnerChange(e.target.value)}
             className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
             required 
           >
@@ -116,7 +119,7 @@ const TambahHewanModal = ({
                 </option>
               ))
             ) : (
-              <option key="no-owner" disabled>Tidak ada data pemilik</option>
+              <option disabled>Tidak ada data pemilik</option>
             )}
           </select>
           <p className="text-xs text-gray-500 mt-1">
@@ -139,7 +142,7 @@ const TambahHewanModal = ({
           />
         </div>
 
-        {/* ✅ Dropdown Jenis Hewan */}
+        {/* ✅ Dropdown Jenis Hewan - Dynamic by Owner */}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Jenis Hewan
@@ -149,25 +152,25 @@ const TambahHewanModal = ({
             onChange={(e) => setFormData({ ...formData, speciesId: e.target.value })}
             className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
             required
+            disabled={!formData.ownerId}
           >
-            <option value="">Pilih jenis hewan</option>
-            {jenisHewanOptions && jenisHewanOptions.length > 0 ? (
-              jenisHewanOptions
-                .filter(jenis => jenis.id_jenisHewan) // ✅ Filter data undefined
-                .map((jenis) => (
-                  <option 
-                    key={`jenis-${jenis.id_jenisHewan}`} 
-                    value={jenis.id_jenisHewan}
-                  >
-                    {jenis.nama_jenis}
-                </option>
-              ))
-          ) : (
-            <option disabled>Tidak ada data jenis hewan</option>
-          )}
+            <option value="">
+              {!formData.ownerId 
+                ? 'Pilih pemilik terlebih dahulu' 
+                : jenisHewanOptions.length === 0
+                ? 'Pemilik belum punya jenis hewan. Tambahkan di menu Jenis Hewan.'
+                : 'Pilih jenis hewan'}
+            </option>
+            {jenisHewanOptions.map((jenis) => (
+              <option key={jenis.id_jenisHewan} value={jenis.id_jenisHewan}>
+                {jenis.nama_jenis}
+              </option>
+            ))}
           </select>
           <p className="text-xs text-gray-500 mt-1">
-            Total jenis hewan: {jenisHewanOptions?.length || 0}
+            {formData.ownerId 
+              ? `Jenis hewan tersedia: ${jenisHewanOptions.length}`
+              : 'Pilih pemilik untuk melihat jenis hewan'}
           </p>
         </div>
 
@@ -209,8 +212,6 @@ const TambahHewanModal = ({
     </BaseModal>
   );
 };
-
-
 
 export default TambahHewanModal;
 

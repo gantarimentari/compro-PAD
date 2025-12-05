@@ -6,24 +6,29 @@ import  UserProfile  from "@ds/contents/UserProfile";
 
 export default function RootLayout({ children }) {
     const svgBackground = "/Background/bg-paw-profile.svg";
-  
-    
     const backgroundStyle = {
     backgroundImage: `url('${svgBackground}')`,
   };
   return (
-    <div className="min-h-screen flex flex-col" style={backgroundStyle}
- >
+    <div className="min-h-screen flex flex-col" style={backgroundStyle}>
+      
+
+   
        <Header />
         <main className="flex-grow relative">
-          <UserProfile />
+          <UserProfile
+           />
         </main>
         
-        
-        <Footer
+        <div>
+       
+       <Footer
         footerClass="text-white bg-accent-blue-600"
         
       />
+
+        </div>
+       
     </div>
 
   );

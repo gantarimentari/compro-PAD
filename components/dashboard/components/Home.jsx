@@ -276,7 +276,7 @@ export default function Home() {
         {/* Latest Transactions Panel */}
         <div className="bg-white rounded-2xl shadow-xl p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-h-6 font-bold text-accent-neutral-800">
+            <h3 className="text-h-8 font-bold text-accent-neutral-1000">
               Transaksi Terbaru
             </h3>
             <div className="relative">
