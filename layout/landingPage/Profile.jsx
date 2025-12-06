@@ -1,14 +1,16 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import api from '@lib/api.js';
+import { sendWA } from '@lib/wa.js';
 import Button from '@ds/Button';
 import { RightArrowIcon } from '@ds/icons';
 
 export default function Profile() {
-  // ✅ Initialize with default values
+  // Initialize with default values
   const [systemData, setSystemData] = useState({
     deskripsi_hero: 'Buat pawrent, nggak ada yang lebih tenang selain tahu hewan kesayangannya sehat. Klinik Dokter Fanina hadir buat bantu jaga mereka tetap ceria. Mulai dari vaksin, check-up, sampai perawatan kecil yang sering terlupa.',
     foto_card: '/images/foto-dokter.png',
+    phone:''
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
@@ -16,7 +18,7 @@ export default function Profile() {
 
   const photoCardBorder = '/Assets/photoCard-border-only.svg';
 
-  // ✅ Fetch data from backend
+  // fetch from backend
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -25,19 +27,21 @@ export default function Profile() {
 
         console.log('📦 System Info (Profile):', res.data);
 
-        // ✅ Use snake_case from backend with fallback
+        // Use snake_case from backend with fallback
         setSystemData({
           deskripsi_hero: res.data.systemInfo?.deskripsi_hero,
           foto_card: res.data.systemInfo?.foto_card || '/images/foto-dokter.png',
+          phone: res.data.systemInfo?.phone || '',
         });
 
       } catch (err) {
         console.error('❌ Error fetching profile:', err);
         
-        // ✅ Keep default values on error
+        // Keep default values on error
         setSystemData({
           deskripsi_hero: 'error',
           foto_card: '/images/foto-dokter.png',
+          phone: '',
         });
       } finally {
         setIsLoading(false);
@@ -46,6 +50,66 @@ export default function Profile() {
 
     fetchProfile();
   }, []);
+
+  // ✅ Handle WhatsApp CTA Button
+  async function handleSendMessage() {
+    try {
+      console.log('📞 Starting WhatsApp send...');
+      console.log('📱 System phone:', systemData.phone);
+      
+      // ✅ Validate phone exists
+      if (!systemData.phone) {
+        alert('❌ Nomor WhatsApp belum tersedia. Silakan hubungi admin untuk menambahkan nomor WhatsApp di System Info.');
+        return;
+      }
+
+      // ✅ Clean & format phone number (remove spaces, dashes, plus)
+      const cleanNumber = systemData.phone.replace(/[\s\-\+]/g, '');
+      
+      // ✅ Format to international (62xxx)
+      let formattedNumber = cleanNumber;
+      if (cleanNumber.startsWith('0')) {
+        formattedNumber = '62' + cleanNumber.substring(1); // 081234 -> 6281234
+      } else if (!cleanNumber.startsWith('62')) {
+        formattedNumber = '62' + cleanNumber; // 81234 -> 6281234
+      }
+
+      console.log('📱 Clean number:', cleanNumber);
+      console.log('📱 Formatted number:', formattedNumber);
+
+      // ✅ CREATE PAYLOAD OBJECT
+      const payload = {
+        number: formattedNumber,
+        text: "Halo! Saya tertarik untuk reservasi di Klinik Dokter Fanina. Mohon informasi lebih lanjut tentang layanan dan jadwal yang tersedia. Terima kasih!"
+      };
+
+      console.log('📤 Sending payload:', payload);
+
+      // ✅ CALL sendWA with payload
+      const response = await sendWA(payload);
+
+      console.log("✅ WA API Response:", response);
+
+      // ✅ Handle success/error response
+      if (response.success || response.status === 200) {
+        alert('✅ Pesan berhasil dikirim ke WhatsApp!');
+      } else {
+        throw new Error(response.error || response.message || 'Gagal mengirim pesan');
+      }
+
+    } catch (err) {
+      console.error('❌ Error sending WhatsApp:', err);
+      
+      // ✅ Extract error message
+      const errorMsg = err.response?.data?.message 
+        || err.response?.data?.error
+        || err.message 
+        || 'Gagal mengirim pesan WhatsApp. Silakan coba lagi.';
+      
+      alert(`❌ ${errorMsg}`);
+    }
+  }
+
 
   return (
     <div className="max-w-7xl mx-auto py-12 md:py-16">
@@ -68,7 +132,7 @@ export default function Profile() {
               </span> 
             </h1>
 
-            {/* ✅ Show loading skeleton or actual content */}
+            {/* Show loading skeleton or actual content */}
             {isLoading ? (
               <div className="space-y-2 w-full">
                 <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
@@ -81,7 +145,8 @@ export default function Profile() {
               </p>
             )}
 
-            <Button 
+            <Button
+              onClick={handleSendMessage} 
               icon={<RightArrowIcon className="h-4 w-4" />} 
               iconPosition="right"
               roundedClass="rounded-md"
@@ -143,7 +208,7 @@ export default function Profile() {
                     zIndex: 1,
                   }}
                 >
-                  {/* ✅ Loading state for image */}
+                  {/* Loading state for image */}
                   {isLoading ? (
                     <div className="w-full h-full bg-gray-200 animate-pulse flex items-center justify-center">
                       <svg className="animate-spin h-8 w-8 text-gray-400" viewBox="0 0 24 24">
