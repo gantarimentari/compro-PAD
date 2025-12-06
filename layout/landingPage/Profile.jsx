@@ -241,6 +241,63 @@ export default function Profile() {
           
         </div>
       </div>
+
+      {/* Selendang Section - Layered */}
+      <div className="relative overflow-hidden z-30" style={{ 
+        height: 'auto', 
+        width: '120vw', 
+        marginLeft: 'calc(-60vw + 50%)',
+        maxWidth: 'none'
+      }}>
+        <style jsx>{`
+          @keyframes slideRightToLeft {
+            0% {
+              transform: translate(1%, 1%);
+            }
+            50% {
+              transform: translate(-1%, -1%);
+            }
+            100% {
+              transform: translate(1%, 1%);
+            }
+          }
+          
+          @keyframes slideLeftToRight {
+            0% {
+              transform: translate(-1%, -1%);
+            }
+            50% {
+              transform: translate(1%, 1%);
+            }
+            100% {
+              transform: translate(-1%, -1%);
+            }
+          }
+        `}</style>
+        
+        {/* Selendang Bawah - animasi kiri ke kanan */}
+        <img
+          src="/Assets/selendang-bawah.webp"
+          alt="Selendang Bawah"
+          className="w-full h-auto object-cover block"
+          style={{ 
+            display: 'block', 
+            width: '180%', 
+            marginLeft: '-5%',
+            animation: 'slideLeftToRight 10s cubic-bezier(0.6, 0, 0.4, 1) infinite'
+          }}
+        />
+        {/* Selendang Atas - animasi kanan ke kiri */}
+        <img
+          src="/Assets/selendang-atas.webp"
+          alt="Selendang Atas"
+          className="w-full h-auto object-cover absolute top-0 left-0"
+          style={{ 
+            width: '95%',
+            animation: 'slideRightToLeft 10s cubic-bezier(0.6, 0, 0.4, 1) infinite'
+          }}
+        />
+      </div>
     </div>
   );
 }
