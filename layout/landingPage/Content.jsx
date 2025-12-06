@@ -86,6 +86,7 @@ export default function Content() {
       backgroundPosition: 'center',
       backgroundSize: 'cover',
       backgroundColor: 'white',
+      marginTop: '-175px',
     }}
     >
       {/* Ornamen Kiri - Berputar */}
