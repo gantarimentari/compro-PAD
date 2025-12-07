@@ -86,7 +86,7 @@ export default function Services() {
 
   const currentServiceData = selectedService ? servicesInfo[selectedService] : null;
   const currentIndex = serviceKeys.indexOf(selectedService);
-
+  const [isCardHovered, setIsCardHovered] = useState(false);
   return (
     <>
     <div className="flex flex-col relative overflow-hidden" 
@@ -130,7 +130,13 @@ export default function Services() {
       <div className="container max-w-7xl mx-auto p-10  relative z-[5]">
         <div className="flex flex-col items-center gap-6 p-4 justify-center">
           {/* Header */}
-          <TagLabel label='Layanan' className='shadow-e4' />
+          <TagLabel label='Layanan' className='shadow-e4'
+          style={{
+            transformOrigin: 'center',
+            transform: isCardHovered ? 'rotate(3deg)' : 'rotate(-3deg)',
+          }}
+          onMouseEnter={() => setIsCardHovered(true)}
+          onMouseLeave={() => setIsCardHovered(false)} />
           <p className='text-2xl md:text-3xl lg:text-4xl font-bold text-center max-w-3xl px-4'>
             {judulLayanan}
           </p>

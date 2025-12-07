@@ -10,6 +10,7 @@ export default function About() {
     image: "/images/dummy-aboutus.png"
   })
   const [isLoading, setIsLoading]= useState(true);
+  const [isCardHovered, setIsCardHovered] = useState(false);
 
   useEffect(()=>{
     const fetchAboutUs = async ()=>{
@@ -37,6 +38,7 @@ export default function About() {
     };
     fetchAboutUs();
   }, []);
+
   return (
 
     <div
@@ -61,13 +63,21 @@ export default function About() {
                 src={aboutUs.image}
                 alt="Tentang Klinik Fanina"
                 className="max-w-full max-h-[450px] object-cover"
+              
               />
             </div>
           </div>
 
           <div className="w-full md:w-[60%] text-left space-y-3 ">
             <div className="flex items-center gap-3 ">
-              <TagLabel />
+              <TagLabel 
+                style={{
+                  transformOrigin: 'center',
+                  transform: isCardHovered ? 'rotate(3deg)' : 'rotate(-3deg)',
+                }}
+                onMouseEnter={() => setIsCardHovered(true)}
+                onMouseLeave={() => setIsCardHovered(false)}
+              />
               <img
                 src="/title/title-about.svg"
                 alt="Klinik Dokter Fanina"
@@ -76,7 +86,7 @@ export default function About() {
             </div>
 
             <p className="text-body-1 font-base text-white leading-relaxed">
-              {aboutUs.aboutUs}
+              {isLoading ? "Memuat... " : aboutUs.aboutUs}
             </p>
           </div>
         </div>

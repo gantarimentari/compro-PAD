@@ -11,6 +11,7 @@ export default function Article() {
   const [articleData, setArticleData] = useState({
     deskripsi_artikel: "Artikel adalah halaman yang memuat informasi, pengetahuan, dan edukasi seputar topik tertentu agar Pawrents mendapatkan wawasan baru terkait hewan kesayangannya."
   });
+  const [isCardHovered, setIsCardHovered] = useState(false);
 
   const [recentArticles, setRecentArticles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -133,7 +134,14 @@ export default function Article() {
       <div className="container max-w-7xl mx-auto p-8 relative z-[5] min-h-[85vh]">
         {/* Header Section */}
         <div className='flex flex-row items-center gap-6 py-10 px-0 justify-center'>
-          <TagLabel label='Artikel' className='shadow-e4' />
+          <TagLabel label='Artikel' className='shadow-e4' 
+          style={{
+            transformOrigin: 'center',
+            transform: isCardHovered ? 'rotate(3deg)' : 'rotate(-3deg)',
+          }}
+          onMouseEnter={()=> setIsCardHovered(true)}
+          onMouseLeave={()=> setIsCardHovered(false)}
+          />
           
           {/*  Show loading state */}
           {isLoading ? (

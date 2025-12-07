@@ -58,6 +58,7 @@ export default function Content() {
   const [videos, setVideos] = useState([]);
   const [selectedVideo, setSelectedVideo] = useState(1); 
   const [isLoading, setIsLoading] = useState(true);
+  const [isCardHovered, setIsCardHovered] = useState(false);
   const scrollContainerRef = useRef(null);
 
   useEffect(()=>{
@@ -176,16 +177,24 @@ export default function Content() {
       
       
 
-      <div className="container max-w-7xl mx-auto px-4 py-6 md:py-10 relative z-[5]">
-        <div className="flex flex-col items-center gap-2">
-          {/* Tag biru dengan border putus-putus putih di dalam */}
-          <div className="relative rounded-lg inline-block bg-accent-blue-500  px-8 py-4 shadow-lg">
-            {/* Border putus-putus putih di dalam */}
+      <div className="container max-w-7xl mx-auto px-4 pt-24 pb-16 md:py-10 relative z-[5]">
+        <div className="flex flex-col items-center gap-2 relative z-10">
+          {/* Tag biru dengan border putus-putus */}
+          <div 
+            className="relative rounded-lg inline-block bg-accent-blue-500 px-8 py-4 shadow-lg transition-transform duration-300 cursor-pointer z-50"
+            style={{
+              transformOrigin: 'center',
+              transform: isCardHovered ? 'rotate(0deg)' : 'rotate(-3deg)',
+            }}
+            onMouseEnter={() => setIsCardHovered(true)}
+            onMouseLeave={() => setIsCardHovered(false)}
+          >
             <svg
-              className="absolute inset-0 w-full h-full pointer-events-none"
+              className="absolute inset-0 w-full h-full pointer-events-none z-0"
               viewBox="0 0 200 60"
               fill="none"
               preserveAspectRatio="none"
+              style={{ pointerEvents: 'none' }}
             >
               <rect
                 x="3"
@@ -201,7 +210,7 @@ export default function Content() {
             </svg>
             
             {/* Teks */}
-            <span className="relative z-10 text-white text-h-6  font-bold whitespace-nowrap">
+            <span className="relative z-10 text-white text-h-6 font-bold whitespace-nowrap" style={{ pointerEvents: 'none' }}>
               Selamat Datang
             </span>
           </div>
@@ -212,12 +221,24 @@ export default function Content() {
             alt="title-greeting" 
             className="h-[80px] md:h-[100px] w-auto"
           />
-          <p className='text-h-7 font-bold text-accent-neutral-1000 text-center max-w-2xl leading-relaxed'>
-            {systemData.judul_video_edukasi}
-          </p>
-          <p className='text-h-7 font-bold text-accent-neutral-1000 text-center max-w-2xl leading-relaxed'>
-            {systemData.deksripsi_video_edukasi}
-          </p>
+
+             {/* ✅ Loading skeleton untuk text */}
+          {isLoading ? (
+            <div className="flex flex-col items-center gap-3 w-full max-w-2xl">
+              <div className="h-8 bg-accent-neutral-200 rounded-lg w-3/4 animate-pulse"></div>
+              <div className="h-6 bg-accent-neutral-200 rounded-lg w-full animate-pulse"></div>
+              <div className="h-6 bg-accent-neutral-200 rounded-lg w-5/6 animate-pulse"></div>
+            </div>
+          ) : (
+            <>
+              <p className='text-h-7 font-bold text-accent-neutral-1000 text-center max-w-2xl leading-relaxed'>
+                {systemData.judul_video_edukasi}
+              </p>
+              <p className='text-h-7 font-bold text-accent-neutral-1000 text-center max-w-2xl leading-relaxed'>
+                {systemData.deksripsi_video_edukasi}
+              </p>
+            </>
+          )}
         </div>
 
         {/* Video Carousel Section */}

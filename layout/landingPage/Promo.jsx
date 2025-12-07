@@ -4,6 +4,7 @@ import TagLabel from "@ds/Button/TagLabel";
 import { DashedBorder } from '@ds/frame/garisputus';
 import PromoCard from './components/PromoCard';
 import api from '@lib/api';
+import { transform } from 'next/dist/build/swc/generated-native';
 
 export default function Promo() {
   const svgBackground = "/Background/bg-bone-blue.svg";
@@ -15,6 +16,7 @@ export default function Promo() {
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
   };
+  const [isCardHovered, setIsCardHovered] = useState(false);
 
   const [promoData, setPromoData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -113,7 +115,18 @@ export default function Promo() {
       <DashedBorder className="w-full h-10 relative z-[5]" />
       
       <div className="flex flex-col w-full items-center gap-6 py-10 px-4 justify-center">
-        <TagLabel label='Promo' className='shadow-e4' />
+        <TagLabel label='Promo' className='shadow-e4' 
+        style={{
+          transformOrigin: 'center',
+          transform: isCardHovered ? 'rotate(3deg)' : 'rotate(-3deg)',
+        }}
+        onMouseEnter={() => setIsCardHovered(true)}
+        onMouseLeave={() => setIsCardHovered(false)}/>
+        <img 
+            src="/title/title-promo.svg" 
+            alt="promo-desc" 
+            className="h-[40px] md:h-[40px] w-auto"
+        />
         
         {/* ✅ Dynamic Title from Database */}
         {isLoading ? (

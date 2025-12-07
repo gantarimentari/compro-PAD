@@ -243,11 +243,12 @@ export default function Profile() {
       </div>
 
       {/* Selendang Section - Layered */}
-      <div className="relative  z-30" style={{ 
+      <div className="relative z-30" style={{ 
         height: 'auto', 
         width: '120vw', 
         marginLeft: 'calc(-60vw + 50%)',
-        maxWidth: 'none'
+        maxWidth: 'none',
+        pointerEvents: 'none'
       }}>
       
         {/* Selendang Bawah - animasi kiri ke kanan */}
