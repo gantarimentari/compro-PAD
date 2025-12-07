@@ -13,18 +13,17 @@ export default function RootLayout({ children }) {
 const svgBackground = "/Background/bg-profile.svg";
 const blobSvg = "/Assets/blob.svg";
   
-  const backgroundStyle = {
-    backgroundImage: `url('${blobSvg}'), url('${svgBackground}')`,
-    backgroundColor: 'white',
-    backgroundSize: '1000px, contain',
-    backgroundPosition: 'right -175px top -300px, top center',
-    backgroundRepeat: 'no-repeat, no-repeat',
-  };
   return (
-    <div className="min-h-screen flex flex-col relative overflow-x-hidden" 
-     style={backgroundStyle}>
+    <div 
+      className="min-h-screen flex flex-col relative overflow-x-hidden bg-white blob-bg-mobile  lg:blob-bg-desktop"
+      style={{
+        backgroundImage: `url('${blobSvg}'), url('${svgBackground}')`,
+        // backgroundSize: '1000px, contain',
+        backgroundRepeat: 'no-repeat, no-repeat',
+      }}
+    >
        <Header />
-        <main className="pt-20">
+        <main >
           <Profile />
           <Content />
           <About />  
