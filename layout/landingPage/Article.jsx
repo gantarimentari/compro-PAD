@@ -30,9 +30,13 @@ export default function Article() {
 
         const articleRes = await api.get('/api/articles');
         console.log('📦 Articles Response:', articleRes.data);
+        
+        //  FILTER: Hanya ambil artikel dengan status 'Publish'
+        const publishedArticles = articleRes.data.filter(article => article.status === 'Publish');
+        console.log(' Published articles only:', publishedArticles);
 
-        // ✅ Process articles: use imageUrl from backend & strip HTML
-        const processedArticles = articleRes.data.slice(0, 2).map(article => {
+        //  Process articles: use imageUrl from backend & strip HTML
+        const processedArticles = publishedArticles.slice(0, 2).map(article => {
           console.log('🔍 Processing article:', article.id, 'ImageURL:', article.imageUrl);
           
           return {
@@ -43,20 +47,20 @@ export default function Article() {
             status: article.status,
             created_at: article.created_at,
             updated_at: article.updated_at,
-            // ✅ Use imageUrl from backend (already full URL)
+            //  Use imageUrl from backend (already full URL)
             imageUrl: article.imageUrl || '/images/placeholder-article.png',
-            // ✅ Strip HTML tags from content (for preview)
+            //  Strip HTML tags from content (for preview)
             contentPreview: article.content?.replace(/<[^>]*>/g, '').substring(0, 200) + '...',
           };
         });
 
-        console.log('✅ Processed articles:', processedArticles);
+        console.log(' Processed articles:', processedArticles);
         setRecentArticles(processedArticles);
 
       } catch (err) {
         console.error('❌ Error fetching articles:', err);
         
-        // ✅ Fallback to dummy data
+        //  Fallback to dummy data
         setRecentArticles([
           {
             id: 1,
@@ -131,7 +135,7 @@ export default function Article() {
         <div className='flex flex-row items-center gap-6 py-10 px-0 justify-center'>
           <TagLabel label='Artikel' className='shadow-e4' />
           
-          {/* ✅ Show loading state */}
+          {/*  Show loading state */}
           {isLoading ? (
             <div className="h-6 bg-gray-200 rounded animate-pulse flex-1"></div>
           ) : (
@@ -156,10 +160,10 @@ export default function Article() {
           </Link>
         </div>
 
-        {/* ✅ Article Cards Section with Loading State */}
+        {/*  Article Cards Section with Loading State */}
         <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
           {isLoading ? (
-            // ✅ Loading skeleton
+            //  Loading skeleton
             <>
               {[1, 2].map((i) => (
                 <div key={i} className="bg-accent-blue-500 rounded-lg p-6 animate-pulse">
@@ -175,23 +179,23 @@ export default function Article() {
               ))}
             </>
           ) : recentArticles.length === 0 ? (
-            // ✅ Empty state
+            //  Empty state
             <div className="col-span-2 text-center py-12">
               <p className="text-h-7 font-bold text-accent-neutral-1000">
-                Belum ada artikel
+                Belum ada artikel yang dipublikasikan
               </p>
               <p className="text-body-2 text-gray-600 mt-2">
-                Artikel akan muncul setelah admin mengunggah
+                Artikel akan muncul setelah admin mempublikasikan
               </p>
             </div>
           ) : (
-            // ✅ Render articles - Use imageUrl prop
+            //  Render articles - Use imageUrl prop
             recentArticles.map((article) => (
               <ArticleCard
                 key={article.id}
                 judul={article.title}
                 deskripsi={article.contentPreview}
-                gambar={article.imageUrl} // ✅ Changed from image to imageUrl
+                gambar={article.imageUrl}
                 tanggal={article.created_at}
                 articleId={article.id}
               />

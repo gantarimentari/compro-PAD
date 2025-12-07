@@ -115,13 +115,13 @@ const ArticleModal = ({ article, isOpen, onClose, onNavigate, allArticles }) => 
                             <div className="relative bg-white p-8 rounded-lg border-2 border-accent-yellow-300">
                                 <ModalDashedBorder className="absolute inset-0 pointer-events-none p-1 stroke-accent-yellow-300" />
                                 
-                                {/* ✅ Option 1: Render HTML safely */}
+                                {/*  Option 1: Render HTML safely */}
                                 <div 
                                     className="relative z-10 text-body-2 text-accent-neutral-1000 leading-relaxed space-y-4 prose prose-sm max-w-none"
                                     dangerouslySetInnerHTML={{ __html: article.content }}
                                 />
 
-                                {/* ✅ Option 2: Plain text with paragraphs (safer)
+                                {/*  Option 2: Plain text with paragraphs (safer)
                                 <div className="relative z-10 text-body-2 text-accent-neutral-1000 leading-relaxed space-y-4">
                                     {stripHtmlTags(article.content)
                                         .split('\n')
@@ -272,18 +272,25 @@ const ArticleCMSApp = () => {
             
             console.log('📦 Articles API Response:', response.data);
             
-            // ✅ Debug: Cek imageUrl setiap artikel
-            response.data.forEach((article, index) => {
+            //  FILTER: Hanya ambil artikel dengan status 'Publish'
+            const publishedArticles = response.data.filter(article => article.status === 'Publish');
+            
+            console.log(' Published articles only:', publishedArticles);
+            
+            //  Debug: Cek imageUrl setiap artikel
+            publishedArticles.forEach((article, index) => {
                 console.log(`📝 Article ${index + 1}:`, {
                     id: article.id,
                     title: article.title,
+                    status: article.status,
                     imageUrl: article.imageUrl,
                     image_url: article.image_url,
                     has_image: !!article.imageUrl || !!article.image_url
                 });
             });
             
-            const formattedArticles = response.data.map(article => {
+            //  Gunakan publishedArticles yang sudah difilter
+            const formattedArticles = publishedArticles.map(article => {
                 const content = article.content;
                 const plainText = stripHtmlTags(content);
                 const summary = plainText.substring(0, 150) + (plainText.length > 150 ? '...' : '');
@@ -303,7 +310,7 @@ const ArticleCMSApp = () => {
                 };
             });
             
-            console.log('✅ Formatted articles:', formattedArticles);
+            console.log(' Formatted articles:', formattedArticles);
             setArticles(formattedArticles);
         } catch (error) {
             console.error('❌ Error fetching articles:', error);

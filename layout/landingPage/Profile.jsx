@@ -10,7 +10,7 @@ export default function Profile() {
     deskripsi_hero: 'Buat pawrent, nggak ada yang lebih tenang selain tahu hewan kesayangannya sehat. Klinik Dokter Fanina hadir buat bantu jaga mereka tetap ceria. Mulai dari vaksin, check-up, sampai perawatan kecil yang sering terlupa.',
     foto_card: '/images/foto-dokter.png',
     phone: '',
-    whatsapp_template: '' // ✅ Add template field
+    whatsapp_template: '' //  Add template field
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
@@ -18,7 +18,7 @@ export default function Profile() {
 
   const photoCardBorder = '/Assets/photoCard-border-only.svg';
 
-  // ✅ Fetch system info
+  //  Fetch system info
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -31,7 +31,7 @@ export default function Profile() {
           deskripsi_hero: sysRes.data.systemInfo?.deskripsi_hero || 'Buat pawrent...',
           foto_card: sysRes.data.systemInfo?.foto_card || '/images/foto-dokter.png',
           phone: sysRes.data.systemInfo?.phone || '',
-          whatsapp_template: sysRes.data.systemInfo?.whatsapp_template || '', // ✅ Get template
+          whatsapp_template: sysRes.data.systemInfo?.whatsapp_template || '', //  Get template
         });
 
       } catch (err) {
@@ -41,7 +41,7 @@ export default function Profile() {
           deskripsi_hero: 'Buat pawrent...',
           foto_card: '/images/foto-dokter.png',
           phone: '',
-          whatsapp_template: '', // ✅ Default empty
+          whatsapp_template: '', //  Default empty
         });
       } finally {
         setIsLoading(false);
@@ -51,19 +51,19 @@ export default function Profile() {
     fetchData();
   }, []);
 
-  // ✅ Handle Direct WhatsApp - Use Dynamic Template
+  //  Handle Direct WhatsApp - Use Dynamic Template
   const handleOpenWhatsApp = () => {
     try {
       console.log('📱 Opening WhatsApp...');
       console.log('📞 Clinic phone:', systemData.phone);
 
-      // ✅ Validate clinic phone exists
+      //  Validate clinic phone exists
       if (!systemData.phone) {
         alert('❌ Nomor WhatsApp klinik belum tersedia. Silakan hubungi admin.');
         return;
       }
 
-      // ✅ Clean & format clinic's phone number
+      //  Clean & format clinic's phone number
       const cleanNumber = systemData.phone.replace(/[\s\-\+]/g, '');
       let formattedNumber = cleanNumber;
       
@@ -73,7 +73,7 @@ export default function Profile() {
         formattedNumber = '62' + cleanNumber;
       }
 
-      // ✅ Validate format
+      //  Validate format
       if (!/^62\d{9,12}$/.test(formattedNumber)) {
         alert('❌ Format nomor WhatsApp klinik tidak valid. Hubungi admin.');
         console.error('Invalid clinic number:', formattedNumber);
@@ -82,7 +82,7 @@ export default function Profile() {
 
       console.log('📱 Formatted clinic number:', formattedNumber);
 
-      // ✅ Use dynamic template from database OR fallback to default
+      //  Use dynamic template from database OR fallback to default
       const messageTemplate = systemData.whatsapp_template || 
         `Halo Klinik Dokter Fanina! 👋\n\n` +
         `Saya ingin membuat reservasi untuk pemeriksaan hewan peliharaan saya.\n\n` +
@@ -94,18 +94,18 @@ export default function Profile() {
 
       console.log('📝 Message template:', messageTemplate);
 
-      // ✅ Encode message for URL
+      //  Encode message for URL
       const encodedMessage = encodeURIComponent(messageTemplate);
 
-      // ✅ Create WhatsApp URL
+      //  Create WhatsApp URL
       const whatsappUrl = `https://wa.me/${formattedNumber}?text=${encodedMessage}`;
       
       console.log('🚀 WhatsApp URL:', whatsappUrl);
 
-      // ✅ Open WhatsApp in new tab
+      //  Open WhatsApp in new tab
       window.open(whatsappUrl, '_blank');
 
-      console.log('✅ WhatsApp opened successfully');
+      console.log(' WhatsApp opened successfully');
 
     } catch (err) {
       console.error('❌ Error opening WhatsApp:', err);
@@ -158,7 +158,7 @@ export default function Profile() {
               textColor="text-accent-neutral-1000"
               textSize="text-body-2 font-semibold"
             >
-              Reservasi via WhatsApp
+              Reservasi Sekarang
             </Button>
           </div>
 

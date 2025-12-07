@@ -17,15 +17,15 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // ✅ Validate required fields
+    // ✅ Validate required fields (image is optional)
     if (!formData.judul || !formData.kategori || !formData.isiArtikel) {
       alert('❌ Semua field wajib diisi!');
       return;
     }
     
-    // ✅ Validate file
-    if (!formData.file) {
-      alert('❌ Gambar artikel wajib diupload!');
+    // ✅ Validate file IF provided
+    if (formData.file && !(formData.file instanceof File)) {
+      alert('❌ File yang dipilih tidak valid!');
       return;
     }
 

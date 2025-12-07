@@ -6,12 +6,12 @@ import Link from "next/link";
 import api from "@lib/api.js";
 
 export default function Header() {
-  // ✅ Start with false (assume guest)
+  //  Start with false (assume guest)
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
-  // ✅ Check auth status on mount
+  //  Check auth status on mount
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -87,14 +87,14 @@ export default function Header() {
               <NotificationIcon className="w-5 h-5" />
             </button>
 
-            {/* ✅ Show skeleton while checking auth */}
+            {/*  Show skeleton while checking auth */}
             {isCheckingAuth ? (
               <div className="flex items-center gap-2">
                 <div className="w-20 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
                 <div className="w-24 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
               </div>
             ) : (
-              // ✅ Show correct UI based on auth status
+              //  Show correct UI based on auth status
               isLoggedIn ? (
                 <UserActions />
               ) : (
