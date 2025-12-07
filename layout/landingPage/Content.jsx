@@ -54,6 +54,7 @@ export default function Content() {
   });
   
   const [selectedVideo, setSelectedVideo] = useState(1); 
+  const [isCardHovered, setIsCardHovered] = useState(false);
   const scrollContainerRef = useRef(null);
 
   // Fungsi untuk scroll ke video tertentu (center position)
@@ -123,16 +124,25 @@ export default function Content() {
       
       
 
-      <div className="container max-w-7xl mx-auto px-4 py-6 md:py-10 relative z-[5]">
-        <div className="flex flex-col items-center gap-2">
+      <div className="container max-w-7xl mx-auto px-4 pt-24 pb-16 md:py-10 relative z-[5]">
+        <div className="flex flex-col items-center gap-2 relative z-10">
           {/* Tag biru dengan border putus-putus putih di dalam */}
-          <div className="relative rounded-lg inline-block bg-accent-blue-500  px-8 py-4 shadow-lg">
+          <div 
+            className="relative rounded-lg inline-block bg-accent-blue-500 px-8 py-4 shadow-lg transition-transform duration-300 cursor-pointer z-50"
+            style={{
+              transformOrigin: 'center',
+              transform: isCardHovered ? 'rotate(0deg)' : 'rotate(-3deg)',
+            }}
+            onMouseEnter={() => setIsCardHovered(true)}
+            onMouseLeave={() => setIsCardHovered(false)}
+          >
             {/* Border putus-putus putih di dalam */}
             <svg
-              className="absolute inset-0 w-full h-full pointer-events-none"
+              className="absolute inset-0 w-full h-full pointer-events-none z-0"
               viewBox="0 0 200 60"
               fill="none"
               preserveAspectRatio="none"
+              style={{ pointerEvents: 'none' }}
             >
               <rect
                 x="3"
@@ -148,7 +158,7 @@ export default function Content() {
             </svg>
             
             {/* Teks */}
-            <span className="relative z-10 text-white text-h-6  font-bold whitespace-nowrap">
+            <span className="relative z-10 text-white text-h-6 font-bold whitespace-nowrap" style={{ pointerEvents: 'none' }}>
               Selamat Datang
             </span>
           </div>

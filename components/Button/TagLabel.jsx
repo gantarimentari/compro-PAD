@@ -24,10 +24,16 @@ export default function TagLabel({
   strokeColor = 'rgb(255, 171, 47)',
   buttonClass = 'px-4 py-2',
   showDashed = true,
+  style = {},
+  onMouseEnter,
+  onMouseLeave,
 }) {
   return (
     <div
-      className={`relative shadow-e2 inline-block rounded-lg border-[1px] ${bgClass} ${borderClass} ${className}`}
+      className={`relative shadow-e2 inline-block rounded-lg border-[1px] transition-transform duration-300 cursor-pointer ${bgClass} ${borderClass} ${className}`}
+      style={style}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       {showDashed && (
         <svg

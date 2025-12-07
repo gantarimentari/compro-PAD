@@ -8,6 +8,7 @@ export default function About() {
     aboutUs: "Klinik Dokter Hewan Fanina hadir sebagai sahabat terpercaya bagi para pemilik hewan peliharaan. Kami melayani berbagai jenis hewan, mulai dari kucing, anjing, kelinci, burung, hingga hewan kecil lainnya. Dengan dukungan tim dokter hewan berpengalaman dan fasilitas yang lengkap, kami berkomitmen memberikan layanan terbaik untuk menjaga kesehatan serta kenyamanan hewan kesayangan Pawrents. Layanan kami mencakup vaksinasi, pemeriksaan kesehatan rutin, dll. Bagi kami, setiap hewan bukan sekadar peliharaan, tetapi bagian dari keluarga yang layak mendapat perhatian penuh.",
     image: "/images/dummy-aboutus.png"
   })
+  const [isCardHovered, setIsCardHovered] = useState(false);
   return (
 
     <div
@@ -32,13 +33,21 @@ export default function About() {
                 src={aboutUs.image}
                 alt="Tentang Klinik Fanina"
                 className="max-w-full max-h-[450px] object-cover"
+              
               />
             </div>
           </div>
 
           <div className="w-full md:w-[60%] text-left space-y-3 ">
             <div className="flex items-center gap-3 ">
-              <TagLabel />
+              <TagLabel 
+                style={{
+                  transformOrigin: 'center',
+                  transform: isCardHovered ? 'rotate(3deg)' : 'rotate(-3deg)',
+                }}
+                onMouseEnter={() => setIsCardHovered(true)}
+                onMouseLeave={() => setIsCardHovered(false)}
+              />
               <img
                 src="/title/title-about.svg"
                 alt="Klinik Dokter Fanina"
