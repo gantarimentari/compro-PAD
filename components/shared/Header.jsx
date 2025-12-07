@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { NotificationIcon, UserIcon } from "@ds/icons";
+import { NotificationIcon, UserIcon, CloseIcon } from "@ds/icons";
 import Link from "next/link";
 import api from "@lib/api.js";
 
@@ -9,7 +9,8 @@ export default function Header() {
   //  Start with false (assume guest)
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true); // ✅ Loading state
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   //  Check auth status on mount
   useEffect(() => {
@@ -30,7 +31,7 @@ export default function Header() {
         }
         setIsLoggedIn(false);
       } finally {
-        setIsCheckingAuth(false);
+        setIsCheckingAuth(false); // ✅ Stop loading
       }
     };
 
@@ -47,13 +48,17 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
-    <header className={`${
-      isScrolled 
-        ? "sticky top-4 mx-auto scale-95 rounded-[14px]" 
+    <header className={`
+      ${isScrolled 
+        ? "fixed top-4 scale-95 rounded-[14px]" 
         : "scale-100"
-    } w-full bg-white shadow-e2 rounded-b-[14px] overflow-hidden shadow-e4 transition-all duration-1000 ease-in-out z-50 origin-center`}>
-      
+      } w-full bg-white shadow-e2 rounded-b-[14px] shadow-e4 transition-all duration-1000 ease-in-out z-50 origin-top`}
+    >
       <div className="mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-20">
           {/* Logo and Company Name Section */}
@@ -63,13 +68,13 @@ export default function Header() {
               src="/logo.svg"
               alt="Company Logo"
             />
-            <h1 className="text-h-7 text-accent-neutral-1000 font-semibold">
+            <h1 className="md:text-h-7 text-accent-neutral-1000 font-semibold text-body-1">
               Praktik Dokter Hewan Fanina
             </h1>
           </div>
 
-          {/* Action Links */}
-          <div className="flex items-center gap-4">
+          {/* Action Links - Desktop */}
+          <div className="hidden lg:flex items-center gap-4">
             {/* Navigation Links */}
             <nav className="hidden md:flex items-center space-x-8">
               <Link href="/" className="text-body-1 text-accent-neutral-1000 transition-colors">
@@ -87,26 +92,113 @@ export default function Header() {
               <NotificationIcon className="w-5 h-5" />
             </button>
 
-            {/*  Show skeleton while checking auth */}
+            {/* ✅ Show loading skeleton saat checking auth */}
             {isCheckingAuth ? (
-              <div className="flex items-center gap-2">
-                <div className="w-20 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
-                <div className="w-24 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
-              </div>
+              <AuthLoadingSkeleton />
+            ) : isLoggedIn ? (
+              <UserActions />
             ) : (
-              //  Show correct UI based on auth status
-              isLoggedIn ? (
-                <UserActions />
+              <AuthActions />
+            )}           
+          </div>
+
+          {/* Burger Button - Mobile */}
+          <button
+            onClick={toggleMenu}
+            className="lg:hidden flex flex-col justify-center items-center gap-1.5 p-2 w-10 h-10 focus:outline-none"
+            aria-label="Toggle menu"
+          >
+            <span className={`block w-6 h-0.5 bg-gray-700 transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+            <span className={`block w-6 h-0.5 bg-gray-700 transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''}`}></span>
+            <span className={`block w-6 h-0.5 bg-gray-700 transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+          </button>
+        </div>
+
+        {/* Mobile Menu Dropdown */}
+        <div className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+          <div className="px-4 py-4 space-y-3">
+            {/* Navigation Links */}
+            <nav className="flex flex-col items-center justify-center gap-4">
+              <Link 
+                href="/" 
+                className="text-body-1 text-accent-neutral-1000 py-2 transition-colors hover:text-accent-blue-300"
+                onClick={toggleMenu}
+              >
+                Home
+              </Link>
+              <Link 
+                href="/galery" 
+                className="text-body-1 text-accent-neutral-1000 py-2 transition-colors hover:text-accent-blue-300"
+                onClick={toggleMenu}
+              >
+                Galeri
+              </Link>
+              <Link 
+                href="/article" 
+                className="text-body-1 text-accent-neutral-1000 py-2 transition-colors hover:text-accent-blue-300"
+                onClick={toggleMenu}
+              >
+                Artikel
+              </Link>
+            </nav>
+
+            {/* Buttons */}
+            <div className="flex flex-col items-center justify-center gap-3 pt-2">
+              {/* Notifikasi Button */}
+              <button className="w-full bg-accent-yellow-300 text-accent-neutral-1000 rounded-lg px-4 py-3 text-body-2 font-medium flex items-center justify-center gap-2 hover:bg-accent-yellow-400 transition-colors">
+                <NotificationIcon className="w-5 h-5" />
+                Notifikasi
+              </button>
+
+              {/* ✅ Show loading atau buttons sesuai auth status */}
+              {isCheckingAuth ? (
+                <div className="w-full space-y-3">
+                  <div className="w-full h-11 bg-accent-neutral-200 rounded-lg animate-pulse"></div>
+                  <div className="w-full h-11 bg-accent-neutral-200 rounded-lg animate-pulse"></div>
+                </div>
+              ) : !isLoggedIn ? (
+                <>
+                  <Link 
+                    href="/auth/login"
+                    className="w-full bg-accent-yellow-300 text-accent-neutral-1000 rounded-lg px-4 py-3 text-body-2 font-medium text-center hover:bg-accent-yellow-400 transition-colors"
+                    onClick={toggleMenu}
+                  >
+                    Login
+                  </Link>
+                  
+                  <Link 
+                    href="/auth/register"
+                    className="w-full bg-white border-2 border-accent-yellow-300 text-accent-neutral-1000 rounded-lg px-4 py-3 text-body-2 font-medium text-center hover:bg-accent-neutral-200 transition-colors"
+                    onClick={toggleMenu}
+                  >
+                    Register
+                  </Link>
+                </>
               ) : (
-                <AuthActions />
-              )
-            )}
+                <Link 
+                  href="/profile"
+                  className="bg-accent-yellow-300 text-accent-neutral-1000 rounded-lg px-4 py-3 text-body-2 font-medium flex items-center justify-center gap-2 hover:bg-accent-yellow-400 transition-colors"
+                  onClick={toggleMenu}
+                >
+                  <UserIcon className="w-5 h-5" />
+                  Profile
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </div>
     </header>
   );
 }
+
+// ✅ Loading Skeleton Component untuk Desktop
+const AuthLoadingSkeleton = () => (
+  <div className="flex items-center gap-4">
+    <div className="w-20 h-10 bg-accent-neutral-200 rounded-lg animate-pulse"></div>
+    <div className="w-24 h-10 bg-accent-neutral-200 rounded-lg animate-pulse"></div>
+  </div>
+);
 
 const AuthActions = () => (
   <>

@@ -23,10 +23,10 @@ const blobSvg = "/Assets/blob.svg";
     backgroundRepeat: 'no-repeat, no-repeat',
   };
   return (
-    <div className="min-h-screen flex flex-col relative" 
+    <div className="min-h-screen flex flex-col relative overflow-x-hidden" 
      style={backgroundStyle}>
        <Header />
-        <main className="flex-grow">
+        <main className="pt-20">
           <Profile />
           <Content />
           <About />  

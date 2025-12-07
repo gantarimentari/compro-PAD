@@ -18,8 +18,8 @@ export default function Footer({
   const svgStyle = footerSvg
     ? {
         backgroundImage: `url(${footerSvg})`,
-        backgroundRepeat: "repeat",
-        backgroundSize: "auto",
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover", // atau "contain" tergantung kebutuhan
         backgroundPosition: "center",
       }
     : {};
@@ -74,21 +74,19 @@ export default function Footer({
   const data = footerData || defaultData;
 
   return (
-    <footer className={`${footerClass} w-full relative`} style={combinedStyle}>
-      <div className="pt-8 md:pt-12 lg:pt-16 pb-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-16">
-          {/* Main Content - Contact Info & Map */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16">
-            {/* Left Column: Contact Information */}
-            <div className="flex flex-col items-start gap-6">
-              {/* Clinic Name */}
-              <h3 className="text-xl md:text-2xl font-extrabold text-white uppercase tracking-tight">
-                {isLoading ? (
-                  <div className="h-8 bg-white/20 rounded w-64 animate-pulse"></div>
-                ) : (
-                  data.clinic_name
-                )}
-              </h3>
+    <footer
+      className={`${footerClass} w-full pt-12 md:pt-16 lg:pt-20 pb-6`}
+      style={combinedStyle}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-16">
+        {/* Main Content - Contact Info & Map */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16">
+          {/* Left Column: Contact Information */}
+          <div className="flex flex-col items-start gap-6">
+            {/* Clinic Name */}
+            <h3 className="text-xl md:text-2xl font-extrabold text-white uppercase tracking-tight">
+              {data.clinic_name}
+            </h3>
 
               {/* Contact Details */}
               <div className="flex flex-col items-start gap-4 w-full">
@@ -173,7 +171,7 @@ export default function Footer({
             <div className="w-full">
               {isLoading ? (
                 <div className="w-full h-[280px] md:h-[320px] lg:h-[340px] bg-white/20 rounded animate-pulse"></div>
-              ) : data.mapEmbedUrl && data.mapEmbedUrl.trim() !== "" ? ( // ✅ Check for non-empty string
+              ) : data.mapEmbedUrl && data.mapEmbedUrl.trim() !== "" ? (
                 <>
                   <div className="w-full h-[280px] md:h-[320px] lg:h-[340px] overflow-hidden shadow-e3 rounded">
                     <iframe
@@ -212,21 +210,19 @@ export default function Footer({
                 </div>
               )}
             </div>
-          </div>
+          </div> {/* ✅ Close grid columns */}
 
-          {/* Copyright Section */}
+          {/* ✅ Copyright Section - PINDAHKAN KELUAR dari grid */}
           <div className="mt-12 md:mt-14 pt-6">
             <div className="text-center text-sm md:text-base font-semibold text-white">
               {isLoading ? (
                 <div className="h-5 bg-white/20 rounded w-64 mx-auto animate-pulse"></div>
               ) : (
-                `${data.judul_footer
-                }`
+                `${data.judul_footer}`
               )}
             </div>
           </div>
         </div>
-      </div>
-    </footer>
+    </footer> 
   );
 }
