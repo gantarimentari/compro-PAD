@@ -18,7 +18,7 @@ const TambahMediaModal = ({ isOpen, onClose, onSave }) => {
       return;
     }
 
-    // ✅ Validasi: jika kategori Video, harus ada link YouTube
+    //  Validasi: jika kategori Video, harus ada link YouTube
     if (formData.kategori === 'Video' && !formData.linkYoutube) {
       alert('Harap masukkan link YouTube untuk kategori Video!');
       return;

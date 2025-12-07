@@ -39,7 +39,7 @@ export default function ManagemenPromo() {
   const [selectedPromo, setSelectedPromo] = useState(null);
   const [promoToDelete, setPromoToDelete] = useState(null);
 
-  // ✅ Fetch promos dari database
+  //  Fetch promos dari database
   const fetchPromos = async () => {
     try {
       await api.get('/sanctum/csrf-cookie');
@@ -61,7 +61,7 @@ export default function ManagemenPromo() {
     item.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // ✅ Tambah Promo
+  //  Tambah Promo
   const handleSavePromo = async (formData) => {
     try {
       await api.get('/sanctum/csrf-cookie');
@@ -79,14 +79,14 @@ export default function ManagemenPromo() {
       await api.post('/api/promos', payload);
       await fetchPromos();
       setIsModalOpen(false);
-      alert('✅ Promo berhasil ditambahkan!');
+      alert(' Promo berhasil ditambahkan!');
     } catch (err) {
       console.error('Error saving promo:', err);
       alert(`Gagal menyimpan: ${err.response?.data?.message || err.message}`);
     }
   };
 
-  // ✅ Edit Promo
+  //  Edit Promo
   const handleEdit = (item) => {
     setSelectedPromo(item);
     setIsEditModalOpen(true);
@@ -108,14 +108,14 @@ export default function ManagemenPromo() {
       await fetchPromos();
       setIsEditModalOpen(false);
       setSelectedPromo(null);
-      alert('✅ Promo berhasil diupdate!');
+      alert(' Promo berhasil diupdate!');
     } catch (err) {
       console.error('Error updating promo:', err);
       alert(`Gagal mengupdate: ${err.response?.data?.message || err.message}`);
     }
   };
 
-  // ✅ Delete Promo
+  //  Delete Promo
   const handleDelete = (promo) => {
     setPromoToDelete(promo);
     setIsDeleteModalOpen(true);
@@ -129,7 +129,7 @@ export default function ManagemenPromo() {
         await fetchPromos();
         setIsDeleteModalOpen(false);
         setPromoToDelete(null);
-        alert('✅ Promo berhasil dihapus!');
+        alert(' Promo berhasil dihapus!');
       } catch (err) {
         console.error('Error deleting promo:', err);
         alert('Gagal menghapus promo');
@@ -137,7 +137,7 @@ export default function ManagemenPromo() {
     }
   };
 
-  // ✅ Preview Promo
+  //  Preview Promo
   const handlePreview = (item) => {
     setSelectedPromo(item);
     setIsPreviewModalOpen(true);

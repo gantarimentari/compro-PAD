@@ -6,12 +6,12 @@ import api from '@lib/api';
 
 const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState({
-    ownerId: '', // ✅ Change from ownerName to ownerId
+    ownerId: '', //  Change from ownerName to ownerId
     species: '',
   });
   const [pemilikOptions, setPemilikOptions] = useState([]);
 
-  // ✅ Fetch data pemilik dari database
+  //  Fetch data pemilik dari database
   useEffect(() => {
     if (isOpen) {
       fetchPemilik();
@@ -38,7 +38,7 @@ const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
     }
   };
 
-  // ✅ Reset form saat modal ditutup
+  //  Reset form saat modal ditutup
   useEffect(() => {
     if (!isOpen) {
       setFormData({ ownerId: '', species: '' });
@@ -65,7 +65,7 @@ const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
       maxWidth="max-w-lg"
     >
       <form onSubmit={handleSubmit} className="p-6 space-y-2">
-        {/* ✅ Dropdown Nama Pemilik */}
+        {/*  Dropdown Nama Pemilik */}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Nama Pemilik
@@ -92,7 +92,7 @@ const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
           </p>
         </div>
 
-        {/* ✅ Input Jenis Hewan */}
+        {/*  Input Jenis Hewan */}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Jenis Hewan
@@ -110,7 +110,7 @@ const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
           </p>
         </div>
 
-        {/* ✅ Buttons */}
+        {/*  Buttons */}
         <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
           <button
             type="button"

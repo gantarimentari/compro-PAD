@@ -7,12 +7,13 @@ import Button from '@ds/Button';
 import { UploadIcon, FacebookIcon, InstagramIcon, TwitterIcon, YoutubeDBIcon, AddIcon, DiskSaveIcon } from '@ds/icons';
 
 export default function SystemInfo() {
-  // ✅ Use snake_case to match backend
+  //  Use snake_case to match backend
   const [systemData, setSystemData] = useState({
     clinic_name: '',
     address: '',
     phone: '',
     email: '',
+    whatsapp_template: '',
     foto_card: '',
     deskripsi_hero: '',
     judul_video_edukasi: '',
@@ -41,7 +42,7 @@ export default function SystemInfo() {
     { value: 'youtube', label: 'YouTube', icon: YoutubeDBIcon },
   ];
 
-  // ✅ Fetch data
+  //  Fetch data
   const fetchSystemInfo = async () => {
     try {
       setIsLoading(true);
@@ -53,12 +54,13 @@ export default function SystemInfo() {
 
       const fetchedData = res.data.systemInfo || {};
       
-      // ✅ Map snake_case from backend
+      //  Map snake_case from backend
       setSystemData({
         clinic_name: fetchedData.clinic_name || '',
         address: fetchedData.address || '',
         phone: fetchedData.phone || '',
         email: fetchedData.email || '',
+        whatsapp_template: fetchedData.whatsapp_template || '',
         foto_card: fetchedData.foto_card || '',
         deskripsi_hero: fetchedData.deskripsi_hero || '',
         judul_video_edukasi: fetchedData.judul_video_edukasi || '',
@@ -71,13 +73,13 @@ export default function SystemInfo() {
         operating_hours: fetchedData.operating_hours || '',
       });
 
-      // ✅ FIX: Social media is inside systemInfo object
+      //  FIX: Social media is inside systemInfo object
       const socialMediaData = fetchedData.socialMedia || [];
-      console.log('✅ Parsed Social Media:', socialMediaData);
+      console.log(' Parsed Social Media:', socialMediaData);
       
-      // ✅ Add 'id' field from database
+      //  Add 'id' field from database
       const socialMediaWithIds = socialMediaData.map((item, index) => ({
-        id: item.id || index + 1, // ✅ Use real ID from backend
+        id: item.id || index + 1, //  Use real ID from backend
         platform: item.platform || item.name?.toLowerCase() || '',
         url: item.url || item.href || '',
         name: item.name || item.platform,
@@ -85,7 +87,7 @@ export default function SystemInfo() {
         icon: item.icon || item.platform?.toLowerCase(),
       }));
 
-      console.log('✅ Social Media with IDs:', socialMediaWithIds);
+      console.log(' Social Media with IDs:', socialMediaWithIds);
       setSocialMedia(socialMediaWithIds);
       
     } catch (err) {
@@ -132,7 +134,7 @@ export default function SystemInfo() {
       
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('category', 'foto-cards'); // ✅ Special category
+      formData.append('category', 'foto-cards'); //  Special category
       formData.append('name', 'Foto Card - Hero Section');
 
       await api.get('/sanctum/csrf-cookie');
@@ -144,7 +146,7 @@ export default function SystemInfo() {
         },
       });
 
-      console.log('✅ Upload response:', res.data);
+      console.log(' Upload response:', res.data);
 
       const uploadedUrl = res.data.data.imageUrl;
 
@@ -153,7 +155,7 @@ export default function SystemInfo() {
         foto_card: uploadedUrl,
       }));
 
-      alert('✅ File berhasil diupload');
+      alert(' File berhasil diupload');
     } catch (err) {
       console.error('❌ Upload error:', err);
       console.error('Error response:', err.response?.data);
@@ -163,7 +165,7 @@ export default function SystemInfo() {
     }
   };
 
-  // ✅ Save system info - send snake_case to backend
+  //  Save system info - send snake_case to backend
   const handleSave = async () => {
     try {
       await api.get('/sanctum/csrf-cookie');
@@ -172,9 +174,9 @@ export default function SystemInfo() {
 
       const res = await api.put('/api/system-info', systemData);
 
-      console.log('✅ Save response:', res.data);
+      console.log(' Save response:', res.data);
 
-      alert('✅ Data berhasil disimpan!');
+      alert(' Data berhasil disimpan!');
       await fetchSystemInfo();
     } catch (err) {
       console.error('❌ Error saving system info:', err);
@@ -183,7 +185,7 @@ export default function SystemInfo() {
     }
   };
 
-  // ✅ Add social media
+  //  Add social media
   const handleAddSocialMedia = async () => {
     if (newSocialMedia.platform && newSocialMedia.url) {
       try {
@@ -196,7 +198,7 @@ export default function SystemInfo() {
 
         setNewSocialMedia({ platform: '', url: '' });
         await fetchSystemInfo();
-        alert('✅ Social media berhasil ditambahkan!');
+        alert(' Social media berhasil ditambahkan!');
       } catch (err) {
         console.error('❌ Error adding social media:', err);
         alert('❌ Gagal menambahkan social media');
@@ -204,14 +206,14 @@ export default function SystemInfo() {
     }
   };
 
-  // ✅ Update social media
+  //  Update social media
   const handleUpdateSocialMedia = async (id, newUrl) => {
     try {
       await api.get('/sanctum/csrf-cookie');
 
       await api.put(`/api/social-media/${id}`, { url: newUrl });
 
-      alert('✅ Social media berhasil diupdate!');
+      alert(' Social media berhasil diupdate!');
     } catch (err) {
       console.error('❌ Error updating social media:', err);
       alert('❌ Gagal mengupdate social media');
@@ -426,6 +428,23 @@ export default function SystemInfo() {
             className="w-full text-body-2 bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
           />
         </div>
+
+        {/*  Add WhatsApp Template Field */}
+        <div className="md:col-span-2">
+          <label className="block text-h-8 font-bold text-accent-neutral-1000 mb-1">
+            Template Whatsapp
+          </label>
+          <textarea
+            value={systemData.whatsapp_template || ''}
+            onChange={(e) => handleInputChange('whatsapp_template', e.target.value)}
+            rows={8}
+            placeholder="Halo Klinik Dokter Fanina! 👋&#10;&#10;Saya ingin membuat reservasi untuk pemeriksaan hewan peliharaan saya.&#10;&#10;Mohon informasi lebih lanjut mengenai:&#10;• Jadwal yang tersedia&#10;• Jenis layanan yang ditawarkan&#10;• Estimasi biaya pemeriksaan&#10;&#10;Terima kasih! 🐾"
+            className="w-full text-body-2 bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 resize-none"
+          />
+          <p className="text-caption text-gray-500 mt-1">
+            Template pesan yang akan muncul saat user klik "Reservasi via WhatsApp" di landing page
+          </p>
+        </div>
       </div>
 
       <div className="w-full">
@@ -458,7 +477,7 @@ export default function SystemInfo() {
                   <p className="text-body-2 text-accent-neutral-1000">{item.platform}</p>
                   <input
                     type="text"
-                    value={item.url || ''} // ✅ Fallback
+                    value={item.url || ''} //  Fallback
                     onBlur={(e) => handleUpdateSocialMedia(item.id, e.target.value)}
                     onChange={(e) => {
                       setSocialMedia(socialMedia.map(sm =>

@@ -109,7 +109,7 @@ export default function Reservasi() {
   const [selectedReservasi, setSelectedReservasi] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  // ✅ Fetch reservasi dari database
+  //  Fetch reservasi dari database
   const fetchReservasi = async () => {
     try {
       await api.get('/sanctum/csrf-cookie');
@@ -127,7 +127,7 @@ export default function Reservasi() {
     fetchReservasi();
   }, []);
 
-  // ✅ Filter data (tidak perlu flatten karena data sudah flat dari API)
+  //  Filter data (tidak perlu flatten karena data sudah flat dari API)
   const filteredData = reservasiData.filter(item =>
     (item.petName?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
     (item.ownerName?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
@@ -137,7 +137,7 @@ export default function Reservasi() {
     (item.status?.toLowerCase() || '').includes(searchQuery.toLowerCase())
   );
 
-  // ✅ Tambah Reservasi
+  //  Tambah Reservasi
   const handleSaveReservasi = async (formData) => {
     try {
       await api.get('/sanctum/csrf-cookie');
@@ -145,24 +145,24 @@ export default function Reservasi() {
       const payload = {
         id_pasien: formData.ownerId,
         id_hewan: formData.petId,
-        tanggal_reservasi: formData.date, // ✅ Fix: Nama field yang benar
+        tanggal_reservasi: formData.date, //  Fix: Nama field yang benar
         keluhan: formData.keluhan,
         status: 'pending',
       };
 
-      console.log('📤 Sending reservation:', payload); // ✅ Fix: console.log()
+      console.log('📤 Sending reservation:', payload); //  Fix: console.log()
 
       await api.post('/api/reservations', payload);
       await fetchReservasi();
       setIsModalOpen(false);
-      alert('✅ Reservasi berhasil ditambahkan!');
+      alert(' Reservasi berhasil ditambahkan!');
     } catch (err) {
       console.error('❌ Error saving reservation:', err);
       alert(`❌ Gagal menyimpan: ${err.response?.data?.message || err.message}`);
     }
   };
 
-  // ✅ Update Status
+  //  Update Status
   const handleStatusChange = async (reservasiId, newStatus) => {
     try {
       await api.get('/sanctum/csrf-cookie');
@@ -176,14 +176,14 @@ export default function Reservasi() {
         item.id === reservasiId ? { ...item, status: newStatus } : item
       ));
 
-      console.log(`✅ Status updated: ${reservasiId} → ${newStatus}`);
+      console.log(` Status updated: ${reservasiId} → ${newStatus}`);
     } catch (err) {
       console.error('❌ Error updating status:', err);
       alert('❌ Gagal mengupdate status');
     }
   };
 
-  // ✅ Edit Reservasi
+  //  Edit Reservasi
   const handleEdit = (item) => {
     setSelectedReservasi(item);
     setIsEditModalOpen(true);
@@ -194,6 +194,7 @@ export default function Reservasi() {
       await api.get('/sanctum/csrf-cookie');
 
       const payload = {
+        id_pasien: formData.ownerId,
         id_hewan: formData.petId,
         tanggal_reservasi: formData.date,
         keluhan: formData.keluhan,
@@ -203,14 +204,14 @@ export default function Reservasi() {
       await fetchReservasi();
       setIsEditModalOpen(false);
       setSelectedReservasi(null);
-      alert('✅ Reservasi berhasil diupdate!');
+      alert(' Reservasi berhasil diupdate!');
     } catch (err) {
       console.error('❌ Error updating reservation:', err);
       alert(`❌ Gagal mengupdate: ${err.response?.data?.message || err.message}`);
     }
   };
 
-  // ✅ Delete Reservasi
+  //  Delete Reservasi
   const handleDelete = (item) => {
     setReservasiToDelete(item);
     setIsDeleteModalOpen(true);
@@ -224,7 +225,7 @@ export default function Reservasi() {
         await fetchReservasi();
         setIsDeleteModalOpen(false);
         setReservasiToDelete(null);
-        alert('✅ Reservasi berhasil dihapus!');
+        alert(' Reservasi berhasil dihapus!');
       } catch (err) {
         console.error('❌ Error deleting reservation:', err);
         alert('❌ Gagal menghapus reservasi');

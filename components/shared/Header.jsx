@@ -1,39 +1,60 @@
 "use client";
 
-// import React from "react";
 import React, { useState, useEffect } from "react";
-import { NotificationIcon,UserIcon } from "@ds/icons";
+import { NotificationIcon, UserIcon } from "@ds/icons";
 import Link from "next/link";
+import api from "@lib/api.js";
 
 export default function Header() {
-  // SIMULASI STATE LOGIN
-    // Ubah nilainya menjadi true untuk melihat tampilan "Sudah Login"
-    // Ubah nilainya menjadi false untuk melihat tampilan "Belum Login"
-    const [isLoggedIn, setIsLoggedIn] = useState(true);
-    const [isScrolled, setIsScrolled] = useState(false);
+  // ✅ Start with false (assume guest)
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
-    // Fungsi simulasi logout
-    const handleLogout = () => {
-        setIsLoggedIn(false);  
-    };
-    useEffect(() => {
-      const handleScroll = () => {
-        setIsScrolled(window.scrollY > 0);
+  // ✅ Check auth status on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        setIsCheckingAuth(true);
+        const response = await api.get('/api/user');
+        
+        if (response.data) {
+          console.log('✅ User authenticated:', response.data);
+          setIsLoggedIn(true);
+        }
+      } catch (err) {
+        if (err.response?.status === 401) {
+          console.log('👤 User not authenticated (guest)');
+        } else {
+          console.error('❌ Auth check error:', err);
+        }
+        setIsLoggedIn(false);
+      } finally {
+        setIsCheckingAuth(false);
       }
-      handleScroll(); // Cek posisi scroll saat komponen dimount
-      window.addEventListener('scroll', handleScroll, {passive: true});
-      return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-    
+    };
+
+    checkAuth();
+  }, []);
+
+  // Scroll handler
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <header className={`${
       isScrolled 
-        ? " sticky top-4 mx-auto scale-95 rounded-[14px]" 
-        : " scale-100"
+        ? "sticky top-4 mx-auto scale-95 rounded-[14px]" 
+        : "scale-100"
     } w-full bg-white shadow-e2 rounded-b-[14px] overflow-hidden shadow-e4 transition-all duration-1000 ease-in-out z-50 origin-center`}>
       
-      <div className=" mx-auto px-4 sm:px-6 ">
+      <div className="mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-20">
           {/* Logo and Company Name Section */}
           <div className="flex items-center gap-3">
@@ -51,61 +72,66 @@ export default function Header() {
           <div className="flex items-center gap-4">
             {/* Navigation Links */}
             <nav className="hidden md:flex items-center space-x-8">
-              <Link href="/" className="text-body-1 text-accent-neutral-1000  transition-colors">
+              <Link href="/" className="text-body-1 text-accent-neutral-1000 transition-colors">
                 Home
               </Link>
-              <Link href="/galery" className="text-body-1 text-accent-neutral-1000  transition-colors">
+              <Link href="/galery" className="text-body-1 text-accent-neutral-1000 transition-colors">
                 Galeri
               </Link>
-              <Link href="/article" className="text-body-1 text-accent-neutral-1000  transition-colors">
+              <Link href="/article" className="text-body-1 text-accent-neutral-1000 transition-colors">
                 Artikel
               </Link>
             </nav>
+            
             <button className="w-10 h-10 md:w-11 md:h-11 bg-accent-yellow-300 rounded-lg flex items-center justify-center text-accent-neutral-1000 hover:bg-accent-yellow-400 duration-300 hover:shadow-md">
               <NotificationIcon className="w-5 h-5" />
             </button>
 
- {/* 3. Logic Kondisional untuk Bagian Action */}
-              {isLoggedIn ? (
-                <UserActions handleLogout={handleLogout} />
+            {/* ✅ Show skeleton while checking auth */}
+            {isCheckingAuth ? (
+              <div className="flex items-center gap-2">
+                <div className="w-20 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+                <div className="w-24 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+              </div>
+            ) : (
+              // ✅ Show correct UI based on auth status
+              isLoggedIn ? (
+                <UserActions />
               ) : (
                 <AuthActions />
-                        )}           
-
-           
+              )
+            )}
           </div>
         </div>
       </div>
     </header>
   );
 }
+
 const AuthActions = () => (
   <>
+    <Link 
+      href="/auth/login"
+      className="px-6 h-10 bg-accent-yellow-300 text-accent-neutral-1000 text-body-2 rounded-lg hover:bg-accent-yellow-400 transition-colors font-medium inline-flex items-center"
+    >
+      Login
+    </Link>
     
-
-            <Link 
-              href="/auth/login"
-              className="px-6 h-10 bg-accent-yellow-300 text-accent-neutral-1000 text-body-2 rounded-lg hover:bg-accent-yellow-400 transition-colors font-medium inline-flex items-center"
-            >
-              Login
-            </Link>
-            
-            <Link 
-              href="/auth/register"
-              className="px-6 h-10 border-2 border-accent-yellow-300 text-accent-neutral-1000 text-body-2 rounded-lg hover:bg-accent-neutral-200 transition-colors font-medium inline-flex items-center"
-            >
-              Register
-            </Link>
+    <Link 
+      href="/auth/register"
+      className="px-6 h-10 border-2 border-accent-yellow-300 text-accent-neutral-1000 text-body-2 rounded-lg hover:bg-accent-neutral-200 transition-colors font-medium inline-flex items-center"
+    >
+      Register
+    </Link>
   </>
- );
- const UserActions = ({ handleLogout }) => (
-    <div className="flex items-center space-x-2 md:space-x-4">
-        <Link 
-            href="/profile"
-            aria-label="Go to Dashboard"
-            className="w-10 h-10 md:w-11 md:h-11 bg-accent-yellow-300 rounded-lg flex items-center justify-center text-accent-neutral-1000 hover:bg-accent-yellow-400 duration-300 hover:shadow-md"
-        >
-            <UserIcon className="w-5 h-5" />
-        </Link>
-    </div>
+);
+
+const UserActions = () => (
+  <Link 
+    href="/profile"
+    aria-label="Go to Profile"
+    className="w-10 h-10 md:w-11 md:h-11 bg-accent-yellow-300 rounded-lg flex items-center justify-center text-accent-neutral-1000 hover:bg-accent-yellow-400 duration-300 hover:shadow-md"
+  >
+    <UserIcon className="w-5 h-5" />
+  </Link>
 );

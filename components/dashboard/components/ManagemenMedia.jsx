@@ -76,7 +76,7 @@ export default function ManagemenMedia() {
   const [mediaData, setMediaData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // ✅ Fetch media dari database
+  //  Fetch media dari database
   const fetchMedia = async () => {
     try {
       console.log('🔄 Fetching media from API...');
@@ -101,7 +101,7 @@ export default function ManagemenMedia() {
           videoUrl: item.videoUrl,
           date: item.date,
           timeStamp: item.timeStamp,
-          // ✅ Cek juga snake_case
+          //  Cek juga snake_case
           image_url: item.image_url,
           video_url: item.video_url
         });
@@ -116,7 +116,7 @@ export default function ManagemenMedia() {
         };
       });
       
-      console.log('✅ Formatted Data:', formatted);
+      console.log(' Formatted Data:', formatted);
       setMediaData(formatted);
     } catch (err) {
       console.error('❌ Error fetching media:', err);
@@ -154,7 +154,7 @@ export default function ManagemenMedia() {
       
       await fetchMedia(); // Refresh data
       setIsModalOpen(false);
-      alert('✅ Media berhasil ditambahkan!');
+      alert(' Media berhasil ditambahkan!');
     } catch (err) {
       console.error('Error uploading media:', err);
       alert('❌ Gagal menambahkan media');
@@ -170,13 +170,13 @@ export default function ManagemenMedia() {
     if (mediaToDelete) {
       try {
         await api.get('/sanctum/csrf-cookie');
-        // ✅ Fix: Pakai template literal yang benar
+        //  Fix: Pakai template literal yang benar
         await api.delete(`/api/media/${mediaToDelete}`);
         
         await fetchMedia(); // Refresh data
         setIsDeleteModalOpen(false);
         setMediaToDelete(null);
-        alert('✅ Media berhasil dihapus!');
+        alert(' Media berhasil dihapus!');
       } catch (err) {
         console.error('Error deleting media:', err);
         alert('❌ Gagal menghapus media');
@@ -201,7 +201,7 @@ export default function ManagemenMedia() {
 
   return (
     <div className="space-y-6">
-      {/* ✅ Hanya satu PageHeader */}
+      {/*  Hanya satu PageHeader */}
       <PageHeader 
         title="Manajemen Media"
         description="Kelola media klinik anda"
@@ -210,7 +210,7 @@ export default function ManagemenMedia() {
       />
      
       <div className="space-y-4">
-        {/* ✅ Hanya satu SearchBar */}
+        {/*  Hanya satu SearchBar */}
         <SearchBar
           placeholderText="Cari nama gambar..." 
           value={searchQuery}
@@ -236,7 +236,7 @@ export default function ManagemenMedia() {
         onClose={handleClosePreview}
       />
 
-      {/* ✅ Hanya satu DeleteConfirmModal */}
+      {/*  Hanya satu DeleteConfirmModal */}
       <DeleteConfirmModal 
         isOpen={isDeleteModalOpen}
         onClose={handleCancelDelete}

@@ -19,7 +19,7 @@ const TambahHewanModal = ({
   
   const [jenisHewanOptions, setJenisHewanOptions] = useState([]);
 
-  // ✅ Fetch jenis hewan saat owner dipilih
+  //  Fetch jenis hewan saat owner dipilih
   const handleOwnerChange = async (ownerId) => {
     console.log('👤 Owner selected:', ownerId);
     setFormData({ 
@@ -29,7 +29,7 @@ const TambahHewanModal = ({
     });
     
     if (ownerId) {
-      // ✅ Fetch jenis hewan milik owner ini
+      //  Fetch jenis hewan milik owner ini
       try {
         await api.get('/sanctum/csrf-cookie');
         const res = await api.get(`/api/jenis-hewan?id_pasien=${ownerId}`);
@@ -142,7 +142,7 @@ const TambahHewanModal = ({
           />
         </div>
 
-        {/* ✅ Dropdown Jenis Hewan - Dynamic by Owner */}
+        {/*  Dropdown Jenis Hewan - Dynamic by Owner */}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Jenis Hewan

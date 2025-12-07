@@ -9,6 +9,39 @@ import SearchBar from '@ds/dashboard/layouts/ManagementSearch';
 import PageHeader from '@ds/dashboard/layouts/PageHeader';
 import {TambahHewanModal,EditHewanModal,DeleteConfirmModal} from '@ds/dashboard/modals';
 
+// ✅ Function to calculate age from birth date
+const calculateAge = (birthDate) => {
+  if (!birthDate) return '-';
+  
+  const birth = new Date(birthDate);
+  const today = new Date();
+  
+  let years = today.getFullYear() - birth.getFullYear();
+  let months = today.getMonth() - birth.getMonth();
+  let days = today.getDate() - birth.getDate();
+  
+  // Adjust if current month/day is before birth month/day
+  if (days < 0) {
+    months--;
+    const lastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+    days += lastMonth.getDate();
+  }
+  
+  if (months < 0) {
+    years--;
+    months += 12;
+  }
+  
+  // Format output
+  if (years > 0) {
+    return months > 0 ? `${years} tahun ${months} bulan` : `${years} tahun`;
+  } else if (months > 0) {
+    return days > 0 ? `${months} bulan ${days} hari` : `${months} bulan`;
+  } else {
+    return `${days} hari`;
+  }
+};
+
 // Fungsi untuk flatten data dari owner dengan pets menjadi array hewan
 const flattenHewanData = (ownerData) => {
   const flattened = [];
@@ -16,18 +49,20 @@ const flattenHewanData = (ownerData) => {
     if (owner.pets && owner.pets.length > 0) {
       owner.pets.forEach(pet => {
         flattened.push({
-          id: pet.id, // ✅ Fix: use pet.id instead of pet.petId
+          id: pet.id,
           petName: pet.petName || `Hewan ${pet.id}`,
-          species: pet.speciesName, // ✅ Fix: use speciesName from backend
+          species: pet.speciesName,
           ownerName: owner.name,
           ownerId: owner.id,
           speciesId: pet.speciesId,
           birthDate: pet.birthDate,
-          age: pet.age || '-',
+          age: calculateAge(pet.birthDate), // ✅ Calculate age from birthDate
         });
       });
     }
   });
+  
+  console.log('🔍 Flattened data with calculated age:', flattened);
   return flattened;
 };
 
@@ -54,32 +89,29 @@ export default function ManagementHewan() {
 
   useEffect(() => {
     fetchHewanData();
-    fetchOwners(); // ✅ Fix: use correct function name
-    fetchJenisHewan(); // ✅ Fix: use correct function name
+    fetchOwners();
+    fetchJenisHewan();
   }, []);
 
-  // ✅ Fetch hewan data (both grouped and flat)
+  //  Fetch hewan data (both grouped and flat)
   const fetchHewanData = async () => {
     try {
       await api.get('/sanctum/csrf-cookie');
       const res = await api.get('/api/hewan');
       
       console.log('📦 Raw Grouped Data:', res.data);
-      console.log('📦 First owner:', res.data[0]); // ✅ Check structure
-      console.log('📦 First owner pets:', res.data[0]?.pets); // ✅ Check pets array
+      console.log('📦 First owner:', res.data[0]);
+      console.log('📦 First owner pets:', res.data[0]?.pets);
     
       setGroupedHewanData(res.data);
-    
-      const flattened = flattenHewanData(res.data);
-      console.log('📊 Flattened Data for Table:', flattened);
-      setHewanData(res.data);
+      setHewanData(res.data); // ✅ Keep as res.data (grouped)
     
     } catch (err) {
       console.error('❌ Error fetching hewan data:', err);
     }
   };
 
-  // ✅ Fetch jenis hewan options
+  //  Fetch jenis hewan options
   const fetchJenisHewan = async () => {
     try {
       await api.get('/sanctum/csrf-cookie');
@@ -100,7 +132,7 @@ export default function ManagementHewan() {
     }
   };
 
-  // ✅ Fetch owner/patient options
+  //  Fetch owner/patient options
   const fetchOwners = async () => {
     try {
       await api.get('/sanctum/csrf-cookie');
@@ -122,7 +154,7 @@ export default function ManagementHewan() {
     }
   };
 
-  // Flatten data untuk ditampilkan di tabel
+  // ✅ Flatten data untuk ditampilkan di tabel (with age calculation)
   const flattenedData = useMemo(() => flattenHewanData(HewanData), [HewanData]);
 
   const filteredData = useMemo(() => {
@@ -146,9 +178,9 @@ export default function ManagementHewan() {
 
       console.log('📤 Saving Hewan:', payload);
 
-      await api.post('/api/hewan', payload); // ✅ Fix endpoint (plural)
+      await api.post('/api/hewan', payload);
 
-      await fetchHewanData(); // ✅ Refresh data
+      await fetchHewanData();
       setIsModalOpen(false);
       alert('✅ Hewan berhasil ditambahkan!');
     } catch (err) {
@@ -169,8 +201,8 @@ export default function ManagementHewan() {
         tanggal_lahir_hewan: formData.birthDate || null,
       };
 
-      await api.put(`/api/hewan/${id}`, payload); // ✅ Fix endpoint (plural)
-      await fetchHewanData(); // ✅ Refresh data
+      await api.put(`/api/hewan/${id}`, payload);
+      await fetchHewanData();
       setIsEditModalOpen(false);
       setSelectedHewan(null);
       alert('✅ Hewan berhasil diupdate!');
@@ -189,8 +221,8 @@ export default function ManagementHewan() {
   const confirmDelete = async () => {
     try {
       await api.get('/sanctum/csrf-cookie');
-      await api.delete(`/api/hewan/${hewanToDelete.id}`); // ✅ Fix endpoint (plural)
-      await fetchHewanData(); // ✅ Refresh data
+      await api.delete(`/api/hewan/${hewanToDelete.id}`);
+      await fetchHewanData();
       setIsDeleteModalOpen(false);
       setHewanToDelete(null);
       alert('✅ Hewan berhasil dihapus!');
@@ -234,7 +266,7 @@ export default function ManagementHewan() {
     }
   };
 
-  // ✅ Fetch jenis hewan untuk PASIEN TERTENTU
+  //  Fetch jenis hewan untuk PASIEN TERTENTU
   const fetchJenisHewanByOwner = async (ownerId) => {
     try {
       await api.get('/sanctum/csrf-cookie');
@@ -280,7 +312,7 @@ export default function ManagementHewan() {
         onSave={handleSaveHewan}
         ownerOptions={ownerOptions}
         jenisHewanOptions={jenisHewanOptions}
-        existingHewans={groupedHewanData} // ✅ Pass grouped data
+        existingHewans={groupedHewanData}
       />
 
       <EditHewanModal

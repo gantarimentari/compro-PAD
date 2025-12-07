@@ -16,7 +16,30 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // ✅ Validate required fields
+    if (!formData.judul || !formData.kategori || !formData.isiArtikel) {
+      alert('❌ Semua field wajib diisi!');
+      return;
+    }
+    
+    // ✅ Validate file
+    if (!formData.file) {
+      alert('❌ Gambar artikel wajib diupload!');
+      return;
+    }
+
+    console.log('📝 Submitting article:', {
+      judul: formData.judul,
+      kategori: formData.kategori,
+      status: formData.status,
+      hasFile: !!formData.file,
+      fileName: formData.file?.name
+    });
+
     onSave(formData);
+    
+    // Reset form
     setFormData({
       judul: '',
       kategori: '',
@@ -29,7 +52,31 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+    
     if (file) {
+      // ✅ Validate file type
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      
+      if (!validTypes.includes(file.type)) {
+        alert('❌ Format file harus JPG, PNG, GIF, atau WebP');
+        e.target.value = '';
+        return;
+      }
+
+      // ✅ Validate file size (max 10MB)
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      if (file.size > maxSize) {
+        alert('❌ Ukuran file maksimal 10MB');
+        e.target.value = '';
+        return;
+      }
+
+      console.log('✅ File selected:', {
+        name: file.name,
+        type: file.type,
+        size: `${(file.size / 1024).toFixed(2)} KB`
+      });
+
       setFormData(prev => ({ ...prev, file }));
     }
   };

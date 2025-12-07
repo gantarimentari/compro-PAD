@@ -38,7 +38,7 @@ const PreviewMediaModal = ({ media, isOpen, onClose }) => {
       }
       
       const embedUrl = videoId ? `https://www.youtube.com/embed/${videoId}` : null;
-      console.log('✅ Embed URL:', embedUrl);
+      console.log(' Embed URL:', embedUrl);
       return embedUrl;
     } catch (error) {
       console.error('❌ Error parsing YouTube URL:', error);
@@ -46,7 +46,7 @@ const PreviewMediaModal = ({ media, isOpen, onClose }) => {
     }
   };
 
-  // ✅ Fix: Cek video hanya jika videoUrl ada DAN tidak null/undefined
+  //  Fix: Cek video hanya jika videoUrl ada DAN tidak null/undefined
   const isVideo = (media.category === 'Video' && media.videoUrl) || (media.videoUrl && media.videoUrl.trim() !== '');
   const embedUrl = isVideo ? getYouTubeEmbedUrl(media.videoUrl) : null;
 
@@ -74,13 +74,13 @@ const PreviewMediaModal = ({ media, isOpen, onClose }) => {
         {/* Content */}
         <div className="relative w-full h-full flex items-center justify-center">
           {!isVideo ? (
-            // ✅ Preview Foto
+            //  Preview Foto
             <div className="flex flex-col items-center">
               <img
                 className="max-w-full border-4 max-h-[85vh] object-contain rounded-lg shadow-2xl"
                 alt={media.name}
                 src={media.imageUrl || defaultPlaceholder}
-                onLoad={() => console.log('✅ Image loaded successfully:', media.imageUrl)}
+                onLoad={() => console.log(' Image loaded successfully:', media.imageUrl)}
                 onError={(e) => { 
                   console.error('❌ Image failed to load:', media.imageUrl);
                   console.error('❌ Error event:', e);
@@ -93,7 +93,7 @@ const PreviewMediaModal = ({ media, isOpen, onClose }) => {
               </p>
             </div>
           ) : embedUrl ? (
-            // ✅ Preview Video YouTube
+            //  Preview Video YouTube
             <div className="w-full max-w-4xl aspect-video bg-black rounded-lg overflow-hidden">
               <iframe
                 className="w-full h-full border-4 rounded-lg"
@@ -105,7 +105,7 @@ const PreviewMediaModal = ({ media, isOpen, onClose }) => {
               />
             </div>
           ) : (
-            // ✅ Fallback
+            //  Fallback
             <div className="w-full max-w-4xl aspect-video bg-gray-900 rounded-lg flex items-center justify-center p-8">
               <div className="text-center">
                 <p className="text-white text-lg mb-2">Media tidak dapat dimuat</p>

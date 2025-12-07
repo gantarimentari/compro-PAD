@@ -107,6 +107,12 @@ export default function ManagemenArtikel() {
 
   const handleSaveArtikel = async (formData) => {
     try {
+      // ✅ Validate file exists
+      if (!formData.file) {
+        alert('❌ Gambar artikel wajib diupload!');
+        return;
+      }
+
       await api.get('/sanctum/csrf-cookie');
       
       const data = new FormData();
@@ -114,18 +120,45 @@ export default function ManagemenArtikel() {
       data.append("category", formData.kategori);
       data.append("content", formData.isiArtikel);
       data.append("status", formData.status);
-      if (formData.file) data.append("image", formData.file);
+      data.append("image", formData.file); // ✅ file → image
+      
+      // ✅ Debug: Log FormData contents
+      console.log('📤 Sending article data:');
+      for (let [key, value] of data.entries()) {
+        if (value instanceof File) {
+          console.log(`  ${key}:`, {
+            name: value.name,
+            type: value.type,
+            size: `${(value.size / 1024).toFixed(2)} KB`
+          });
+        } else {
+          console.log(`  ${key}:`, value);
+        }
+      }
 
-      await api.post("/api/articles", data);
+      const response = await api.post("/api/articles", data, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      console.log('✅ Article saved:', response.data);
+      
       await fetchCsrfAndArticles();
-      setIsModalOpen(false); // ✅ Tutup modal setelah berhasil
+      setIsModalOpen(false);
       alert('✅ Artikel berhasil ditambahkan!');
+      
     } catch (err) {
+      console.error('❌ Gagal menyimpan artikel:', err.response?.data?.message || err.message);
       console.error('Error details:', {
-        message: err.message,
         status: err.response?.status,
         data: err.response?.data,
-        headers: err.response?.headers
+        formData: {
+          judul: formData.judul,
+          kategori: formData.kategori,
+          hasFile: !!formData.file,
+          fileName: formData.file?.name
+        }
       });
       alert(`❌ Gagal menyimpan artikel: ${err.response?.data?.message || err.message}`);
     }
@@ -145,9 +178,9 @@ export default function ManagemenArtikel() {
 
       await api.post(`/api/articles/${id}`, data);
       await fetchCsrfAndArticles();
-      setIsEditModalOpen(false); // ✅ Tutup modal setelah berhasil
+      setIsEditModalOpen(false); //  Tutup modal setelah berhasil
       setSelectedArticle(null);
-      alert('✅ Artikel berhasil diupdate!');
+      alert(' Artikel berhasil diupdate!');
     } catch (err) {
       console.error('Error details:', {
         message: err.message,
@@ -172,7 +205,7 @@ export default function ManagemenArtikel() {
         await fetchCsrfAndArticles();
         setIsDeleteModalOpen(false);
         setArticleToDelete(null);
-        alert('✅ Artikel berhasil dihapus!');
+        alert(' Artikel berhasil dihapus!');
       } catch (err) {
         console.error('Error deleting article:', err);
         alert('❌ Gagal menghapus artikel');
@@ -197,7 +230,7 @@ export default function ManagemenArtikel() {
 
   return (
     <div className="space-y-6">
-      {/* ✅ Hanya satu PageHeader */}
+      {/*  Hanya satu PageHeader */}
       <PageHeader 
         title="Konten Artikel"
         description="Kelola Artikel dan Konten Edukasi"
@@ -206,7 +239,7 @@ export default function ManagemenArtikel() {
       />
      
       <div className="space-y-4">
-        {/* ✅ Hanya satu SearchBar */}
+        {/*  Hanya satu SearchBar */}
         <SearchBar
           placeholderText="Cari judul atau kategori..." 
           value={searchQuery}
@@ -220,7 +253,7 @@ export default function ManagemenArtikel() {
         />
       </div>
 
-      {/* ✅ Modals */}
+      {/*  Modals */}
       <TambahArtikelModal 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -234,7 +267,7 @@ export default function ManagemenArtikel() {
         article={selectedArticle}
       />
 
-      {/* ✅ Hanya satu DeleteConfirmModal */}
+      {/*  Hanya satu DeleteConfirmModal */}
       <DeleteConfirmModal 
         isOpen={isDeleteModalOpen}
         onClose={handleCancelDelete}

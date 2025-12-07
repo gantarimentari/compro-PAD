@@ -24,7 +24,7 @@ export default function JenisHewan() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [jenisToDelete, setJenisToDelete] = useState(null);
 
-  // ✅ Fetch jenis hewan dengan relasi pasien
+  //  Fetch jenis hewan dengan relasi pasien
   const fetchJenisHewan = async () => {
     try {
       await api.get('/sanctum/csrf-cookie');
@@ -32,7 +32,7 @@ export default function JenisHewan() {
       
       console.log('📦 Jenis Hewan Data:', res.data);
       
-      // ✅ Transform data untuk table
+      //  Transform data untuk table
       const formatted = res.data.map(jenis => ({
         id: jenis.id_jenisHewan,
         species: jenis.nama_jenis,
@@ -41,7 +41,7 @@ export default function JenisHewan() {
         ownerEmail: jenis.pasien?.email || '',
       }));
       
-      console.log('✅ Formatted Data:', formatted);
+      console.log(' Formatted Data:', formatted);
       setJenisHewanData(formatted);
     } catch (err) {
       console.error('Error fetching jenis hewan:', err);
@@ -53,20 +53,20 @@ export default function JenisHewan() {
     fetchJenisHewan();
   }, []);
 
-  // ✅ Filter data
+  //  Filter data
   const filteredData = jenisHewanData.filter(item =>
     item.species.toLowerCase().includes(searchQuery.toLowerCase()) ||
     item.ownerName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // ✅ Handle save jenis hewan baru
+  //  Handle save jenis hewan baru
   const handleSaveSpecies = async (formData) => {
     try {
       await api.get('/sanctum/csrf-cookie');
 
       const payload = {
         nama_jenis: formData.species,
-        id_pasien: formData.ownerId, // ✅ Send ownerId (not ownerName)
+        id_pasien: formData.ownerId, //  Send ownerId (not ownerName)
       };
 
       console.log('📤 Sending payload:', payload);
@@ -74,17 +74,17 @@ export default function JenisHewan() {
       await api.post('/api/jenis-hewan', payload);
       await fetchJenisHewan();
       setIsModalOpen(false);
-      alert('✅ Jenis hewan berhasil ditambahkan!');
+      alert(' Jenis hewan berhasil ditambahkan!');
     } catch (err) {
       console.error('Error saving jenis hewan:', err);
       
-      // ✅ Better error handling
+      //  Better error handling
       const errorMessage = err.response?.data?.message || err.message;
       alert(`❌ Gagal menyimpan: ${errorMessage}`);
     }
   };
 
-  // ✅ Handle edit
+  //  Handle edit
   const handleEdit = (item) => {
     setSelectedJenis({
       id: item.id,
@@ -95,7 +95,7 @@ export default function JenisHewan() {
     setIsEditModalOpen(true);
   };
 
-  // ✅ Handle update jenis hewan
+  //  Handle update jenis hewan
   const handleUpdateSpecies = async (id, formData) => {
     try {
       await api.get('/sanctum/csrf-cookie');
@@ -111,20 +111,20 @@ export default function JenisHewan() {
       await fetchJenisHewan();
       setIsEditModalOpen(false);
       setSelectedJenis(null);
-      alert('✅ Jenis hewan berhasil diupdate!');
+      alert(' Jenis hewan berhasil diupdate!');
     } catch (err) {
       console.error('Error updating jenis hewan:', err);
       alert(`❌ Gagal mengupdate: ${err.response?.data?.message || err.message}`);
     }
   };
 
-  // ✅ Handle delete
+  //  Handle delete
   const handleDelete = (item) => {
     setJenisToDelete(item);
     setIsDeleteModalOpen(true);
   };
 
-  // ✅ Confirm delete
+  //  Confirm delete
   const handleConfirmDelete = async () => {
     if (jenisToDelete) {
       try {
@@ -133,7 +133,7 @@ export default function JenisHewan() {
         await fetchJenisHewan();
         setIsDeleteModalOpen(false);
         setJenisToDelete(null);
-        alert('✅ Jenis hewan berhasil dihapus!');
+        alert(' Jenis hewan berhasil dihapus!');
       } catch (err) {
         console.error('Error deleting jenis hewan:', err);
         alert(`❌ ${err.response?.data?.message || 'Gagal menghapus jenis hewan'}`);
@@ -141,7 +141,7 @@ export default function JenisHewan() {
     }
   };
 
-  // ✅ Render cell
+  //  Render cell
   const renderCell = (item, key) => {
     switch (key) {
       case 'actions':

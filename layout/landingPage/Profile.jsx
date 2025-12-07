@@ -1,16 +1,16 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import api from '@lib/api.js';
-import { sendWA } from '@lib/wa.js';
 import Button from '@ds/Button';
 import { RightArrowIcon } from '@ds/icons';
 
 export default function Profile() {
-  // Initialize with default values
+  // System data
   const [systemData, setSystemData] = useState({
     deskripsi_hero: 'Buat pawrent, nggak ada yang lebih tenang selain tahu hewan kesayangannya sehat. Klinik Dokter Fanina hadir buat bantu jaga mereka tetap ceria. Mulai dari vaksin, check-up, sampai perawatan kecil yang sering terlupa.',
     foto_card: '/images/foto-dokter.png',
-    phone:''
+    phone: '',
+    whatsapp_template: '' // ✅ Add template field
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
@@ -18,98 +18,100 @@ export default function Profile() {
 
   const photoCardBorder = '/Assets/photoCard-border-only.svg';
 
-  // fetch from backend
+  // ✅ Fetch system info
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchData = async () => {
       try {
         setIsLoading(true);
-        const res = await api.get('/api/system-info');
 
-        console.log('📦 System Info (Profile):', res.data);
+        const sysRes = await api.get('/api/system-info');
+        console.log('📦 System Info:', sysRes.data);
 
-        // Use snake_case from backend with fallback
         setSystemData({
-          deskripsi_hero: res.data.systemInfo?.deskripsi_hero,
-          foto_card: res.data.systemInfo?.foto_card || '/images/foto-dokter.png',
-          phone: res.data.systemInfo?.phone || '',
+          deskripsi_hero: sysRes.data.systemInfo?.deskripsi_hero || 'Buat pawrent...',
+          foto_card: sysRes.data.systemInfo?.foto_card || '/images/foto-dokter.png',
+          phone: sysRes.data.systemInfo?.phone || '',
+          whatsapp_template: sysRes.data.systemInfo?.whatsapp_template || '', // ✅ Get template
         });
 
       } catch (err) {
-        console.error('❌ Error fetching profile:', err);
+        console.error('❌ Error fetching system info:', err);
         
-        // Keep default values on error
         setSystemData({
-          deskripsi_hero: 'error',
+          deskripsi_hero: 'Buat pawrent...',
           foto_card: '/images/foto-dokter.png',
           phone: '',
+          whatsapp_template: '', // ✅ Default empty
         });
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchProfile();
+    fetchData();
   }, []);
 
-  // ✅ Handle WhatsApp CTA Button
-  async function handleSendMessage() {
+  // ✅ Handle Direct WhatsApp - Use Dynamic Template
+  const handleOpenWhatsApp = () => {
     try {
-      console.log('📞 Starting WhatsApp send...');
-      console.log('📱 System phone:', systemData.phone);
-      
-      // ✅ Validate phone exists
+      console.log('📱 Opening WhatsApp...');
+      console.log('📞 Clinic phone:', systemData.phone);
+
+      // ✅ Validate clinic phone exists
       if (!systemData.phone) {
-        alert('❌ Nomor WhatsApp belum tersedia. Silakan hubungi admin untuk menambahkan nomor WhatsApp di System Info.');
+        alert('❌ Nomor WhatsApp klinik belum tersedia. Silakan hubungi admin.');
         return;
       }
 
-      // ✅ Clean & format phone number (remove spaces, dashes, plus)
+      // ✅ Clean & format clinic's phone number
       const cleanNumber = systemData.phone.replace(/[\s\-\+]/g, '');
-      
-      // ✅ Format to international (62xxx)
       let formattedNumber = cleanNumber;
+      
       if (cleanNumber.startsWith('0')) {
-        formattedNumber = '62' + cleanNumber.substring(1); // 081234 -> 6281234
+        formattedNumber = '62' + cleanNumber.substring(1);
       } else if (!cleanNumber.startsWith('62')) {
-        formattedNumber = '62' + cleanNumber; // 81234 -> 6281234
+        formattedNumber = '62' + cleanNumber;
       }
 
-      console.log('📱 Clean number:', cleanNumber);
-      console.log('📱 Formatted number:', formattedNumber);
-
-      // ✅ CREATE PAYLOAD OBJECT
-      const payload = {
-        number: formattedNumber,
-        text: "Halo! Saya tertarik untuk reservasi di Klinik Dokter Fanina. Mohon informasi lebih lanjut tentang layanan dan jadwal yang tersedia. Terima kasih!"
-      };
-
-      console.log('📤 Sending payload:', payload);
-
-      // ✅ CALL sendWA with payload
-      const response = await sendWA(payload);
-
-      console.log("✅ WA API Response:", response);
-
-      // ✅ Handle success/error response
-      if (response.success || response.status === 200) {
-        alert('✅ Pesan berhasil dikirim ke WhatsApp!');
-      } else {
-        throw new Error(response.error || response.message || 'Gagal mengirim pesan');
+      // ✅ Validate format
+      if (!/^62\d{9,12}$/.test(formattedNumber)) {
+        alert('❌ Format nomor WhatsApp klinik tidak valid. Hubungi admin.');
+        console.error('Invalid clinic number:', formattedNumber);
+        return;
       }
+
+      console.log('📱 Formatted clinic number:', formattedNumber);
+
+      // ✅ Use dynamic template from database OR fallback to default
+      const messageTemplate = systemData.whatsapp_template || 
+        `Halo Klinik Dokter Fanina! 👋\n\n` +
+        `Saya ingin membuat reservasi untuk pemeriksaan hewan peliharaan saya.\n\n` +
+        `Mohon informasi lebih lanjut mengenai:\n` +
+        `• Jadwal yang tersedia\n` +
+        `• Jenis layanan yang ditawarkan\n` +
+        `• Estimasi biaya pemeriksaan\n\n` +
+        `Terima kasih! 🐾`;
+
+      console.log('📝 Message template:', messageTemplate);
+
+      // ✅ Encode message for URL
+      const encodedMessage = encodeURIComponent(messageTemplate);
+
+      // ✅ Create WhatsApp URL
+      const whatsappUrl = `https://wa.me/${formattedNumber}?text=${encodedMessage}`;
+      
+      console.log('🚀 WhatsApp URL:', whatsappUrl);
+
+      // ✅ Open WhatsApp in new tab
+      window.open(whatsappUrl, '_blank');
+
+      console.log('✅ WhatsApp opened successfully');
 
     } catch (err) {
-      console.error('❌ Error sending WhatsApp:', err);
-      
-      // ✅ Extract error message
-      const errorMsg = err.response?.data?.message 
-        || err.response?.data?.error
-        || err.message 
-        || 'Gagal mengirim pesan WhatsApp. Silakan coba lagi.';
-      
-      alert(`❌ ${errorMsg}`);
+      console.error('❌ Error opening WhatsApp:', err);
+      alert('❌ Gagal membuka WhatsApp. Silakan coba lagi.');
     }
-  }
-
+  };
 
   return (
     <div className="max-w-7xl mx-auto py-12 md:py-16">
@@ -132,7 +134,6 @@ export default function Profile() {
               </span> 
             </h1>
 
-            {/* Show loading skeleton or actual content */}
             {isLoading ? (
               <div className="space-y-2 w-full">
                 <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
@@ -146,18 +147,18 @@ export default function Profile() {
             )}
 
             <Button
-              onClick={handleSendMessage} 
+              onClick={handleOpenWhatsApp} 
               icon={<RightArrowIcon className="h-4 w-4" />} 
               iconPosition="right"
               roundedClass="rounded-md"
               color="bg-accent-yellow-300" 
               hoverColor="hover:bg-accent-yellow-500"
               focusColor="focus:bg-accent-yellow-400"
-              label="Reservasi sekarang"
+              label="Reservasi via WhatsApp"
               textColor="text-accent-neutral-1000"
               textSize="text-body-2 font-semibold"
             >
-              Reservasi Sekarang
+              Reservasi via WhatsApp
             </Button>
           </div>
 
@@ -176,7 +177,6 @@ export default function Profile() {
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
             >
-              {/* Container untuk foto dan card */}
               <div 
                 className="relative"
                 style={{ 
@@ -186,7 +186,6 @@ export default function Profile() {
                   aspectRatio: '250 / 343',
                 }}
               >
-                {/* Background putih untuk card */}
                 <div 
                   className="absolute inset-0"
                   style={{ 
@@ -196,7 +195,6 @@ export default function Profile() {
                   }}
                 />
                 
-                {/* Container untuk foto dengan padding dari border */}
                 <div
                   className="absolute overflow-hidden"
                   style={{
@@ -208,7 +206,6 @@ export default function Profile() {
                     zIndex: 1,
                   }}
                 >
-                  {/* Loading state for image */}
                   {isLoading ? (
                     <div className="w-full h-full bg-gray-200 animate-pulse flex items-center justify-center">
                       <svg className="animate-spin h-8 w-8 text-gray-400" viewBox="0 0 24 24">
@@ -221,25 +218,16 @@ export default function Profile() {
                       src={systemData.foto_card} 
                       alt="Dokter Hewan Fanina" 
                       onError={(e) => {
-                        console.error('❌ Foto tidak ditemukan, using fallback');
                         e.target.src = '/images/foto-dokter.png';
                       }}
-                      onLoad={() => console.log('✅ Foto berhasil dimuat:', systemData.foto_card)}
                       className="w-full h-full object-contain"
-                      style={{
-                        display: 'block',
-                      }}
                     />
                   )}
                 </div>
                 
-                {/* SVG Card border */}
                 <img 
                   src={photoCardBorder} 
                   alt="Card Border" 
-                  onError={(e) => {
-                    console.error('❌ Card border SVG tidak ditemukan');
-                  }}
                   className="absolute left-0 w-full h-full"
                   style={{
                     zIndex: 2,
