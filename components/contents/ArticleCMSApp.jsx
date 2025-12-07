@@ -278,7 +278,7 @@ const ArticleCard = ({ article, onReadClick }) => {
             {/* Content Section - PERBAIKAN: Hapus height tetap, biarkan auto */}
             <div className="relative pt-4 px-4 pb-0 flex flex-col flex-grow ">
                 {/* ini tu svg yang garis itu */}
-              <ModalDashedBorder className="absolute inset-0  z-0 pointer-events-none p-2 "/>
+              <ModalDashedBorder className="absolute inset-0  z-0 pointer-events-none p-2 stroke-accent-yellow-300"/>
 
               
                 

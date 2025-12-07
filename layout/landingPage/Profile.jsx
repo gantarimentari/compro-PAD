@@ -142,38 +142,13 @@ export default function Profile() {
       </div>
 
       {/* Selendang Section - Layered */}
-      <div className="relative overflow-hidden z-30" style={{ 
+      <div className="relative  z-30" style={{ 
         height: 'auto', 
         width: '120vw', 
         marginLeft: 'calc(-60vw + 50%)',
         maxWidth: 'none'
       }}>
-        <style jsx>{`
-          @keyframes slideRightToLeft {
-            0% {
-              transform: translate(1%, 1%);
-            }
-            50% {
-              transform: translate(-1%, -1%);
-            }
-            100% {
-              transform: translate(1%, 1%);
-            }
-          }
-          
-          @keyframes slideLeftToRight {
-            0% {
-              transform: translate(-1%, -1%);
-            }
-            50% {
-              transform: translate(1%, 1%);
-            }
-            100% {
-              transform: translate(-1%, -1%);
-            }
-          }
-        `}</style>
-        
+      
         {/* Selendang Bawah - animasi kiri ke kanan */}
         <img
           src="/Assets/selendang-bawah.webp"

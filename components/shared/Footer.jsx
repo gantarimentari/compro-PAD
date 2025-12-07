@@ -17,8 +17,8 @@ export default function Footer({
   const svgStyle = footerSvg
     ? {
         backgroundImage: `url(${footerSvg})`,
-        backgroundRepeat: "repeat",
-        backgroundSize: "auto",
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover", // atau "contain" tergantung kebutuhan
         backgroundPosition: "center",
       }
     : {};
@@ -73,10 +73,9 @@ export default function Footer({
 
   return (
     <footer
-      className={`${footerClass} w-full relative`}
+      className={`${footerClass} w-full pt-12 md:pt-16 lg:pt-20 pb-6`}
       style={combinedStyle}
     >
-      <div className="pt-8 md:pt-12 lg:pt-16 pb-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-16">
         {/* Main Content - Contact Info & Map */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16">
@@ -164,13 +163,12 @@ export default function Footer({
           </div>
         </div>
 
-        {/* Copyright Section */}
+        
         <div className="mt-12 md:mt-14 pt-6">
           <div className="text-center text-sm md:text-base font-semibold text-white">
             {data.copyrightText}
           </div>
         </div>
-      </div>
       </div>
     </footer>
   );
