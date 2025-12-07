@@ -114,13 +114,13 @@ export default function Profile() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto py-12 md:py-16">
+    <div className="max-w-7xl mx-auto lg:py-16 pb-24 lg:pb-16 relative z-10">
       <div className="container mx-auto px-6 md:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-20 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-12 lg:gap-20 items-center">
           
           {/* Left Content */}
-          <div className="flex flex-col gap-4 items-start">
-            <h1 className="text-h-4 font-bold text-accent-neutral-1000">
+          <div className="flex flex-col pt-8 lg:gap-4 gap-2 lg:items-start items-center relative z-20">
+            <h1 className="lg:text-h-4 text-h-7 font-bold text-accent-neutral-1000">
               Halo{' '}
               <span 
                 className="cursor-pointer transition-colors duration-300"
@@ -141,7 +141,7 @@ export default function Profile() {
                 <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
               </div>
             ) : (
-              <p className="text-body-1 font-base text-accent-neutral-1000 mb-4">
+              <p className="lg:text-body-1 text-body-2 font-base text-accent-neutral-1000 mb-4 text-center lg:text-left">
                 {systemData.deskripsi_hero}
               </p>
             )}
@@ -163,7 +163,7 @@ export default function Profile() {
           </div>
 
           {/* Right Content - Photo Card */}
-          <div className="flex justify-center md:justify-end"> 
+          <div className="hidden lg:flex lg:justify-center lg:justify-end"> 
             <div 
               className="cursor-pointer transition-all duration-300 ease-in-out relative"
               style={{
