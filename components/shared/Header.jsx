@@ -50,7 +50,7 @@ export default function Header() {
               src="/logo.svg"
               alt="Company Logo"
             />
-            <h1 className="md:text-h-7 text-accent-neutral-1000 font-semibold text-body-1">
+            <h1 className="md:text-h-7 text-accent-neutral-1000 md:semibold font-bold text-body-2">
               Praktik Dokter Hewan Fanina
             </h1>
           </div>

@@ -53,13 +53,34 @@ export default function Content() {
     judulVideoEdukasi: "Belajar tentang hewan jadi gampang! Yuk temukan tips, info, dan fun fact seru bareng kami"
   });
   
-  const [selectedVideo, setSelectedVideo] = useState(1); 
   const [isCardHovered, setIsCardHovered] = useState(false);
-  const scrollContainerRef = useRef(null);
+  const [selectedVideo, setSelectedVideo] = useState(1); 
+  const scrollContainerRef = useRef(null); // Untuk mobile
+  const desktopScrollContainerRef = useRef(null); // Untuk desktop
 
-  // Fungsi untuk scroll ke video tertentu (center position)
+  // Fungsi untuk membagi array video menjadi chunks (untuk mobile: 3 video per kolom)
+  const chunkArray = (array, chunkSize) => {
+    const chunks = [];
+    for (let i = 0; i < array.length; i += chunkSize) {
+      chunks.push(array.slice(i, i + chunkSize));
+    }
+    return chunks;
+  };
+
+  const videoColumns = chunkArray(dummyVideos, 3); // 3 video per kolom untuk mobile
+
+  // Fungsi untuk scroll ke video tertentu (center position) - hanya untuk md ke atas
   const scrollToVideo = (index) => {
-    const container = scrollContainerRef.current;
+    const isMdAndUp = window.innerWidth >= 768;
+    
+    if (!isMdAndUp) {
+      // Untuk mobile, tidak perlu scroll center effect
+      setSelectedVideo(index);
+      return;
+    }
+
+    // Untuk desktop
+    const container = desktopScrollContainerRef.current;
     if (container) {
       const containerWidth = container.offsetWidth;
       const gap = GAP; // mengikuti kelas gap-10
@@ -74,20 +95,37 @@ export default function Content() {
     setSelectedVideo(index);
   };
 
-  // Auto-center on mount
+  // Auto-center on mount - hanya untuk md ke atas
   useEffect(() => {
-    scrollToVideo(1); // Start with second video centered
+    const handleResize = () => {
+      const container = desktopScrollContainerRef.current;
+      if (!container) return;
+
+      const isMdAndUp = window.innerWidth >= 768;
+      
+      // Set scrollPaddingLeft untuk desktop centering
+      if (isMdAndUp) {
+        container.style.scrollPaddingLeft = 'calc(50% - 200px)';
+        scrollToVideo(1); // Start with second video centered
+      } else {
+        container.style.scrollPaddingLeft = '0px';
+      }
+    };
+
+    handleResize(); // Check on mount
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden" 
+    <div className="flex flex-col relative overflow-hidden" 
     style={{
       backgroundImage: "url('/Background/bg-paw-profile.svg')",
       backgroundRepeat: 'no-repeat',
       backgroundPosition: 'center',
       backgroundSize: 'cover',
       backgroundColor: 'white',
-      marginTop: '-175px',
+      marginTop: '-165px',
     }}
     >
       {/* Ornamen Kiri - Berputar */}
@@ -124,11 +162,11 @@ export default function Content() {
       
       
 
-      <div className="container max-w-7xl mx-auto px-4 pt-24 pb-16 md:py-10 relative z-[5]">
-        <div className="flex flex-col items-center gap-2 relative z-10">
+      <div className="container max-w-7xl mx-auto px-6 pt-24 pb-16 md:py-10 relative z-[5]">
+        <div className="flex flex-col items-center lg:gap-2 gap-0 relative z-10">
           {/* Tag biru dengan border putus-putus putih di dalam */}
           <div 
-            className="relative rounded-lg inline-block bg-accent-blue-500 px-8 py-4 shadow-lg transition-transform duration-300 cursor-pointer z-50"
+            className="relative rounded-lg inline-block bg-accent-blue-500 lg:px-8 px-4 py-2 lg:py-4 shadow-lg transition-transform duration-300 cursor-pointer z-50"
             style={{
               transformOrigin: 'center',
               transform: isCardHovered ? 'rotate(0deg)' : 'rotate(-3deg)',
@@ -158,7 +196,7 @@ export default function Content() {
             </svg>
             
             {/* Teks */}
-            <span className="relative z-10 text-white text-h-6 font-bold whitespace-nowrap" style={{ pointerEvents: 'none' }}>
+            <span className="relative z-10 text-white lg:text-h-6 text-body-2 font-bold whitespace-nowrap" style={{ pointerEvents: 'none' }}>
               Selamat Datang
             </span>
           </div>
@@ -167,22 +205,68 @@ export default function Content() {
           <img 
             src="/title/title-greeting.svg" 
             alt="title-greeting" 
-            className="h-[80px] md:h-[100px] w-auto"
+            className="lg:h-[80px] h-[40px] w-auto"
           />
-          <p className='text-h-7 font-bold text-accent-neutral-1000 text-center max-w-2xl leading-relaxed'>
+          <p className='lg:text-h-7 text-body-2 font-bold text-accent-neutral-1000 text-center max-w-2xl leading-relaxed'>
             {systemData.judulVideoEdukasi}
           </p>
         </div>
 
         {/* Video Carousel Section */}
         <div className="mt-12 md:mt-16 w-full relative">
+          {/* Mobile Layout: Kolom-kolom dengan maksimal 3 video per kolom */}
           <div 
             ref={scrollContainerRef}
-            className=" flex  gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory p-6 [&::-webkit-scrollbar]:hidden"
+            className="flex md:hidden gap-8 overflow-x-auto scroll-smooth snap-x snap-mandatory p-4 [&::-webkit-scrollbar]:hidden"
             style={{
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',
-              scrollPaddingLeft: 'calc(50% - 200px)', // Centering offset
+            }}
+          >
+            {videoColumns.map((column, columnIndex) => (
+              <div
+                key={columnIndex}
+                className="flex flex-col gap-4 flex-shrink-0 snap-center items-center"
+                style={{ width: 'calc(100vw - 2rem)' }} // Full width minus padding
+              >
+                {column.map((video) => {
+                  const videoIndex = dummyVideos.findIndex(v => v.id === video.id);
+                  const youtubeEmbedUrl = getYoutubeEmbedUrl(video.youtubeLink);
+                  
+                  return (
+                    <div
+                      key={video.id}
+                      className="w-[250px] cursor-pointer"
+                    >
+                      <div className="relative bg-accent-yellow-300 rounded-xl shadow-lg overflow-hidden w-full aspect-video">
+                        {/* Border putus-putus kuning di dalam card */}
+                        <ModalDashedBorder className="absolute inset-0 pointer-events-none z-20 stroke-white"/>
+                        
+                        {/* Video Container */}
+                        <div className="relative p-2 z-10 rounded-sm overflow-hidden w-full h-full">
+                          <iframe
+                            className="w-full h-full rounded-md"
+                            src={youtubeEmbedUrl}
+                            title={`Video ${video.id}`}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Layout: Horizontal dengan scale effect */}
+          <div 
+            ref={desktopScrollContainerRef}
+            className="hidden md:flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory p-6 [&::-webkit-scrollbar]:hidden"
+            style={{
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
             }}
             onScroll={(e) => {
               const container = e.target;
@@ -220,39 +304,43 @@ export default function Content() {
                     key={video.id}
                     onClick={() => scrollToVideo(index)}
                     className={`
-                      flex-shrink-0 snap-center transition-all duration-500 ease-out cursor-pointer gap-2
+                      flex-shrink-0 snap-center transition-all duration-500 ease-out cursor-pointer
+                      w-[calc((100vw-5rem)/3)] max-w-[400px]
                       ${isCenter 
                         ? 'scale-125 z-20' 
                         : 'scale-75'
                       }
                     `}
                     style={{
-                      width: 'calc((100vw - 5rem) / 3)', // 3 cards visible, accounting for 2 gaps (2 * 2.5rem)
-                      maxWidth: '400px',
                       transformOrigin: 'center center',
                     }}
                   >
-
-                   <div className={`relative bg-accent-yellow-300 rounded-xl shadow-lg overflow-hidden w-full h-[200px] transition-all duration-500 ${isCenter ? 'shadow-2xl' : ''}`}>
-                     {/* Border putus-putus kuning di dalam card */}
-                     <ModalDashedBorder className="absolute inset-0 pointer-events-none z-20 stroke-white"/>
-                     
-                     {/* Video Container - Full height, tanpa title */}
-                     <div className="relative p-3 z-10 rounded-sm overflow-hidden w-full h-full">
-                       <iframe
-                         className="w-full h-full rounded-md"
-                         src={youtubeEmbedUrl}
-                         title={`Video ${video.id}`}
-                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                         allowFullScreen
-                       />
-                     </div>
-                   </div>
-                </div>
-              );
-            })}
+                    <div 
+                      className={`
+                        relative bg-accent-yellow-300 rounded-xl shadow-lg overflow-hidden w-full 
+                        h-[200px] 
+                        transition-all duration-500 
+                        ${isCenter ? 'shadow-2xl' : ''}
+                      `}
+                    >
+                      {/* Border putus-putus kuning di dalam card */}
+                      <ModalDashedBorder className="absolute inset-0 pointer-events-none z-20 stroke-white"/>
+                      
+                      {/* Video Container - Full height, tanpa title */}
+                      <div className="relative p-3 z-10 rounded-sm overflow-hidden w-full h-full">
+                        <iframe
+                          className="w-full h-full rounded-md"
+                          src={youtubeEmbedUrl}
+                          title={`Video ${video.id}`}
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
           </div>
-          
          
         </div>
 
