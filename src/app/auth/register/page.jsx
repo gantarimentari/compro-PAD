@@ -46,7 +46,7 @@ const handleSubmit = async (e) => {
         withCredentials: true,
       });
       console.log('Register data:', formData);
-    router.push('/auth/login');
+    router.push('/');
     } catch(err){
       console.error(err.response?.data);
       setError(err.response?.data?.message || 'register gagal');

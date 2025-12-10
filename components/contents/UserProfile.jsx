@@ -316,10 +316,14 @@ export default function UserProfile() {
     const handleLogout = async () => {
         try {
             await api.post('/api/logout');
-            router.push('/auth/login');
+            localStorage.removeItem('user');
+            sessionStorage.clear();
+            router.push('/');
         } catch (err) {
             console.error('❌ Logout error:', err);
             // Force logout anyway
+            localStorage.removeItem('user');
+            sessionStorage.clear();
             router.push('/');
         }
     };

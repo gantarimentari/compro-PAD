@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import api from '@lib/api.js';
 import PageHeader from '@ds/dashboard/layouts/PageHeader';
 import Button from '@ds/Button';
-import { UploadIcon, FacebookIcon, InstagramIcon, TwitterIcon, YoutubeDBIcon, AddIcon, DiskSaveIcon } from '@ds/icons';
+import { UploadIcon, FacebookIcon, InstagramIcon, TwitterIcon, YoutubeDBIcon, AddIcon, DiskSaveIcon, TrashIcon } from '@ds/icons';
 
 export default function SystemInfo() {
   //  Use snake_case to match backend
@@ -162,6 +162,37 @@ export default function SystemInfo() {
       alert(`❌ Gagal upload: ${err.response?.data?.message || err.message}`);
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const handleDeleteSocialMedia = async (id, platform) => {
+    try{
+      await api.get('/sanctum/csrf-cookie');
+
+      console.log('hapus sosmed', id, platform);
+
+      await api.delete(`/api/social-media/${id}`);
+
+      console.log('sosmed berhasil dihapus');
+
+      // Refresh data
+      await fetchSystemInfo();
+    }catch(err){
+      console.error('❌ Error deleting social media:', err);
+    
+      let errorMessage = '❌ Gagal menghapus social media!\n\n';
+    
+      if (err.response?.status === 404) {
+        errorMessage += 'Social media tidak ditemukan.\nMungkin sudah dihapus sebelumnya.';
+      } else if (err.response?.status === 500) {
+        errorMessage += 'Terjadi kesalahan di server.\nSilakan coba lagi.';
+      } else if (err.code === 'ERR_NETWORK') {
+        errorMessage += 'Tidak dapat terhubung ke server.\nPastikan backend Laravel sedang berjalan.';
+      } else {
+        errorMessage += err.response?.data?.message || err.message;
+      }
+
+      alert(errorMessage);
     }
   };
 
@@ -470,14 +501,17 @@ export default function SystemInfo() {
             const IconComponent = getSocialIcon(item.platform);
             return (
               <div key={item.id} className="flex items-center gap-3 p-3 bg-accent-neutral-225 rounded-2xl">
+                {/* Icon Platform */}
                 <div className="w-10 h-10 rounded-[14px] bg-accent-blue-300 flex items-center shadow-[0_4px_4px_rgba(0,0,0,0.15),_0_8px_10px_-6px_rgba(31,162,255,0.80)] justify-center flex-shrink-0">
                   {IconComponent && <IconComponent className="w-4 h-4 text-white" />}
                 </div>
+                
+                {/* Input URL */}
                 <div className="flex-1 space-y-1">
                   <p className="text-body-2 text-accent-neutral-1000">{item.platform}</p>
                   <input
                     type="text"
-                    value={item.url || ''} //  Fallback
+                    value={item.url || ''}
                     onBlur={(e) => handleUpdateSocialMedia(item.id, e.target.value)}
                     onChange={(e) => {
                       setSocialMedia(socialMedia.map(sm =>
@@ -487,6 +521,15 @@ export default function SystemInfo() {
                     className="w-full text-body-1 font-medium rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
                   />
                 </div>
+                
+                {/* Delete Button */}
+                <button
+                  onClick={() => handleDeleteSocialMedia(item.id, item.platform)}
+                  className="w-10 h-10 rounded-[14px] bg-accent-red-300 hover:bg-accent-red-400 flex items-center justify-center flex-shrink-0 transition-colors duration-150 shadow-md hover:shadow-lg"
+                  title={`Hapus ${item.platform}`}
+                >
+                  <TrashIcon className="w-5 h-5 text-white" />
+                </button>
               </div>
             );
           })}

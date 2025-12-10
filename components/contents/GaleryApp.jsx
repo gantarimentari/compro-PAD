@@ -190,7 +190,11 @@ const ImageCard = ({ image, onClick }) => {
     return (
         <div className="relative w-full aspect-square rounded-xl overflow-hidden shadow-lg transition-all duration-300 group">
             <img
-                className="w-full h-full object-cover"
+                className={`w-full h-full ${
+                    isVideo 
+                        ? 'object-cover'
+                        : 'object-cover'
+                }`}
                 alt={image.name || `Gallery image ${image.id}`}
                 src={thumbnailUrl || defaultPlaceholder}
                 onError={(e) => { 
