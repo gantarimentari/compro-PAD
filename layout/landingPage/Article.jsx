@@ -101,7 +101,7 @@ export default function Article() {
     >
       {/* Ornamen Kiri */}
       <div 
-        className="absolute pointer-events-none z-[1]"
+        className="hidden lg:block absolute pointer-events-none z-[1]"
         style={{
           left: '20px',
           top: '70px',
@@ -117,7 +117,7 @@ export default function Article() {
       
       {/* Ornamen Kanan */}
       <div 
-        className="absolute pointer-events-none z-[1]"
+        className="hidden lg:block absolute pointer-events-none z-[1]"
         style={{
           right: '40px',
           top: '300px',
@@ -133,24 +133,27 @@ export default function Article() {
       
       <div className="container max-w-7xl mx-auto p-8 relative z-[5] min-h-[85vh]">
         {/* Header Section */}
-        <div className='flex flex-row items-center gap-6 py-10 px-0 justify-center'>
+        <div className='flex flex-col lg:flex-row items-center gap-4 lg:gap-6 py-10 px-0'>
           <TagLabel label='Artikel' className='shadow-e4' 
           style={{
             transformOrigin: 'center',
             transform: isCardHovered ? 'rotate(3deg)' : 'rotate(-3deg)',
           }}
-          onMouseEnter={()=> setIsCardHovered(true)}
-          onMouseLeave={()=> setIsCardHovered(false)}
+          onMouseEnter={() => setIsCardHovered(true)}
+          onMouseLeave={() => setIsCardHovered(false)}
           />
           
-          {/*  Show loading state */}
+          {/* ✅ Show loading state + responsive text */}
           {isLoading ? (
             <div className="h-6 bg-gray-200 rounded animate-pulse flex-1"></div>
           ) : (
-            <p className='text-body-1 text-black pr-4'>{articleData.deskripsi_artikel}</p>
+            <p className='text-body-1 text-black lg:pr-4 flex-1 text-center lg:text-left'>
+              {articleData.deskripsi_artikel}
+            </p>
           )}
           
-          <Link href='/article'>
+          {/* ✅ Button - hanya tampil di lg+ */}
+          <Link href='/article' className='hidden lg:block'>
             <Button 
               icon={<RightArrowIcon className="h-4 w-4" />} 
               iconPosition="right"
@@ -168,10 +171,10 @@ export default function Article() {
           </Link>
         </div>
 
-        {/*  Article Cards Section with Loading State */}
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
+        {/* ✅ Article Cards Section with Loading State */}
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8'>
           {isLoading ? (
-            //  Loading skeleton
+            // ✅ Loading skeleton
             <>
               {[1, 2].map((i) => (
                 <div key={i} className="bg-accent-blue-500 rounded-lg p-6 animate-pulse">
@@ -187,7 +190,7 @@ export default function Article() {
               ))}
             </>
           ) : recentArticles.length === 0 ? (
-            //  Empty state
+            // ✅ Empty state
             <div className="col-span-2 text-center py-12">
               <p className="text-h-7 font-bold text-accent-neutral-1000">
                 Belum ada artikel yang dipublikasikan
@@ -197,7 +200,7 @@ export default function Article() {
               </p>
             </div>
           ) : (
-            //  Render articles - Use imageUrl prop
+            // ✅ Render articles - Use imageUrl prop from database
             recentArticles.map((article) => (
               <ArticleCard
                 key={article.id}
@@ -209,6 +212,26 @@ export default function Article() {
               />
             ))
           )}
+        </div>
+
+        {/* ✅ Button - hanya tampil di mobile (lg ke bawah), di bawah cards */}
+        <div className='lg:hidden mt-6 flex justify-center'>
+          <Link href='/article' className='w-full'>
+            <Button 
+              icon={<RightArrowIcon className="h-4 w-4" />} 
+              iconPosition="right"
+              roundedClass="rounded-md"
+              color="bg-accent-yellow-300" 
+              hoverColor="hover:bg-accent-yellow-500"
+              focusColor="focus:bg-accent-yellow-400"
+              label="Lihat Artikel"
+              textColor="text-accent-neutral-1000"
+              textSize="text-body-2"
+              className="w-full"
+            >
+              Lihat Artikel
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

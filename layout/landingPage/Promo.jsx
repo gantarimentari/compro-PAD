@@ -128,7 +128,7 @@ export default function Promo() {
             className="h-[40px] md:h-[40px] w-auto"
         />
         
-        {/* ✅ Dynamic Title from Database */}
+        {/* ✅ Dynamic Title from Database with Loading */}
         {isLoading ? (
           <div className="h-12 w-2/3 bg-white/20 rounded animate-pulse" />
         ) : (
@@ -137,11 +137,11 @@ export default function Promo() {
           </h2>
         )}
         
-        {/* Promo Cards Grid */}
-        <div className="container max-w-6xl mx-auto mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+        {/* ✅ Promo Cards - Grid untuk lg+, Scroll horizontal untuk lg- */}
+        <div className="w-full max-w-6xl mx-auto mt-8">
           {isLoading ? (
-            // ✅ Loading skeleton
-            <>
+            // ✅ Loading skeleton - tampil di semua breakpoint
+            <div className="hidden lg:grid grid-cols-3 gap-6">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="bg-white rounded-xl shadow-lg p-6 animate-pulse">
                   <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
@@ -149,7 +149,7 @@ export default function Promo() {
                   <div className="h-4 bg-gray-200 rounded w-5/6"></div>
                 </div>
               ))}
-            </>
+            </div>
           ) : availablePromos.length === 0 ? (
             // ✅ Empty state
             <div className="col-span-3 text-center py-12">
@@ -161,14 +161,39 @@ export default function Promo() {
               </p>
             </div>
           ) : (
-            // ✅ Render max 3 latest available promos
-            availablePromos.map((promo) => (
-              <PromoCard
-                key={promo.id}
-                title={promo.title}
-                description={promo.description}
-              />
-            ))
+            <>
+              {/* Desktop (lg+) - Grid 3 kolom */}
+              <div className="hidden lg:grid grid-cols-3 gap-6">
+                {availablePromos.map((promo) => (
+                  <PromoCard
+                    key={promo.id}
+                    title={promo.title}
+                    description={promo.description}
+                  />
+                ))}
+              </div>
+
+              {/* Mobile/Tablet (lg-) - Horizontal scroll dengan fixed width */}
+              <div className="lg:hidden flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory px-4 [&::-webkit-scrollbar]:hidden" 
+                style={{ 
+                  scrollbarWidth: 'none', 
+                  msOverflowStyle: 'none' 
+                }}
+              >
+                {availablePromos.map((promo) => (
+                  <div 
+                    key={promo.id} 
+                    className="flex-shrink-0 snap-center" 
+                    style={{ width: '280px' }}
+                  >
+                    <PromoCard
+                      title={promo.title}
+                      description={promo.description}
+                    />
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </div>
