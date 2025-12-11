@@ -162,7 +162,7 @@ export default function Content() {
       
       
 
-      <div className="container max-w-7xl mx-auto px-6 pt-24 pb-16 md:py-10 relative z-[5]">
+      <div className="container max-w-7xl mx-auto px-6 pt-12 pb-16 md:pt-10  relative z-[5]">
         <div className="flex flex-col items-center lg:gap-2 gap-0 relative z-10">
           {/* Tag biru dengan border putus-putus putih di dalam */}
           <div 
@@ -213,11 +213,11 @@ export default function Content() {
         </div>
 
         {/* Video Carousel Section */}
-        <div className="mt-12 md:mt-16 w-full relative">
+        <div className="mt-8 md:mt-16 w-full relative">
           {/* Mobile Layout: Kolom-kolom dengan maksimal 3 video per kolom */}
           <div 
             ref={scrollContainerRef}
-            className="flex md:hidden gap-8 overflow-x-auto scroll-smooth snap-x snap-mandatory p-4 [&::-webkit-scrollbar]:hidden"
+            className="flex lg:hidden gap-8 overflow-x-auto scroll-smooth snap-x snap-mandatory p-4 [&::-webkit-scrollbar]:hidden"
             style={{
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',
@@ -236,7 +236,7 @@ export default function Content() {
                   return (
                     <div
                       key={video.id}
-                      className="w-[250px] cursor-pointer"
+                      className="w-[250px] md:w-[400px] cursor-pointer"
                     >
                       <div className="relative bg-accent-yellow-300 rounded-xl shadow-lg overflow-hidden w-full aspect-video">
                         {/* Border putus-putus kuning di dalam card */}
@@ -263,7 +263,7 @@ export default function Content() {
           {/* Desktop Layout: Horizontal dengan scale effect */}
           <div 
             ref={desktopScrollContainerRef}
-            className="hidden md:flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory p-6 [&::-webkit-scrollbar]:hidden"
+            className="hidden lg:flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory p-6 [&::-webkit-scrollbar]:hidden"
             style={{
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',

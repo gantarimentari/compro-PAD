@@ -11,7 +11,7 @@ export default function PromoCard({
   className = "",
 }) {
   return (
-    <div className={`relative ${bgClass} rounded-lg border-2 ${borderColor} shadow-lg p-6 overflow-hidden ${className}`}>
+    <div className={`relative ${bgClass} rounded-lg border-2 ${borderColor} shadow-lg p-4 overflow-hidden h-[170px] flex flex-col ${className}`}>
       
       <svg
         className="absolute pointer-events-none block"
@@ -44,10 +44,10 @@ export default function PromoCard({
       <div 
         className="absolute pointer-events-none z-[1]"
         style={{
-          right: '-75px',
-          top: '15px',
-          width: '140px',
-          height: '140px',
+          right: '-80px',
+          top: '20px',
+          width: '130px',
+          height: '130px',
           backgroundImage: "url('/Assets/ornamen-promo.svg')",
           backgroundSize: 'contain',
           backgroundRepeat: 'no-repeat',
@@ -56,14 +56,14 @@ export default function PromoCard({
       />
 
       
-      <div className="relative z-10">
+      <div className="relative p-3 z-10 flex flex-col h-full">
        
-        <h3 className="text-h-7  font-bold text-accent-neutral-1000 mb-2">
+        <h3 className="text-h-7 font-bold text-accent-neutral-1000 mb-2">
           {title}
         </h3>
         
         
-        <p className="text-body-3 m text-accent-neutral-1000 leading-relaxed">
+        <p className="text-body-3 text-accent-neutral-1000 leading-snug line-clamp-4">
           {description}
         </p>
       </div>

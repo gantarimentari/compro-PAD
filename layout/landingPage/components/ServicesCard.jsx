@@ -29,14 +29,14 @@ const ServicesCard = ({
       >
         <div className="relative z-10 p-6 md:p-8 overflow-y-auto max-h-[90vh]">
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl md:text-3xl font-bold text-accent-neutral-1000">
+          <div className="flex items-center justify-between mb-6 gap-4">
+            <h2 className="text-2xl md:text-3xl font-bold text-accent-neutral-1000 flex-1 min-w-0">
               {servicesName}
             </h2>
             <button 
               onClick={onClose} 
               aria-label="Close modal"
-              className="w-10 h-10 md:w-11 md:h-11 bg-accent-yellow-300 rounded-lg flex items-center justify-center text-accent-neutral-1000 hover:bg-accent-yellow-400 duration-300 hover:shadow-md"
+              className="w-10 h-10 md:w-11 md:h-11 flex-shrink-0 bg-accent-yellow-300 rounded-lg flex items-center justify-center text-accent-neutral-1000 hover:bg-accent-yellow-400 duration-300 hover:shadow-md"
             >
               <CloseCircleIcon className="w-5 h-5 md:w-6 md:h-6" />
             </button>
@@ -48,12 +48,17 @@ const ServicesCard = ({
           <div className="flex flex-col md:flex-row gap-6">
             {/* Description Section */}
             <div className="w-full flex flex-col gap-4">
-              <div className="relative bg-white p-6 md:p-8 rounded-lg border-2 border-accent-red-300">
-                <ModalDashedBorder className="absolute inset-0 pointer-events-none stroke-accent-red-400" />
-                <div className="relative z-10 text-base text-accent-neutral-1000 leading-relaxed">
-                  {/* Render deskripsi dengan support untuk line breaks */}
-                  <div className="whitespace-pre-line">
-                    {servicesDesc}
+              <div className="relative bg-white rounded-lg border-2 border-accent-red-300">
+                {/* SVG Border - tidak ikut scroll */}
+                <ModalDashedBorder className="absolute inset-0 pointer-events-none stroke-accent-red-400 z-20" />
+                
+                {/* Scrollable content area */}
+                <div className="p-6 md:p-8 max-h-[50vh] lg:max-h-none overflow-y-auto">
+                  <div className="relative z-10 text-base text-accent-neutral-1000 leading-relaxed">
+                    {/* Render deskripsi dengan support untuk line breaks */}
+                    <div className="whitespace-pre-line">
+                      {servicesDesc}
+                    </div>
                   </div>
                 </div>
               </div>

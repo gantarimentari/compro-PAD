@@ -60,10 +60,10 @@ const ModalDashedBorder = ({ className="stroke-accent-yellow-300" }) => (
     
     <rect
       x="8.9"
-      y="7.9"
+      y="1.9"
       width="645.2"
-      height="282.2"
-      rx="8.1"
+      height="292.2"
+      rx="2.1"
       className={className}
       strokeWidth="1.8"
       strokeLinecap="square"

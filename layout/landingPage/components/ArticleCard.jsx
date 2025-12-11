@@ -13,24 +13,41 @@ const ArticleCard = ({
     <div className='overflow-hidden relative bg-accent-blue-500 p-6 rounded-lg border-2 border-accent-neutral-1000 shadow-lg'>
       <ModalDashedBorder className="absolute inset-0 pointer-events-none stroke-white z-10" />
       
+      {/* Ornamen blue - Desktop version (lg+) */}
+      <div 
+      className="hidden lg:block absolute pointer-events-none z-[1]"
+      style={{
+        right: '-340px',
+        bottom: '-150px',
+        width: '120%',
+        height: '120%',
+        backgroundImage: "url('/Assets/ornamen-article-blue.svg')",
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+      }}
+    />
+      
+      {/* Ornamen blue - Mobile version (lg ke bawah) */}
+      <div 
+      className="lg:hidden absolute pointer-events-none z-[1]"
+      style={{
+        right: '-120px',
+        bottom: '-100px',
+        width: '60%',
+        height: '60%',
+        backgroundImage: "url('/Assets/ornamen-article-blue.svg')",
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+      }}
+    />
+      
       {/* Flex Container - Image Left, Content Right */}
-      <div className='relative z-10 flex flex-col md:flex-row gap-4'>
-        <div 
-        className="absolute pointer-events-none z-[1]"
-        style={{
-          right: '-340px',
-          bottom: '-220px',
-          width: '100%',
-          height: '100%',
-          backgroundImage: "url('/Assets/ornamen-article-blue.svg')",
-          backgroundSize: 'contain',
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center',
-        }}
-      />
+      <div className='relative z-10 flex flex-row gap-4'>
         {/* Image Section */}
-        <div className='flex-shrink-0 w-full md:w-40 lg:w-48 z-10'>
-          <div className='relative w-full h-48 md:h-full overflow-hidden rounded-lg shadow-md'>
+        <div className='flex-shrink-0 w-20 sm:w-40 lg:w-48 z-10'>
+          <div className='relative w-full h-full overflow-hidden rounded-lg shadow-md'>
             <img 
               src={gambar} 
               alt={judul}
@@ -41,7 +58,7 @@ const ArticleCard = ({
 
         {/* Content Section */}
         <div className='flex flex-col gap-2 flex-1 z-10 '>
-          <h3 className='text-h-7 font-bold text-white leading-tight'>
+          <h3 className='sm:text-h-7 text- font-bold text-white leading-tight'>
             {judul}
           </h3>
           <p className='text-body-3 text-white line-clamp-6'>

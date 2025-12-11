@@ -21,42 +21,42 @@ export default function Promo() {
     {
       id: 1,
       judulPromo: "Diskon 90%",
-      isiPromo: "Nikmati promo terbesar kami dalam rangka 11.11. Jangan sampai kelewatan Pawrents! Dapatkan diskon hingga 90% untuk semua layanan grooming dan perawatan hewan kesayangan Anda.",
+      isiPromo: "Nikmati promo terbesar kami dalam rangka 11.11. Jangan sampai kelewatan Pawrents! Dapatkan diskon",
       status: "available",
-      tanggalDibuat: "2024-12-03T10:00:00Z" // ISO 8601 format
+      tanggalDibuat: "2024-12-03T10:00:00Z"
     },
     {
       id: 2,
       judulPromo: "Gratis Konsultasi",
-      isiPromo: "Konsultasi gratis dengan dokter hewan berpengalaman selama bulan Desember. Diskusikan kesehatan, nutrisi, dan perawatan hewan peliharaan Anda tanpa biaya apapun.",
+      isiPromo: "Konsultasi gratis dengan dokter hewan berpengalaman selama bulan Desember. Diskusikan kesehatan",
       status: "available",
       tanggalDibuat: "2024-12-02T14:30:00Z"
     },
     {
       id: 3,
       judulPromo: "Vaksinasi Hemat",
-      isiPromo: "Paket vaksinasi lengkap dengan harga spesial hingga akhir tahun. Lindungi hewan kesayangan dari penyakit berbahaya dengan harga terjangkau mulai dari Rp 150.000.",
+      isiPromo: "Paket vaksinasi lengkap dengan harga spesial hingga akhir tahun. Lindungi hewan kesayangan Anda",
       status: "available",
       tanggalDibuat: "2024-12-01T09:15:00Z"
     },
     {
       id: 4,
       judulPromo: "Grooming Premium",
-      isiPromo: "Diskon 50% untuk layanan grooming premium setiap hari Sabtu dan Minggu. Termasuk mandi, potong kuku, dan styling profesional.",
-      status: "unavailable", // tidak ditampilkan
+      isiPromo: "Diskon 50% untuk layanan grooming premium setiap hari Sabtu dan Minggu. Termasuk mandi, potong",
+      status: "unavailable",
       tanggalDibuat: "2024-11-30T16:45:00Z"
     },
     {
       id: 5,
       judulPromo: "Sterilisasi Murah",
-      isiPromo: "Program sterilisasi dengan harga terjangkau untuk mengontrol populasi hewan. Promo sudah berakhir.",
-      status: "unavailable", // tidak ditampilkan
+      isiPromo: "Program sterilisasi dengan harga terjangkau untuk mengontrol populasi hewan. Promo sudah berakhir",
+      status: "unavailable",
       tanggalDibuat: "2024-11-28T11:00:00Z"
     },
     {
       id: 6,
       judulPromo: "Paket Pemeriksaan Rutin",
-      isiPromo: "Pemeriksaan kesehatan lengkap + vitamin hanya Rp 200.000. Deteksi dini masalah kesehatan hewan peliharaan Anda dengan paket hemat ini.",
+      isiPromo: "Pemeriksaan kesehatan lengkap + vitamin hanya Rp 200.000. Deteksi dini masalah kesehatan hewan",
       status: "available",
       tanggalDibuat: "2024-11-29T13:20:00Z"
     }
@@ -86,15 +86,30 @@ export default function Promo() {
             className="h-[40px] md:h-[40px] w-auto"
         />
         
-        {/* Promo Cards Grid - Hanya tampilkan max 3 promo available terbaru */}
-        <div className="container max-w-6xl mx-auto mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-          {availablePromos.map((promo) => (
-            <PromoCard
-              key={promo.id}
-              title={promo.judulPromo}
-              description={promo.isiPromo}
-            />
-          ))}
+        {/* Promo Cards - Grid untuk lg+, Scroll horizontal untuk lg- */}
+        <div className="w-full max-w-6xl mx-auto mt-8">
+          {/* Desktop (lg+) - Grid 3 kolom */}
+          <div className="hidden lg:grid grid-cols-3 gap-6">
+            {availablePromos.map((promo) => (
+              <PromoCard
+                key={promo.id}
+                title={promo.judulPromo}
+                description={promo.isiPromo}
+              />
+            ))}
+          </div>
+
+          {/* Mobile/Tablet (lg-) - Horizontal scroll dengan fixed width */}
+          <div className="lg:hidden flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory px-4 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            {availablePromos.map((promo) => (
+              <div key={promo.id} className="flex-shrink-0 snap-center" style={{ width: '280px' }}>
+                <PromoCard
+                  title={promo.judulPromo}
+                  description={promo.isiPromo}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
       
