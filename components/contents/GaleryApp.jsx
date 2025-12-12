@@ -230,7 +230,7 @@ const FilterButton = ({ label, isActive, onClick, count }) => {
     return (
         <button
             onClick={onClick}
-            className={`text-accent-neutral-1000 px-6 py-2.5 border-[1px] rounded-[8px] text-body-2 transition-all duration-300 shadow-md ${
+            className={` text-accent-neutral-1000 sm:px-6 px-3 sm:py-2.5 py-2 border-[1px] rounded-[8px] sm:text-body-2 text-body-5 transition-all duration-300 shadow-md ${
                 isActive 
                     ? 'bg-accent-yellow-300 border-accent-yellow-400 scale-105' 
                     : 'bg-accent-neutral-250 border-2 hover:border-accent-neutral-250 hover:bg-accent-yellow-50'
@@ -423,7 +423,7 @@ export const GaleryFilterButtons = ({ activeFilter, onFilterChange }) => {
     };
 
     return (
-        <div className="flex flex-wrap gap-3 justify-center py-6">
+        <div className="flex flex-wrap gap-3 justify-center sm:py-6 pb-6 pt-4">
             <FilterButton 
                 label="Semua" 
                 isActive={activeFilter === 'all'} 

@@ -10,7 +10,7 @@ import GaleryApp from '@ds/contents/GaleryApp';
 export default function GaleryPage() {
     const [activeFilter, setActiveFilter] = useState('all');
     
-    const svgBackground = "/Background/bg-greenPaw.svg";
+    const svgBackground = "/Background/bg-green-paw.svg";
    
     const backgroundStyle = {
         backgroundImage: `url('${svgBackground}')`,
@@ -26,14 +26,14 @@ export default function GaleryPage() {
             <Header />
             
             {/* Main content with background and overlay */}
-            <main className="flex-grow relative">
-                <section className="py-12 text-center">
+            <main className=" flex-grow relative">
+                <section className="sm:py-12 py-4 lg:px-0 px-8 text-center">
                     <img
                         src="/title/title-galery.svg"
                         alt="PawCare Title"
-                        className="mx-auto h-[105px] w-auto"
+                        className="mx-auto lg:h-[105px] w-[310px] h-auto sm:w-auto"
                     />
-                    <p className="text-h-7 text-white max-w-4xl mx-auto px-4 mt-4">
+                    <p className="lg:text-h-7 text-body-2 text-white max-w-4xl mx-auto lg:px-4 lg:mt-4">
                         Abadikan kebahagiaan, keceriaan, dan semangat sehat hewan kesayangan bersama kami!
                     </p>
                     
