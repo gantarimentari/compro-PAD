@@ -74,4 +74,31 @@ const ModalDashedBorder = ({ className="stroke-accent-yellow-300" }) => (
     </svg>
 );
 
-export { FrameGarisPutus, DashedBorder, ModalDashedBorder };
+const CardDashedBorder = ({ className="stroke-accent-yellow-300" }) => (
+    <svg 
+        className={className}
+        width="100%" 
+        height="100%" 
+        viewBox="0 0 663 297" 
+        fill="none" 
+        xmlns="http://www.w3.org/2000/svg"
+        preserveAspectRatio="none"
+    >
+    
+    <rect
+      x="15"
+      y="8"
+      width="633"
+      height="281"
+      rx="12"
+      className={className}
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeDasharray="45 10"
+      vectorEffect="non-scaling-stroke"
+    />
+    </svg>
+);
+
+export { FrameGarisPutus, DashedBorder, ModalDashedBorder, CardDashedBorder };

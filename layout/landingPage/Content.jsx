@@ -1,7 +1,9 @@
 "use client";
 import React, { useState, useRef, useEffect } from 'react';
 import api from '@lib/api';
-import { ModalDashedBorder } from '@ds/frame/garisputus';
+import { CardDashedBorder } from '@ds/frame/garisputus';
+// import { CardDashedBorder } from '@ds/frame/garisputus';
+
 // Fungsi helper untuk convert YouTube link jadi embed URL
 const getYoutubeEmbedUrl = (youtubeLink) => {
   if (!youtubeLink) return '';
@@ -283,7 +285,7 @@ export default function Content() {
                           className="w-[250px] cursor-pointer"
                         >
                           <div className="relative bg-accent-yellow-300 rounded-xl shadow-lg overflow-hidden w-full aspect-video">
-                            <ModalDashedBorder className="absolute inset-0 pointer-events-none z-20 stroke-white"/>
+                            <CardDashedBorder className="absolute inset-0 pointer-events-none z-20 stroke-white"/>
                             
                             <div className="relative p-2 z-10 rounded-sm overflow-hidden w-full h-full">
                               <iframe
@@ -364,7 +366,7 @@ export default function Content() {
                           ${isCenter ? 'shadow-2xl' : ''}
                         `}
                       >
-                        <ModalDashedBorder className="absolute inset-0 pointer-events-none z-20 stroke-white"/>
+                        <CardDashedBorder className="absolute inset-0 pointer-events-none z-20 stroke-white"/>
                         
                         <div className="relative p-3 z-10 rounded-sm overflow-hidden w-full h-full">
                           <iframe

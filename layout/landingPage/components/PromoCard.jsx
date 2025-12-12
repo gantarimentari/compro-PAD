@@ -63,7 +63,7 @@ export default function PromoCard({
         </h3>
         
         
-        <p className="text-body-3 text-accent-neutral-1000 leading-snug line-clamp-4">
+        <p className="text-body-2  text-accent-neutral-1000 leading-snug line-clamp-4">
           {description}
         </p>
       </div>

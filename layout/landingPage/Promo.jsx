@@ -141,15 +141,29 @@ export default function Promo() {
         <div className="w-full max-w-6xl mx-auto mt-8">
           {isLoading ? (
             // ✅ Loading skeleton - tampil di semua breakpoint
-            <div className="hidden lg:grid grid-cols-3 gap-6">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-white rounded-xl shadow-lg p-6 animate-pulse">
-                  <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
-                  <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-                </div>
-              ))}
-            </div>
+            <>
+              {/* Desktop Loading */}
+              <div className="hidden lg:grid grid-cols-3 gap-6">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="bg-white rounded-xl shadow-lg p-6 animate-pulse">
+                    <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
+                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Mobile Loading */}
+              <div className="lg:hidden flex gap-4 overflow-x-auto px-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="flex-shrink-0 bg-white rounded-xl shadow-lg p-6 animate-pulse" style={{ width: '280px' }}>
+                    <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
+                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                  </div>
+                ))}
+              </div>
+            </>
           ) : availablePromos.length === 0 ? (
             // ✅ Empty state
             <div className="col-span-3 text-center py-12">
