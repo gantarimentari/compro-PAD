@@ -72,7 +72,7 @@ export default function Promo() {
     <div className="relative w-full bg-accent-blue-500 py-2" style={backgroundStyle}>
       <DashedBorder className="w-full h-10 relative z-[5]" />
       
-      <div className="flex flex-col w-full items-center gap-6 py-10 px-4 justify-center">
+      <div className="flex flex-col w-full items-center sm:gap-6 gap-3 py-10 px-4 justify-center">
         <TagLabel label='Promo' className='shadow-e4' 
         style={{
           transformOrigin: 'center',
@@ -87,7 +87,7 @@ export default function Promo() {
         />
         
         {/* Promo Cards - Grid untuk lg+, Scroll horizontal untuk lg- */}
-        <div className="w-full max-w-6xl mx-auto mt-8">
+        <div className="w-full max-w-6xl mx-auto lg:mt-8 ">
           {/* Desktop (lg+) - Grid 3 kolom */}
           <div className="hidden lg:grid grid-cols-3 gap-6">
             {availablePromos.map((promo) => (
@@ -100,7 +100,7 @@ export default function Promo() {
           </div>
 
           {/* Mobile/Tablet (lg-) - Horizontal scroll dengan lebar sama persis seperti desktop */}
-          <div className="lg:hidden flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory px-4 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          <div className="lg:hidden flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory px-2 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {availablePromos.map((promo) => (
               <div key={promo.id} className="flex-shrink-0 snap-center w-[368px]">
                 <PromoCard

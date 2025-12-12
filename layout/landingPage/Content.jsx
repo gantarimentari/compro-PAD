@@ -130,10 +130,10 @@ export default function Content() {
     >
       {/* Ornamen Kiri - Berputar */}
       <div 
-        className="absolute pointer-events-none z-[1]"
+        className="hidden lg:block absolute pointer-events-none z-[1]"
         style={{
           left: '60px',
-          top: '285px',
+          top: '265px',
           width: '300px',
           height: '300px',
           backgroundImage: "url('/Assets/ornamen-content.svg')",
@@ -146,12 +146,43 @@ export default function Content() {
       
       {/* Ornamen Kanan - Berputar */}
       <div 
-        className="absolute pointer-events-none z-[1]"
+        className="hidden lg:block absolute pointer-events-none z-[1]"
         style={{
           right: '40px',
-          top: '285px',
+          top: '265px',
           width: '300px',
           height: '300px',
+          backgroundImage: "url('/Assets/ornamen-content.svg')",
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
+          animation: 'rotate 20s linear infinite reverse', // reverse = berlawanan arah
+        }}
+      />
+      {/* ini yagn tab kebawah */}
+            <div 
+        className="hidden sm:block absolute pointer-events-none z-[1]"
+        style={{
+          left: '10px',
+          top: '170px',
+          width: '150px',
+          height: '150px',
+          backgroundImage: "url('/Assets/ornamen-content.svg')",
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
+          animation: 'rotate 20s linear infinite',
+        }}
+      />
+      
+      {/* Ornamen Kanan - Berputar */}
+      <div 
+        className="hidden sm:block absolute pointer-events-none z-[1]"
+        style={{
+          right: '10px',
+          top: '170px',
+          width: '150px',
+          height: '150px',
           backgroundImage: "url('/Assets/ornamen-content.svg')",
           backgroundSize: 'contain',
           backgroundRepeat: 'no-repeat',
@@ -163,7 +194,7 @@ export default function Content() {
       
 
       <div className="container max-w-7xl mx-auto px-6 pt-12 pb-16 md:pt-10  relative z-[5]">
-        <div className="flex flex-col items-center lg:gap-2 gap-0 relative z-10">
+        <div className="flex flex-col items-center lg:gap-2 gap-0 relative z-10 sm:pt-0 pt-8">
           {/* Tag biru dengan border putus-putus putih di dalam */}
           <div 
             className="relative rounded-lg inline-block bg-accent-blue-500 lg:px-8 px-4 py-2 lg:py-4 shadow-lg transition-transform duration-300 cursor-pointer z-50"
@@ -213,7 +244,7 @@ export default function Content() {
         </div>
 
         {/* Video Carousel Section */}
-        <div className="mt-8 md:mt-16 w-full relative">
+        <div className=" md:mt-16 w-full relative">
           {/* Mobile Layout: Kolom-kolom dengan maksimal 3 video per kolom */}
           <div 
             ref={scrollContainerRef}

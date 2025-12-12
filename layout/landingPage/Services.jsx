@@ -73,7 +73,7 @@ export default function Services() {
         backgroundColor: 'white',
       }}>
     <div 
-        className="absolute pointer-events-none z-[1]"
+        className="hidden lg:block absolute pointer-events-none z-[1]"
         style={{
           left: '-200px',
           top: '30px',
@@ -89,7 +89,7 @@ export default function Services() {
       
       {/* Ornamen Kanan - Berputar */}
       <div 
-        className="absolute pointer-events-none z-[1]"
+        className="hidden lg:block  absolute pointer-events-none z-[1]"
         style={{
           right: '-200px',
           top: '200px',
@@ -102,6 +102,36 @@ export default function Services() {
           animation: 'rotate 20s linear infinite reverse', // reverse = berlawanan arah
         }}
       />    
+       <div 
+        className="lg:hidden absolute pointer-events-none z-[1]"
+        style={{
+          left: '-70px',
+          top: '0px',
+          width: '200px',
+          height: '200px',
+          backgroundImage: "url('/Assets/ornamen-services.svg')",
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'left ',
+          animation: 'rotate 20s linear infinite',
+        }}
+      />
+      
+      {/* Ornamen Kanan - Berputar */}
+      <div 
+        className="lg:hidden   absolute pointer-events-none z-[1]"
+        style={{
+          right: '-70px',
+          bottom: '0px',
+          width: '200px',
+          height: '200px',
+          backgroundImage: "url('/Assets/ornamen-services.svg')",
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'right',
+          animation: 'rotate 20s linear infinite reverse', // reverse = berlawanan arah
+        }}
+      />  
       <div className="container max-w-7xl mx-auto p-10  relative z-[5]">
         <div className="flex flex-col items-center gap-6 p-4 justify-center">
           {/* Header */}
@@ -149,7 +179,7 @@ export default function Services() {
                   />
                 </div>
               </div>
-
+ 
               {/* Kolom Tengah - Doctor Illustration */}
               <div className='flex flex-col justify-center items-center'>
                 <img 
