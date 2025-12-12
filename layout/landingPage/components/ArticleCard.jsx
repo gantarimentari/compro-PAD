@@ -28,20 +28,36 @@ const ArticleCard = ({
       }}
     />
       
-      {/* Ornamen blue - Mobile version (lg ke bawah) */}
+      {/* Ornamen blue - Tablet version (sm to lg) */}
       <div 
-      className="lg:hidden absolute pointer-events-none z-[1]"
+      className="hidden sm:block lg:hidden absolute pointer-events-none z-[1]"
       style={{
-        right: '-120px',
-        bottom: '-100px',
-        width: '60%',
-        height: '60%',
+        right: '-260px',
+        bottom: '-80px',
+        width: '80%',
+        height: '80%',
         backgroundImage: "url('/Assets/ornamen-article-blue.svg')",
         backgroundSize: 'contain',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',
       }}
     />
+    
+    {/* Ornamen blue - Mobile version (sm ke bawah) */}
+      <div 
+      className="sm:hidden absolute pointer-events-none z-[1]"
+      style={{
+        right: '-110px',
+        bottom: '-60px',
+        width: '80%',
+        height: '80%',
+        backgroundImage: "url('/Assets/ornamen-article-blue.svg')",
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+      }}
+    />
+
       
       {/* Flex Container - Image Left, Content Right */}
       <div className='relative z-10 flex flex-row gap-4'>

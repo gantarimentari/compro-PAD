@@ -114,7 +114,7 @@ export default function Promo() {
     <div className="relative w-full bg-accent-blue-500 py-2" style={backgroundStyle}>
       <DashedBorder className="w-full h-10 relative z-[5]" />
       
-      <div className="flex flex-col w-full items-center gap-6 py-10 px-4 justify-center">
+      <div className="flex flex-col w-full items-center sm:gap-6 gap-3 py-10 px-4 justify-center">
         <TagLabel label='Promo' className='shadow-e4' 
         style={{
           transformOrigin: 'center',
@@ -137,10 +137,10 @@ export default function Promo() {
           </h2>
         )}
         
-        {/* ✅ Promo Cards - Grid untuk lg+, Scroll horizontal untuk lg- */}
+        {/* ✅ Promo Cards - 4 Layouts Total */}
         <div className="w-full max-w-6xl mx-auto mt-8">
           {isLoading ? (
-            // ✅ Loading skeleton - tampil di semua breakpoint
+            // Loading State - 2 layouts (Desktop + Mobile)
             <>
               {/* Desktop Loading */}
               <div className="hidden lg:grid grid-cols-3 gap-6">
@@ -165,7 +165,7 @@ export default function Promo() {
               </div>
             </>
           ) : availablePromos.length === 0 ? (
-            // ✅ Empty state
+            // Empty State - 1 layout
             <div className="col-span-3 text-center py-12">
               <p className="text-h-7 font-bold text-white">
                 Belum ada promo tersedia
@@ -175,6 +175,7 @@ export default function Promo() {
               </p>
             </div>
           ) : (
+            // Data State - 2 layouts (Desktop + Mobile)
             <>
               {/* Desktop (lg+) - Grid 3 kolom */}
               <div className="hidden lg:grid grid-cols-3 gap-6">
@@ -187,7 +188,7 @@ export default function Promo() {
                 ))}
               </div>
 
-              {/* Mobile/Tablet (lg-) - Horizontal scroll dengan fixed width */}
+              {/* Mobile (lg-) - Horizontal scroll */}
               <div className="lg:hidden flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory px-4 [&::-webkit-scrollbar]:hidden" 
                 style={{ 
                   scrollbarWidth: 'none', 
