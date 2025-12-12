@@ -117,7 +117,7 @@ export default function Services() {
           </p>
 
           {/* Services Grid dengan Doctor di Tengah */}
-          <div className='w-full max-w-6xl mt-8'>
+          <div className='w-full max-w-6xl '>
             {/* Layout untuk lg+ (desktop) - Grid 3 kolom */}
             <div className='hidden lg:grid grid-cols-[1fr_auto_1fr] gap-1 items-center'>
               {/* Kolom Kiri - 2 Services */}

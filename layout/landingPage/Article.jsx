@@ -73,7 +73,7 @@ export default function Article() {
         }}
       />
       
-      <div className="container max-w-7xl mx-auto p-8 relative z-[5] min-h-[85vh]">
+      <div className="container max-w-7xl mx-auto p-8 lg:pb-8 pb-32 relative z-[5] min-h-[85vh]">
         {/* Header Section */}
         <div className='flex flex-col lg:flex-row items-center gap-4 lg:gap-6 py-10 px-0'>
           <TagLabel label='Artikel' className='shadow-e4'
@@ -83,7 +83,7 @@ export default function Article() {
           }}
           onMouseEnter={() => setIsCardHovered(true)}
           onMouseLeave={() => setIsCardHovered(false)} />
-          <p className='text-body-1 text-black lg:pr-4 flex-1 text-center lg:text-left'>{articleData.deskripsiArtikel}</p>
+          <p className='text-body-2 text-black lg:pr-4 flex-1 text-center lg:text-left'>{articleData.deskripsiArtikel}</p>
           
           {/* Button - hanya tampil di lg+ */}
           <Link href='/article' className='hidden lg:block'>

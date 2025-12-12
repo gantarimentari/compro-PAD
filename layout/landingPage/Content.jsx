@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useRef, useEffect } from 'react';
-import { ModalDashedBorder } from '@ds/frame/garisputus';
+import { CardDashedBorder } from '@ds/frame/garisputus';
 // Fungsi helper untuk convert YouTube link jadi embed URL
 const getYoutubeEmbedUrl = (youtubeLink) => {
   if (!youtubeLink) return '';
@@ -240,10 +240,10 @@ export default function Content() {
                     >
                       <div className="relative bg-accent-yellow-300 rounded-xl shadow-lg overflow-hidden w-full aspect-video">
                         {/* Border putus-putus kuning di dalam card */}
-                        <ModalDashedBorder className="absolute inset-0 pointer-events-none z-20 stroke-white"/>
+                        <CardDashedBorder className="absolute inset-0 pointer-events-none z-20 stroke-white"/>
                         
                         {/* Video Container */}
-                        <div className="relative p-2 z-10 rounded-sm overflow-hidden w-full h-full">
+                        <div className="relative p-3 z-10 rounded-sm overflow-hidden w-full h-full">
                           <iframe
                             className="w-full h-full rounded-md"
                             src={youtubeEmbedUrl}
@@ -318,13 +318,13 @@ export default function Content() {
                     <div 
                       className={`
                         relative bg-accent-yellow-300 rounded-xl shadow-lg overflow-hidden w-full 
-                        h-[200px] 
+                        h-[200px]
                         transition-all duration-500 
                         ${isCenter ? 'shadow-2xl' : ''}
                       `}
                     >
                       {/* Border putus-putus kuning di dalam card */}
-                      <ModalDashedBorder className="absolute inset-0 pointer-events-none z-20 stroke-white"/>
+                      <CardDashedBorder className="absolute inset-0 pointer-events-none z-20 stroke-white"/>
                       
                       {/* Video Container - Full height, tanpa title */}
                       <div className="relative p-3 z-10 rounded-sm overflow-hidden w-full h-full">

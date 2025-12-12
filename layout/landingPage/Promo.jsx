@@ -99,10 +99,10 @@ export default function Promo() {
             ))}
           </div>
 
-          {/* Mobile/Tablet (lg-) - Horizontal scroll dengan fixed width */}
-          <div className="lg:hidden flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory px-4 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          {/* Mobile/Tablet (lg-) - Horizontal scroll dengan lebar sama persis seperti desktop */}
+          <div className="lg:hidden flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory px-4 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {availablePromos.map((promo) => (
-              <div key={promo.id} className="flex-shrink-0 snap-center" style={{ width: '280px' }}>
+              <div key={promo.id} className="flex-shrink-0 snap-center w-[368px]">
                 <PromoCard
                   title={promo.judulPromo}
                   description={promo.isiPromo}
