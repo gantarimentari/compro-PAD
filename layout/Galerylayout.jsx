@@ -1,4 +1,5 @@
 import React from 'react';
+import { DashedBorder } from '@ds/frame/garisputus';
 
 /**
  * GaleryLayout - Layout untuk halaman galeri dengan background dan garis putus-putus
@@ -17,43 +18,17 @@ export default function GaleryLayout({ children }) {
 
   return (
     <div className="relative w-full">
-      {/* Garis Putus-Putus Atas dengan SVG */}
-      <svg width="100%" height="5" className="block">
-        <line 
-          x1="0" 
-          y1="1.5" 
-          x2="100%" 
-          y2="1.5" 
-          stroke="white" 
-          strokeWidth="13" 
-          strokeDasharray="70 30"
-          strokeLinecap="round"
-        />
-      </svg>
-      
       {/* Konten dengan Background */}
       <div 
-        className="w-full py-8 bg-accent-green-500"
+        className="w-full py-2 bg-accent-green-500"
         style={backgroundStyle}
       >
+ < DashedBorder className="w-full h-5 relative z-[5]" />
         <div className="container mx-auto px-4">
           {children}
         </div>
+        < DashedBorder className="w-full h-5 relative z-[5]" /> 
       </div>
-      
-      {/* Garis Putus-Putus Bawah dengan SVG */}
-      <svg width="100%" height="3" className="block">
-        <line 
-          x1="0" 
-          y1="1.5" 
-          x2="100%" 
-          y2="1.5" 
-          stroke="white" 
-          strokeWidth="13" 
-          strokeDasharray="70 30"
-          strokeLinecap="round"
-        />
-      </svg>
     </div>
   );
 }
