@@ -78,23 +78,26 @@ const ArticleModal = ({ article, isOpen, onClose, onNavigate, allArticles }) => 
                 className="relative bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className="relative z-10 p-8 overflow-y-auto max-h-[90vh]">
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-h-5 font-bold text-accent-neutral-1000">
-                            {article.title}
-                        </h2>
-                        <button 
-                            onClick={onClose}
-                            aria-label="Close modal"
-                            className="w-10 h-10 md:w-11 md:h-11 bg-accent-yellow-300 rounded-lg flex items-center justify-center text-accent-neutral-1000 hover:bg-accent-yellow-400 duration-300 hover:shadow-md"
-                        >
-                            <CloseCircleIcon className="w-5 h-5" />
-                        </button>
+            
+                {/* Modal Content */}
+                <div className="relative z-10 p-8 flex flex-col max-h-[90vh]">
+                    {/* Header - Fixed */}
+                    <div className="flex items-center justify-between mb-6 flex-shrink-0">
+                         <h2 className="sm:text-h-5 text-body-1 font-bold text-accent-neutral-1000">
+                                {article.title}
+                            </h2>
+                            <button 
+                             onClick={onClose}
+                             aria-label="Close modal"
+                            className="w-10 h-10 md:w-11 md:h-11 bg-accent-yellow-300 rounded-lg flex items-center justify-center text-accent-neutral-1000 hover:bg-accent-yellow-400 duration-300 hover:shadow-md">
+                                <CloseCircleIcon className="w-5 h-5" />
+                            </button>
                     </div>
                            
-                    <div className="w-full h-px bg-accent-neutral-200 mb-6" />
+                    <div className="w-full h-px bg-accent-neutral-200 mb-6 flex-shrink-0" />
 
-                    <div className="flex flex-col md:flex-row gap-6">
+                    {/* Scrollable Content Area */}
+                    <div className="flex flex-col md:flex-row gap-6 overflow-y-auto flex-1 hide-scrollbar">
                         {/* Image Section */}
                         <div className="md:w-1/3 flex-shrink-0">
                             <div className="w-full aspect-square rounded-lg overflow-hidden shadow-md">
@@ -114,6 +117,7 @@ const ArticleModal = ({ article, isOpen, onClose, onNavigate, allArticles }) => 
                         {/* Content Section */}
                         <div className="md:w-2/3 flex flex-col gap-4">
                             <div className="relative bg-white p-8 rounded-lg border-2 border-accent-yellow-300">
+                                {/* Modal Border SVG */}
                                 <ModalDashedBorder className="absolute inset-0 pointer-events-none p-1 stroke-accent-yellow-300" />
                                 
                                 {/*  Option 1: Render HTML safely */}
@@ -136,41 +140,53 @@ const ArticleModal = ({ article, isOpen, onClose, onNavigate, allArticles }) => 
                                 </div>
                                 */}
                             </div>
-
-                            {/* Navigation Between Articles */}
-                            <div className="flex items-center justify-between mt-4">
-                                <div className="flex gap-4">
-                                    <button 
-                                        onClick={handlePrevArticle}
-                                        disabled={isFirstArticle}
-                                        aria-label="Previous article"
-                                        className={`w-10 h-10 md:w-11 md:h-11 rounded-lg flex items-center justify-center text-accent-neutral-1000 duration-300 hover:shadow-md ${
-                                            isFirstArticle 
-                                                ? 'bg-accent-neutral-250 opacity-50 cursor-not-allowed' 
-                                                : 'bg-accent-neutral-250 hover:bg-accent-yellow-400'
-                                        }`}
-                                    >
-                                        <ChevronLeftIcon className="w-5 h-5" />
-                                    </button>
-                                    <button 
-                                        onClick={handleNextArticle}
-                                        disabled={isLastArticle}
-                                        aria-label="Next article"
-                                        className={`w-10 h-10 md:w-11 md:h-11 rounded-lg flex items-center justify-center text-accent-neutral-1000 duration-300 hover:shadow-md ${
-                                            isLastArticle 
-                                                ? 'bg-accent-yellow-300 opacity-50 cursor-not-allowed' 
-                                                : 'bg-accent-yellow-300 hover:bg-accent-yellow-400'
-                                        }`}
-                                    >
-                                        <ChevronRightIcon className="w-5 h-5" />
-                                    </button>
-                                </div>
-                            </div>
-                                 
                         </div>
                     </div>
-                    
-                    <div className="w-full h-px bg-accent-neutral-200 mt-4" />
+
+                    {/* Navigation - Fixed at bottom */}
+                    <div className="flex items-center justify-between mt-4 pt-4 border-t border-accent-neutral-200 flex-shrink-0">
+                        {/* Dot Indicators */}
+                        <div className="flex gap-2 items-center">
+                            {allArticles.map((_, index) => (
+                                <div
+                                    key={index}
+                                    className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                                        index === currentArticleIndex
+                                            ? 'bg-accent-yellow-400'
+                                            : 'bg-accent-neutral-300'
+                                    }`}
+                                />
+                            ))}
+                        </div>
+                        
+                        {/* Navigation Buttons */}
+                        <div className="flex gap-4">
+                            <button 
+                                onClick={handlePrevArticle}
+                                disabled={isFirstArticle}
+                                aria-label="Previous article"
+                                className={`w-10 h-10 md:w-11 md:h-11 rounded-lg flex items-center justify-center text-accent-neutral-1000 duration-300 hover:shadow-md ${
+                                    isFirstArticle 
+                                        ? 'bg-accent-neutral-250 opacity-50 cursor-not-allowed' 
+                                        : 'bg-accent-neutral-250 hover:bg-accent-yellow-400'
+                                }`}
+                            >
+                                <ChevronLeftIcon className="w-5 h-5" />
+                            </button>
+                            <button 
+                                onClick={handleNextArticle}
+                                disabled={isLastArticle}
+                                aria-label="Next article"
+                                className={`w-10 h-10 md:w-11 md:h-11 rounded-lg flex items-center justify-center text-accent-neutral-1000 duration-300 hover:shadow-md ${
+                                    isLastArticle 
+                                        ? 'bg-accent-yellow-300 opacity-50 cursor-not-allowed' 
+                                        : 'bg-accent-yellow-300 hover:bg-accent-yellow-400'
+                                }`}
+                            >
+                                <ChevronRightIcon className="w-5 h-5" />
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

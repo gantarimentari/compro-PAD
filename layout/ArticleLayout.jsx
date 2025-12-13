@@ -1,15 +1,17 @@
 import React from 'react';
+import { DashedBorder } from '@ds/frame/garisputus';
+
 
 /**
  * ArticleLayout - Layout untuk halaman artikel dengan background
  * @param {ReactNode} children - Konten yang akan ditampilkan
  */
 export default function ArticleLayout({ children }) {
-  const svgBackground = "/Background/bg-article.svg";
+  const svgBackground = "/Background/bg-blue-bone.svg";
   
   const backgroundStyle = {
     backgroundImage: `url('${svgBackground}')`,
-    backgroundColor: '#4C8CBA',
+    backgroundColor: '#1FA2FF',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
@@ -17,12 +19,14 @@ export default function ArticleLayout({ children }) {
 
   return (
     <div 
-      className="min-h-screen w-full py-8"
+      className="min-h-screen w-full py-2"
       style={backgroundStyle}
     >
+       < DashedBorder className="w-full h-5 relative z-[5]" />
       <div className="container mx-auto px-4">
         {children}
       </div>
+       < DashedBorder className="w-full h-5 relative z-[5]" />
     </div>
   );
 }

@@ -177,7 +177,7 @@ export default function Header() {
               ) : (
                 <Link 
                   href="/profile"
-                  className="bg-accent-yellow-300 text-accent-neutral-1000 rounded-lg px-4 py-3 text-body-2 font-medium flex items-center justify-center gap-2 hover:bg-accent-yellow-400 transition-colors"
+                  className="w-full bg-accent-yellow-300 text-accent-neutral-1000 rounded-lg px-4 py-3 text-body-2 font-medium flex items-center justify-center gap-2 hover:bg-accent-yellow-400 transition-colors"
                   onClick={toggleMenu}
                 >
                   <UserIcon className="w-5 h-5" />
