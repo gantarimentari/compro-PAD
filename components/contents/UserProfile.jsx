@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { UserIcon, LogOutDoor, PencilIcon,DocumentIcon} from '@ds/icons/UIIcons'; 
 import Link from 'next/link';
+// import { ModalDashedBorder } from '@ds/frame/garisputus';
 
 // DUMMY DATA 
 
@@ -14,28 +15,33 @@ const MOCK_USER_DATA = {
 };
 
 // SVG Component untuk border putus-putus
-const ModalDashedBorder = ({ className }) => (
+const ModalDashedBorder = ({ className, style = {} }) => (
     <svg 
         className={className}
-        width="100%" 
-        height="100%" 
-        viewBox="0 0 663 297" 
-        fill="none" 
-        xmlns="http://www.w3.org/2000/svg"
+        style={{
+            ...style,
+            left: '4px',
+            top: '4px',
+            right: '4px',
+            bottom: '4px',
+            width: 'calc(100% - 8px)',
+            height: 'calc(100% - 8px)',
+        }}
         preserveAspectRatio="none"
-        style={{ overflow: 'visible' }}
     >
         <rect 
-              x="8.9"
-              y="7.9"
-              width="645.2"
-              height="282.2"
-              rx="5.1"
-              className="stroke-accent-yellow-300"
-              strokeWidth="1.8"
+              x="1"
+              y="1"
+              width="calc(100% - 2px)"
+              height="calc(100% - 2px)"
+              rx="5"
+              ry="5"
+              stroke="rgb(255, 171, 47)"
+              strokeWidth="1.5"
               strokeLinecap="square"
               strokeLinejoin="round"
-              strokeDasharray="18 8"
+              strokeDasharray="20 4 3 6 6 4"
+              fill="none"
               vectorEffect="non-scaling-stroke"
         />
     </svg>
@@ -65,43 +71,43 @@ const PasswordGroup = ({ isEditing, onPasswordChangeClick, password }) => {
        
         return (
             <div className="space-y-6">
-                <p className="text-h-4 font-medium text-accent-neutral-1000 ">
+                <p className="text-h-7 font-medium text-accent-neutral-1000 ">
                     Edit Password
                 </p>
                 
                 <div className="space-y-6">
                     <div>
-                        <label className="block text-h-6 font-medium text-accent-neutral-1000 mb-2">Password Lama</label>
+                        <label className="block text-body-1 font-medium text-accent-neutral-1000 mb-2">Password Lama</label>
                         <div className="relative bg-white rounded-lg border-2 border-accent-yellow-300 p-1">
                             {/* Modal Border SVG - Garis Putus-putus dengan jarak dari border */}
-                            <ModalDashedBorder className="absolute inset-0 w-full h-full z-0 pointer-events-none p-1" />
+                            <ModalDashedBorder className="absolute pointer-events-none z-2" />
                             <input 
                                 type="password"
-                                className="relative pl-4  z-10 w-full p-3 text-h-7 font-medium bg-transparent rounded-lg focus:outline-none text-accent-neutral-1000"
+                                className="relative pl-4  z-10 w-full p-3 text-body-1 font-medium bg-transparent rounded-lg focus:outline-none text-accent-neutral-1000"
                             />
                         </div>
                     </div>
                     
                     <div>
-                        <label className="block text-h-6 font-medium text-accent-neutral-1000 mb-2">Password Baru</label>
+                        <label className="block text-body-1 font-medium text-accent-neutral-1000 mb-2">Password Baru</label>
                         <div className="relative bg-white rounded-lg border-2 border-accent-yellow-300 p-1">
                             {/* Modal Border SVG - Garis Putus-putus dengan jarak dari border */}
-                            <ModalDashedBorder className="absolute inset-0 w-full h-full z-0 pointer-events-none p-1" />
+                            <ModalDashedBorder className="absolute pointer-events-none z-2" />
                             <input 
                                 type="password"
-                                className="relative pl-4  z-10 w-full p-3 text-h-7 font-medium bg-transparent rounded-lg focus:outline-none text-accent-neutral-1000"
+                                className="relative pl-4  z-10 w-full p-3 text-body-1 font-medium bg-transparent rounded-lg focus:outline-none text-accent-neutral-1000"
                             />
                         </div>
                     </div>
                     
                     <div>
-                        <label className="block text-h-6 font-medium text-accent-neutral-1000 mb-2">Konfirmasi Password Baru</label>
+                        <label className="block text-body-1 font-medium text-accent-neutral-1000 mb-2">Konfirmasi Password Baru</label>
                         <div className="relative bg-white rounded-lg border-2 border-accent-yellow-300 p-1">
                             {/* Modal Border SVG - Garis Putus-putus dengan jarak dari border */}
-                            <ModalDashedBorder className="absolute inset-0 w-full h-full z-0 pointer-events-none p-1" />
+                            <ModalDashedBorder className="absolute pointer-events-none z-2" />
                             <input 
                                 type="password"
-                                className="relative pl-4 z-10 w-full p-3 text-h-7 font-medium bg-transparent rounded-lg focus:outline-none text-accent-neutral-1000"
+                                className="relative pl-4 z-10 w-full p-3 text-body-1 font-medium bg-transparent rounded-lg focus:outline-none text-accent-neutral-1000"
                             />
                         </div>
                     </div>
@@ -119,33 +125,33 @@ const PasswordGroup = ({ isEditing, onPasswordChangeClick, password }) => {
 // --- Helper Component untuk Input (DIUBAH agar support type="password") ---
 const InputGroup = ({ label, value, isEditing, readOnly, as = 'input', type = 'text' }) => (
     <div>
-        <label className="block text-h-6 font-medium text-accent-neutral-1000 mb-2">{label}</label>
+        <label className="block text-body-1 font-medium text-accent-neutral-1000 mb-2">{label}</label>
         {isEditing && as === 'input' ? (
             <div className="relative bg-white rounded-lg border-2 border-accent-yellow-300 p-1 ">
-                <ModalDashedBorder className="absolute inset-0 w-full h-full z-0 pointer-events-none p-1" />
+                <ModalDashedBorder className="absolute pointer-events-none z-2" />
                 <input 
                     type={type}
                     defaultValue={type !== 'password' ? value : ''} 
                     readOnly={readOnly}
-                    className={`relative pl-4 z-10 text-h-7 font-medium text-accent-neutral-1000 w-full p-3 bg-transparent rounded-lg focus:outline-none ${readOnly ? 'text-gray-500' : 'text-accent-neutral-1000'}`}
+                    className={`relative pl-4 z-10 text-body-1 font-medium text-accent-neutral-1000 w-full p-3 bg-transparent rounded-lg focus:outline-none ${readOnly ? 'text-gray-500' : 'text-accent-neutral-1000'}`}
                 />
             </div>
         ) : isEditing && as === 'textarea' ? (
             <div className="relative bg-white rounded-lg border-2 border-accent-yellow-300 p-1">
                 {/* Modal Border SVG - Garis Putus-putus dengan jarak dari border */}
-                <ModalDashedBorder className="absolute inset-0 w-full h-full z-0 pointer-events-none p-1" />
+                <ModalDashedBorder className="absolute pointer-events-none z-2" />
                 <textarea 
                     defaultValue={value} 
                     readOnly={readOnly}
                     rows="3"
-                    className={`relative pl-4 z-10 text-h-7 font-medium w-full p-3 bg-transparent rounded-lg focus:outline-none ${readOnly ? 'text-gray-500' : 'text-accent-neutral-1000'}`}
+                    className={`relative pl-4 z-10 text-body-1 font-medium w-full p-3 bg-transparent rounded-lg focus:outline-none ${readOnly ? 'text-gray-500' : 'text-accent-neutral-1000'}`}
                 />
             </div>
         ) : (
             // Mode View
             <div className="relative bg-white rounded-lg border-2 border-accent-yellow-300">
-                <ModalDashedBorder className="absolute inset-0 pointer-events-none rounded-lg p-1 " />
-                <div className={`relative z-10 w-full pl-6 p-3 text-h-7 font-medium ${readOnly ? 'text-gray-500' : 'text-accent-neutral-1000'}`}>
+                <ModalDashedBorder className="absolute pointer-events-none z-2" />
+                <div className={`relative z-10 w-full pl-6 p-3 text-body-1 font-medium ${readOnly ? 'text-gray-500' : 'text-accent-neutral-1000'}`}>
                     {type === 'password' ? '••••••••' : value}
                 </div>
             </div>
@@ -194,7 +200,7 @@ export default function UserProfile() {
                 
                 {/* Header */}
                 <div className="mb-8">
-                    <p className="text-h-3 font-bold text-accent-neutral-1000">Hai, {userProfile.username}</p>
+                    <p className="sm:text-h-5 text-h-7 font-bold text-accent-neutral-1000">Hai, {userProfile.username}</p>
                 </div>
 
                 {/* Konten Utama Profil */}
@@ -205,31 +211,30 @@ export default function UserProfile() {
                 />
 
                 {/* Tombol Aksi */}
-                <div className="flex justify-between mt-8">
+                <div className={`flex gap-2 mt-8 ${isEditing ? 'justify-end' : 'justify-between'}`}>
                     {isEditing ? (
                         <>
                             <button 
 
                                 onClick={handleToggleEdit}
-                                className="px-6 
+                                className="sm:px-6 px-4 sm:py-4 py-1
                                 font-bold 
-                                py-4 
                                 h-10 
                                 bg-transparent 
-                                text-body-2 
+                                sm:text-body-2 text-body-5
                                 transition ease-out duration-300 
                                 text-accent-red-300 
-                                border border-accent-red-300 rounded-lg 
+                                border border-accent-red-300 rounded-md 
                                 hover:bg-accent-red-300 hover:text-white   
                                 font-medium flex items-center justify-center gap-2"
                             >
-                                Batal
+                                Batal Perubahan 
                             </button>
                             <button 
                                 onClick={handleToggleEdit}
-                                className="px-6 py-4 h-10 font-bold bg-accent-yellow-300 border-accent-yellow-300 ease-out duration-300 text-body-2 text-white  rounded-lg hover:bg-accent-yellow-400 transition  font-medium flex items-center justify-center gap-2"
+                                className="sm:px-6 px-4 sm:py-4 py-1 h-10 font-bold bg-accent-blue-400 border-accent-blue-400 ease-out duration-300 sm:text-body-2 text-body-5  text-white  rounded-md hover:bg-accent-blue-500 transition  font-medium flex items-center justify-center gap-2"
                             >
-                                <DocumentIcon className="w-5 h-5" />
+                                <DocumentIcon className="sm:w-5 sm:h-5 w-4 w-4" />
                                 <span>Simpan Perubahan</span>
                             </button>
                         </>
@@ -239,28 +244,27 @@ export default function UserProfile() {
                             href="/"
                                 onClick={() => console.log('Logout clicked')}
                                
-                                className="px-6 
+                                className="sm:px-6 px-4 sm:py-4 py-1
                                 font-bold 
-                                py-4 
                                 h-10 
                                 bg-transparent 
-                                text-body-2 
+                                sm:text-body-2 text-body-5
                                 transition ease-out duration-300 
                                 text-accent-red-300 
-                                border border-accent-red-300 rounded-lg 
+                                border border-accent-red-300 rounded-md 
                                 hover:bg-accent-red-300 hover:text-white   
                                 font-medium flex items-center justify-center gap-2"
                             >
-                                <LogOutDoor className="w-5 h-5" /> 
+                                <LogOutDoor className="sm:w-5 sm:h-5 w-4 h-4" /> 
                                 <span>Logout</span>
                                 
                             </Link>
                             
                             <button 
                                 onClick={handleToggleEdit}
-                                className="px-6 py-4 h-10 font-bold bg-accent-yellow-300 border-accent-yellow-300 ease-out duration-300 text-body-2 text-white  rounded-lg hover:bg-accent-yellow-400 transition  font-medium flex items-center justify-center gap-2"
+                                className="sm:px-6 px-4 sm:py-4 py-1 h-10 font-bold bg-accent-yellow-300 border-accent-yellow-300 ease-out duration-300 sm:text-body-2 text-body-5 text-white rounded-md hover:bg-accent-yellow-400 transition font-medium flex items-center justify-center gap-2"
                             >
-                                <PencilIcon className="w-5 h-5" /> 
+                                <PencilIcon className="sm:w-5 sm:h-5 w-4 h-4" /> 
                                 <span>Edit Profile</span>
                             </button>
                         </>
