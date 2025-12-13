@@ -9,7 +9,7 @@ export default function Header() {
   // SIMULASI STATE LOGIN
     // Ubah nilainya menjadi true untuk melihat tampilan "Sudah Login"
     // Ubah nilainya menjadi false untuk melihat tampilan "Belum Login"
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(true);
     const [isScrolled, setIsScrolled] = useState(false);
 
 
@@ -153,7 +153,7 @@ export default function Header() {
               {isLoggedIn && (
                 <Link 
                   href="/profile"
-                  className="bg-accent-yellow-300 text-accent-neutral-1000 rounded-lg px-4 py-3 text-body-2 font-medium flex items-center justify-center gap-2 hover:bg-accent-yellow-400 transition-colors"
+                  className="w-full bg-accent-yellow-300 text-accent-neutral-1000 rounded-lg px-4 py-3 text-body-2 font-medium flex items-center justify-center gap-2 hover:bg-accent-yellow-400 transition-colors"
                   onClick={toggleMenu}
                 >
                   <UserIcon className="w-5 h-5" />
