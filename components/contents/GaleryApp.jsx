@@ -68,7 +68,7 @@ const ImageModal = ({ image, isOpen, onClose, onNavigate }) => {
                 <button 
                     onClick={onClose}
                     aria-label="Close modal"
-                    className="absolute  -top-10 right-8 z-20 w-10 h-10 bg-accent-yellow-300 rounded-lg flex shadow-md items-center justify-center text-accent-neutral-1000 hover:bg-accent-yellow-400 duration-300 hover:shadow-xl"
+                    className="absolute  -top-10 sm:right-8 right-0 z-20 w-10 h-10 bg-accent-yellow-300 rounded-lg flex shadow-md items-center justify-center text-accent-neutral-1000 hover:bg-accent-yellow-400 duration-300 hover:shadow-xl"
                 > 
                     <CloseCircleIcon className="w-6 h-6" />
                 </button>
@@ -80,7 +80,7 @@ const ImageModal = ({ image, isOpen, onClose, onNavigate }) => {
                     onClick={handlePrevImage}
                     disabled={isFirstImage}
                     aria-label="Previous image"
-                    className={`absolute   z-20 w-10 h-10 left-8 rounded-lg flex items-center justify-center text-accent-neutral-1000 duration-300 hover:shadow-lg ${
+                    className={`absolute sm:left-8 left-0  z-20 w-10 h-10 rounded-lg flex items-center justify-center text-accent-neutral-1000 duration-300 hover:shadow-lg ${
                         isFirstImage 
                             ? 'bg-accent-neutral-250 opacity-50 cursor-not-allowed' 
                             : 'bg-accent-yellow-300 hover:bg-accent-yellow-400'
@@ -92,9 +92,9 @@ const ImageModal = ({ image, isOpen, onClose, onNavigate }) => {
                 </button>
 
                 {/* Image */}
-                <div className="relative w-full h-full flex items-center justify-center">
+                <div className="relative w-full h-full flex items-center justify-center ">
                     <img
-                        className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
+                        className="md:w-[560px] w-[300px] max-h-[85vh] object-contain rounded-lg shadow-2xl border-4 border-"
                         alt={`Gallery image ${image.id}`}
                         src={image.imageUrl || defaultPlaceholder}
                         onError={(e) => { 
@@ -110,7 +110,7 @@ const ImageModal = ({ image, isOpen, onClose, onNavigate }) => {
                     onClick={handleNextImage}
                     disabled={isLastImage}
                     aria-label="Next image"
-                    className={`absolute right-8 z-20 w-10 h-10 rounded-lg flex items-center justify-center text-accent-neutral-1000 duration-300 hover:shadow-lg ${
+                    className={`absolute sm:right-8 right-0  z-20 w-10 h-10 rounded-lg flex items-center justify-center text-accent-neutral-1000 duration-300 hover:shadow-lg ${
                         isLastImage 
                             ? 'bg-accent-neutral-250 opacity-50 cursor-not-allowed' 
                             : 'bg-accent-yellow-300 hover:bg-accent-yellow-400'
@@ -158,7 +158,7 @@ const FilterButton = ({ label, isActive, onClick, count }) => {
     return (
         <button
             onClick={onClick}
-            className={` text-accent-neutral-1000 sm:px-6 px-3 sm:py-2.5 py-2 border-[1px] rounded-[8px] sm:text-body-2 text-body-5 transition-all duration-300 shadow-md ${
+            className={`whitespace-nowrap flex-shrink-0 text-accent-neutral-1000 sm:px-6 px-3 sm:py-2.5 py-2 border-[1px] rounded-[8px] sm:text-body-2 text-body-5 transition-all duration-300 shadow-md ${
                 isActive 
                     ? 'bg-accent-yellow-300   border-accent-yellow-400 scale-105' 
                     : 'bg-accent-neutral-250  border-2 hover:border-accent-neutral-250 hover:bg-accent-yellow-50'
@@ -309,37 +309,39 @@ export const GaleryFilterButtons = ({ activeFilter, onFilterChange }) => {
     };
 
     return (
-        <div className="flex flex-wrap gap-3 justify-center sm:py-6 pb-6 pt-4">
-            <FilterButton 
-                label="Semua" 
-                isActive={activeFilter === 'all'} 
-                onClick={() => onFilterChange('all')}
-               
-            />
-            <FilterButton 
-                label="7 Hari Terakhir" 
-                isActive={activeFilter === '7'} 
-                onClick={() => onFilterChange('7')}
-             
-            />
-            <FilterButton 
-                label="14 Hari Terakhir" 
-                isActive={activeFilter === '14'} 
-                onClick={() => onFilterChange('14')}
-                
-            />
-            <FilterButton 
-                label="30 Hari Terakhir" 
-                isActive={activeFilter === '30'} 
-                onClick={() => onFilterChange('30')}
-                
-            />
-            <FilterButton 
-                label="90 Hari Terakhir" 
-                isActive={activeFilter === '90'} 
-                onClick={() => onFilterChange('90')}
-               
-            />
+        <div className="w-full overflow-x-auto sm:py-6 pb-6 pt-4 hide-scrollbar">
+            <div className="flex gap-3 justify-center min-w-max px-4">
+                <FilterButton 
+                    label="Semua" 
+                    isActive={activeFilter === 'all'} 
+                    onClick={() => onFilterChange('all')}
+                   
+                />
+                <FilterButton 
+                    label="7 Hari Terakhir" 
+                    isActive={activeFilter === '7'} 
+                    onClick={() => onFilterChange('7')}
+                 
+                />
+                <FilterButton 
+                    label="14 Hari Terakhir" 
+                    isActive={activeFilter === '14'} 
+                    onClick={() => onFilterChange('14')}
+                    
+                />
+                <FilterButton 
+                    label="30 Hari Terakhir" 
+                    isActive={activeFilter === '30'} 
+                    onClick={() => onFilterChange('30')}
+                    
+                />
+                <FilterButton 
+                    label="90 Hari Terakhir" 
+                    isActive={activeFilter === '90'} 
+                    onClick={() => onFilterChange('90')}
+                   
+                />
+            </div>
         </div>
     );
 };

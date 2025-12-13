@@ -33,7 +33,7 @@ export default function GaleryPage() {
                         alt="PawCare Title"
                         className="mx-auto lg:h-[105px] w-[310px] h-auto sm:w-auto"
                     />
-                    <p className="lg:text-h-7 text-body-2 text-white max-w-4xl mx-auto lg:px-4 lg:mt-4">
+                    <p className="sm:text-h-7 text-body-2 text-white max-w-4xl mx-auto lg:px-4 lg:mt-4">
                         Abadikan kebahagiaan, keceriaan, dan semangat sehat hewan kesayangan bersama kami!
                     </p>
                     
