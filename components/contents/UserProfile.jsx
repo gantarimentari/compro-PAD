@@ -7,28 +7,33 @@ import { useRouter } from 'next/navigation';
 import api from '@lib/api.js'; // ✅ Import API client
 
 // SVG Component untuk border putus-putus
-const ModalDashedBorder = ({ className }) => (
+const ModalDashedBorder = ({ className, style = {} }) => (
     <svg 
         className={className}
-        width="100%" 
-        height="100%" 
-        viewBox="0 0 663 297" 
-        fill="none" 
-        xmlns="http://www.w3.org/2000/svg"
+        style={{
+            ...style,
+            left: '4px',
+            top: '4px',
+            right: '4px',
+            bottom: '4px',
+            width: 'calc(100% - 8px)',
+            height: 'calc(100% - 8px)',
+        }}
         preserveAspectRatio="none"
-        style={{ overflow: 'visible' }}
     >
         <rect 
-            x="8.9"
-            y="7.9"
-            width="645.2"
-            height="282.2"
-            rx="5.1"
-            className="stroke-accent-yellow-300"
-            strokeWidth="1.8"
+            x="1"
+            y="1"
+            width="calc(100% - 2px)"
+            height="calc(100% - 2px)"
+            rx="5"
+            ry="5"
+            stroke="rgb(255, 171, 47)"
+            strokeWidth="1.5"
             strokeLinecap="square"
             strokeLinejoin="round"
-            strokeDasharray="18 8"
+            strokeDasharray="20 4 3 6 6 4"
+            fill="none"
             vectorEffect="non-scaling-stroke"
         />
     </svg>
@@ -68,13 +73,13 @@ const ProfileDetails = ({ user, formData, isEditing, onChange, errors }) => {
 const PasswordChangeForm = ({ formData, onChange, errors }) => {
     return (
         <div className="space-y-6 mt-8">
-            <p className="text-h-4 font-medium text-accent-neutral-1000">
+            <p className="sm:text-h-4 text-h-7 font-medium text-accent-neutral-1000">
                 Ubah Password
             </p>
             
             <div className="space-y-6">
                 <div>
-                    <label className="block text-h-6 font-medium text-accent-neutral-1000 mb-2">
+                    <label className="block sm:text-h-6 text-body-1 font-medium text-accent-neutral-1000 mb-2">
                         Password Lama
                     </label>
                     <div className="relative bg-white rounded-lg border-2 border-accent-yellow-300 p-1">
@@ -84,7 +89,7 @@ const PasswordChangeForm = ({ formData, onChange, errors }) => {
                             name="current_password"
                             value={formData.current_password}
                             onChange={onChange}
-                            className="relative pl-4 z-10 w-full p-3 text-h-7 font-medium bg-transparent rounded-lg focus:outline-none text-accent-neutral-1000"
+                            className="relative pl-4 z-10 w-full p-3 sm:text-h-7 text-body-1 font-medium bg-transparent rounded-lg focus:outline-none text-accent-neutral-1000"
                         />
                     </div>
                     {errors.current_password && (
@@ -93,7 +98,7 @@ const PasswordChangeForm = ({ formData, onChange, errors }) => {
                 </div>
                 
                 <div>
-                    <label className="block text-h-6 font-medium text-accent-neutral-1000 mb-2">
+                    <label className="block sm:text-h-6 text-body-1 font-medium text-accent-neutral-1000 mb-2">
                         Password Baru
                     </label>
                     <div className="relative bg-white rounded-lg border-2 border-accent-yellow-300 p-1">
@@ -103,7 +108,7 @@ const PasswordChangeForm = ({ formData, onChange, errors }) => {
                             name="password"
                             value={formData.password}
                             onChange={onChange}
-                            className="relative pl-4 z-10 w-full p-3 text-h-7 font-medium bg-transparent rounded-lg focus:outline-none text-accent-neutral-1000"
+                            className="relative pl-4 z-10 w-full p-3 sm:text-h-7 text-body-1 font-medium bg-transparent rounded-lg focus:outline-none text-accent-neutral-1000"
                         />
                     </div>
                     {errors.password && (
@@ -112,7 +117,7 @@ const PasswordChangeForm = ({ formData, onChange, errors }) => {
                 </div>
                 
                 <div>
-                    <label className="block text-h-6 font-medium text-accent-neutral-1000 mb-2">
+                    <label className="block sm:text-h-6 text-body-1 font-medium text-accent-neutral-1000 mb-2">
                         Konfirmasi Password Baru
                     </label>
                     <div className="relative bg-white rounded-lg border-2 border-accent-yellow-300 p-1">
@@ -122,9 +127,12 @@ const PasswordChangeForm = ({ formData, onChange, errors }) => {
                             name="password_confirmation"
                             value={formData.password_confirmation}
                             onChange={onChange}
-                            className="relative pl-4 z-10 w-full p-3 text-h-7 font-medium bg-transparent rounded-lg focus:outline-none text-accent-neutral-1000"
+                            className="relative pl-4 z-10 w-full p-3 sm:text-h-7 text-body-1 font-medium bg-transparent rounded-lg focus:outline-none text-accent-neutral-1000"
                         />
                     </div>
+                    {errors.password_confirmation && (
+                        <p className="mt-1 text-sm text-red-500">{errors.password_confirmation}</p>
+                    )}
                 </div>
             </div>
         </div>
@@ -134,7 +142,7 @@ const PasswordChangeForm = ({ formData, onChange, errors }) => {
 // --- Input Group Component ---
 const InputGroup = ({ label, name, value, isEditing, readOnly, onChange, error }) => (
     <div>
-        <label className="block text-h-6 font-medium text-accent-neutral-1000 mb-2">
+        <label className="block sm:text-h-6 text-body-1 font-medium text-accent-neutral-1000 mb-2">
             {label}
         </label>
         {isEditing && !readOnly ? (
@@ -146,7 +154,7 @@ const InputGroup = ({ label, name, value, isEditing, readOnly, onChange, error }
                         name={name}
                         value={value}
                         onChange={onChange}
-                        className="relative pl-4 z-10 text-h-7 font-medium text-accent-neutral-1000 w-full p-3 bg-transparent rounded-lg focus:outline-none"
+                        className="relative pl-4 z-10 sm:text-h-7 text-body-1 font-medium text-accent-neutral-1000 w-full p-3 bg-transparent rounded-lg focus:outline-none"
                     />
                 </div>
                 {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
@@ -154,7 +162,7 @@ const InputGroup = ({ label, name, value, isEditing, readOnly, onChange, error }
         ) : (
             <div className="relative bg-white rounded-lg border-2 border-accent-yellow-300">
                 <ModalDashedBorder className="absolute inset-0 pointer-events-none rounded-lg p-1" />
-                <div className={`relative z-10 w-full pl-6 p-3 text-h-7 font-medium ${readOnly ? 'text-gray-500' : 'text-accent-neutral-1000'}`}>
+                <div className={`relative z-10 w-full pl-6 p-3 sm:text-h-7 text-body-1 font-medium ${readOnly ? 'text-gray-500' : 'text-accent-neutral-1000'}`}>
                     {value}
                 </div>
             </div>
@@ -342,7 +350,7 @@ export default function UserProfile() {
                 
                 {/* Header */}
                 <div className="mb-8">
-                    <p className="text-h-3 font-bold text-accent-neutral-1000">
+                    <p className="sm:text-h-3 text-h-5 font-bold text-accent-neutral-1000">
                         Hai, {userProfile.username}
                     </p>
                 </div>
@@ -380,15 +388,15 @@ export default function UserProfile() {
                 )}
 
                 {/* Action Buttons */}
-                <div className="flex justify-between mt-8">
+                <div className="flex justify-between mt-8 gap-2">
                     {isEditing ? (
                         <>
                             <button 
                                 onClick={handleToggleEdit}
                                 disabled={isSaving}
-                                className="px-6 font-bold py-4 h-10 bg-transparent text-body-2 transition ease-out duration-300 text-accent-red-300 border border-accent-red-300 rounded-lg hover:bg-accent-red-300 hover:text-white font-medium flex items-center justify-center gap-2 disabled:opacity-50"
+                                className="sm:px-6 px-4 font-bold sm:py-4 py-2 h-10 bg-transparent sm:text-body-2 text-body-5 transition ease-out duration-300 text-accent-red-300 border border-accent-red-300 rounded-lg hover:bg-accent-red-300 hover:text-white font-medium flex items-center justify-center gap-2 disabled:opacity-50"
                             >
-                                Batal
+                                Batal Perubahan 
                             </button>
                             
                             <div className="flex gap-3">
@@ -396,7 +404,7 @@ export default function UserProfile() {
                                     <button 
                                         onClick={() => setIsChangingPassword(true)}
                                         disabled={isSaving}
-                                        className="px-6 py-4 h-10 font-bold bg-accent-blue-400 text-body-2 text-white rounded-lg hover:bg-accent-blue-500 transition font-medium flex items-center justify-center gap-2 disabled:opacity-50"
+                                        className="sm:px-6 px-4 sm:py-4 py-2 h-10 font-bold bg-accent-blue-400 sm:text-body-2 text-body-5 text-white rounded-lg hover:bg-accent-blue-500 transition font-medium flex items-center justify-center gap-2 disabled:opacity-50"
                                     >
                                         Ubah Password
                                     </button>
@@ -405,9 +413,9 @@ export default function UserProfile() {
                                 <button 
                                     onClick={isChangingPassword ? handleSavePassword : handleSaveProfile}
                                     disabled={isSaving}
-                                    className="px-6 py-4 h-10 font-bold bg-accent-yellow-300 border-accent-yellow-300 ease-out duration-300 text-body-2 text-white rounded-lg hover:bg-accent-yellow-400 transition font-medium flex items-center justify-center gap-2 disabled:opacity-50"
+                                    className="sm:px-6 px-4 sm:py-4 py-2 h-10 font-bold bg-accent-yellow-300 border-accent-yellow-300 ease-out duration-300 sm:text-body-2 text-body-5 text-white rounded-lg hover:bg-accent-yellow-400 transition font-medium flex items-center justify-center gap-2 disabled:opacity-50"
                                 >
-                                    <DocumentIcon className="w-5 h-5" />
+                                    <DocumentIcon className="sm:w-5 sm:h-5 w-4 h-4" />
                                     <span>{isSaving ? 'Menyimpan...' : 'Simpan Perubahan'}</span>
                                 </button>
                             </div>
@@ -416,17 +424,17 @@ export default function UserProfile() {
                         <>
                             <button
                                 onClick={handleLogout}
-                                className="px-6 font-bold py-4 h-10 bg-transparent text-body-2 transition ease-out duration-300 text-accent-red-300 border border-accent-red-300 rounded-lg hover:bg-accent-red-300 hover:text-white font-medium flex items-center justify-center gap-2"
+                                className="sm:px-6 px-4 font-bold sm:py-4 py-2 h-10 bg-transparent sm:text-body-2 text-body-5 transition ease-out duration-300 text-accent-red-300 border border-accent-red-300 rounded-lg hover:bg-accent-red-300 hover:text-white font-medium flex items-center justify-center gap-2"
                             >
-                                <LogOutDoor className="w-5 h-5" /> 
+                                <LogOutDoor className="sm:w-5 sm:h-5 w-4 h-4" /> 
                                 <span>Logout</span>
                             </button>
                             
                             <button 
                                 onClick={handleToggleEdit}
-                                className="px-6 py-4 h-10 font-bold bg-accent-yellow-300 border-accent-yellow-300 ease-out duration-300 text-body-2 text-white rounded-lg hover:bg-accent-yellow-400 transition font-medium flex items-center justify-center gap-2"
+                                className="sm:px-6 px-4 sm:py-4 py-2 h-10 font-bold bg-accent-yellow-300 border-accent-yellow-300 ease-out duration-300 sm:text-body-2 text-body-5 text-white rounded-lg hover:bg-accent-yellow-400 transition font-medium flex items-center justify-center gap-2"
                             >
-                                <PencilIcon className="w-5 h-5" /> 
+                                <PencilIcon className="sm:w-5 sm:h-5 w-4 h-4" /> 
                                 <span>Edit Profile</span>
                             </button>
                         </>
