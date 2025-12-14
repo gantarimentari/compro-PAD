@@ -133,8 +133,8 @@ function ResetPasswordForm() {
     <AuthLayout>
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-h-4 font-extrabold text-gray-900">
-          Reset Password
+        <h1 className="sm:text-h-4 text-h-7 font-extrabold text-gray-900">
+          Change Password
         </h1>
         <p className="mt-2 text-body-2 text-accent-neutral-700">
           Masukkan password baru Anda

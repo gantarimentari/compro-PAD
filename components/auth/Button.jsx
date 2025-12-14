@@ -11,8 +11,8 @@ export default function Button({
   // 1. BASE CLASSES: Mengatur tata letak dan ukuran standar dari Design System
   const baseClasses = `
     flex justify-center items-center 
-    text-body-1 font-semibold            
-    h-[3.75rem]                          
+    text-xs sm:text-body-1 font-semibold            
+    h-10 sm:h-[3.75rem]                          
     rounded-[0.5rem]                     
     shadow-e1                           
     transition duration-150 
@@ -41,8 +41,8 @@ export default function Button({
       text-black 
       hover:bg-accent-neutral-200
       focus:ring-accent-neutral-400
-      text-h-7
-      py-8
+      sm:text-h-7 
+      sm:py-8 py-4
       shadow-e2
       mb-4
       

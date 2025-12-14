@@ -96,7 +96,7 @@ export default function LoginPage() {
     <AuthLayout>
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-h-4 font-bold text-accent-neutral ">
+        <h1 className="text-2xl sm:text-h-4 font-bold text-accent-neutral ">
           Login
         </h1>
       </div>
@@ -109,7 +109,7 @@ export default function LoginPage() {
       )}
 
       {/* Form Login */}
-      <form className="text-body-1 mt-8 space-y-3 " onSubmit={handleSubmit}>
+      <form className="text-sm sm:text-body-1 mt-4 sm:mt-8 space-y-2 sm:space-y-3 " onSubmit={handleSubmit}>
         {/* Input Email */}
         <Input
           id="email"
@@ -140,7 +140,7 @@ export default function LoginPage() {
           <div className="flex justify-end pt-1">
             <Link 
               href="/auth/forgotPassword" 
-              className="text-body-1  text-accent-blue-200 hover:text-indigo-500"
+              className="text-xs sm:text-body-1 text-accent-blue-200 hover:text-indigo-500"
             >
               lupa password?
             </Link>
@@ -172,12 +172,12 @@ export default function LoginPage() {
       </div>
 
       {/* Link ke halaman Register */}
-      <div className="mt-4 pt-4">
-        <p className="text-accent-neutral-700 text-body-1">
+      <div className="mt-3 sm:mt-4 py-2 sm:pt-4">
+        <p className="text-xs sm:text-body-1 text-accent-neutral-700">
           Belum punya akun?{' '}
           <Link 
             href="/auth/register" 
-            className="text-body-1 text-accent-blue-200 hover:text-indigo-500"
+            className="text-xs sm:text-body-1 text-accent-blue-200 hover:text-indigo-500"
           >
             Daftar Sekarang
           </Link>

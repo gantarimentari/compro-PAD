@@ -19,6 +19,7 @@ export default function ForgotPasswordPage() {
     setError('');
     setLoading(true);
 
+    // logic for forgot password starts here
     try {
       console.log('🔐 Requesting password reset for:', email);
 
@@ -50,7 +51,7 @@ export default function ForgotPasswordPage() {
     <AuthLayout>
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-h-4 font-bold text-accent-neutral">
+        <h1 className="sm:text-h-4 text-h-7 font-bold text-accent-neutral ">
           Forgot Password
         </h1>
         <p className="mt-2 text-body-2 text-accent-neutral-700">

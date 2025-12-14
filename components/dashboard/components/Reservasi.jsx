@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import api from '@lib/api';
 import { TrashIcon, PenIcon, ChevronDownIcon } from '@ds/icons';
 import Button from '@ds/Button';
@@ -8,9 +9,10 @@ import SearchBar from '@ds/dashboard/layouts/ManagementSearch';
 import PageHeader from '@ds/dashboard/layouts/PageHeader';
 import { TambahReservasiModal, DeleteConfirmModal, EditReservasiModal } from '@ds/dashboard/modals';
 
-// Status Dropdown Component
+// Status Dropdown Component with Portal
 const StatusDropdown = ({ currentStatus, onStatusChange, itemId }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const buttonRef = useRef(null);
   const dropdownRef = useRef(null);
 
@@ -24,6 +26,16 @@ const StatusDropdown = ({ currentStatus, onStatusChange, itemId }) => {
   const currentStatusOption = statusOptions.find(option => option.value === currentStatus) || statusOptions[0];
 
   useEffect(() => {
+    const updatePosition = () => {
+      if (buttonRef.current && isOpen) {
+        const rect = buttonRef.current.getBoundingClientRect();
+        setDropdownPosition({
+          top: rect.bottom + 4,
+          left: rect.left
+        });
+      }
+    };
+
     const handleClickOutside = (event) => {
       if (
         buttonRef.current && 
@@ -36,11 +48,16 @@ const StatusDropdown = ({ currentStatus, onStatusChange, itemId }) => {
     };
 
     if (isOpen) {
+      updatePosition();
       document.addEventListener('mousedown', handleClickOutside);
+      window.addEventListener('scroll', updatePosition, true);
+      window.addEventListener('resize', updatePosition);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('resize', updatePosition);
     };
   }, [isOpen]);
 
@@ -48,45 +65,56 @@ const StatusDropdown = ({ currentStatus, onStatusChange, itemId }) => {
     onStatusChange(itemId, status);
     setIsOpen(false);
   };
+  
+  const dropdownContent = isOpen && (
+    <div 
+      ref={dropdownRef}
+      className="fixed z-[9999] w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-1"
+      style={{
+        top: `${dropdownPosition.top}px`,
+        left: `${dropdownPosition.left}px`
+      }}
+    >
+      {statusOptions.map((option) => {
+        const isSelected = option.value === currentStatus;
+        return (
+          <button
+            key={option.value}
+            type="button"
+            onClick={() => handleStatusSelect(option.value)}
+            className={`
+              w-full text-left px-3 py-2 text-sm transition-colors text-gray-800
+              ${isSelected 
+                ? 'bg-gray-100 font-medium' 
+                : 'hover:bg-gray-50'
+              }
+            `}
+          >
+            {option.label}
+          </button>
+        );
+      })}
+    </div>
+  );
 
   return (
-    <div className="relative" ref={buttonRef}>
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-150 hover:shadow-md whitespace-nowrap bg-gray-100 text-gray-800"
-      >
-        <span>{currentStatusOption.label}</span>
-        <ChevronDownIcon 
-          className={`w-4 h-4 transition-transform duration-150 ${isOpen ? 'rotate-180' : ''}`}
-          color="currentColor"
-        />
-      </button>
-
-      {isOpen && (
-        <div 
-          ref={dropdownRef}
-          className="absolute top-full left-0 mt-1 z-[9999] w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-1 flex flex-col"
+    <>
+      <div className="relative inline-block" ref={buttonRef}>
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-150 hover:shadow-md whitespace-nowrap bg-gray-100 text-gray-800"
         >
-          {statusOptions.map((option) => {
-            const isSelected = option.value === currentStatus;
-            return (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => handleStatusSelect(option.value)}
-                className={`
-                  w-full text-left px-3 py-2 text-sm transition-colors text-gray-800
-                  ${isSelected ? 'bg-gray-100 font-medium' : 'hover:bg-gray-50'}
-                `}
-              >
-                {option.label}
-              </button>
-            );
-          })}
-        </div>
-      )}
-    </div>
+          <span>{currentStatusOption.label}</span>
+          <ChevronDownIcon 
+            className={`w-4 h-4 transition-transform duration-150 ${isOpen ? 'rotate-180' : ''}`}
+            color="currentColor"
+          />
+        </button>
+      </div>
+      {/* ✅ Portal to document.body to escape table overflow */}
+      {typeof document !== 'undefined' && dropdownContent && createPortal(dropdownContent, document.body)}
+    </>
   );
 };
 
@@ -127,7 +155,7 @@ export default function Reservasi() {
     fetchReservasi();
   }, []);
 
-  //  Filter data (tidak perlu flatten karena data sudah flat dari API)
+  //  Filter data
   const filteredData = reservasiData.filter(item =>
     (item.petName?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
     (item.ownerName?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
@@ -145,17 +173,17 @@ export default function Reservasi() {
       const payload = {
         id_pasien: formData.ownerId,
         id_hewan: formData.petId,
-        tanggal_reservasi: formData.date, //  Fix: Nama field yang benar
+        tanggal_reservasi: formData.date,
         keluhan: formData.keluhan,
         status: 'pending',
       };
 
-      console.log('📤 Sending reservation:', payload); //  Fix: console.log()
+      console.log('📤 Sending reservation:', payload);
 
       await api.post('/api/reservations', payload);
       await fetchReservasi();
       setIsModalOpen(false);
-      alert(' Reservasi berhasil ditambahkan!');
+      alert('✅ Reservasi berhasil ditambahkan!');
     } catch (err) {
       console.error('❌ Error saving reservation:', err);
       alert(`❌ Gagal menyimpan: ${err.response?.data?.message || err.message}`);
@@ -176,7 +204,7 @@ export default function Reservasi() {
         item.id === reservasiId ? { ...item, status: newStatus } : item
       ));
 
-      console.log(` Status updated: ${reservasiId} → ${newStatus}`);
+      console.log(`✅ Status updated: ${reservasiId} → ${newStatus}`);
     } catch (err) {
       console.error('❌ Error updating status:', err);
       alert('❌ Gagal mengupdate status');
@@ -204,7 +232,7 @@ export default function Reservasi() {
       await fetchReservasi();
       setIsEditModalOpen(false);
       setSelectedReservasi(null);
-      alert(' Reservasi berhasil diupdate!');
+      alert('✅ Reservasi berhasil diupdate!');
     } catch (err) {
       console.error('❌ Error updating reservation:', err);
       alert(`❌ Gagal mengupdate: ${err.response?.data?.message || err.message}`);
@@ -225,7 +253,7 @@ export default function Reservasi() {
         await fetchReservasi();
         setIsDeleteModalOpen(false);
         setReservasiToDelete(null);
-        alert(' Reservasi berhasil dihapus!');
+        alert('✅ Reservasi berhasil dihapus!');
       } catch (err) {
         console.error('❌ Error deleting reservation:', err);
         alert('❌ Gagal menghapus reservasi');
@@ -279,7 +307,8 @@ export default function Reservasi() {
         onAddClick={() => setIsModalOpen(true)}
       />
 
-      <div className="space-y-4">
+      {/* ✅ Add pb-32 from 6297f7a for better spacing */}
+      <div className="space-y-4 pb-32">
         <SearchBar
           placeholderText="Cari nama hewan, jenis, atau pemilik..."
           value={searchQuery}

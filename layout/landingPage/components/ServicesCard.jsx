@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ModalDashedBorder } from '@ds/frame/garisputus';
 import { CloseCircleIcon, ChevronLeftIcon, ChevronRightIcon } from '@ds/icons';
 
@@ -16,6 +16,39 @@ const ServicesCard = ({
   currentIndex = 0,
   totalServices = 4
 }) => {
+  const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  
+  // Split text menjadi array kata
+  const words = servicesDesc.split(/\s+/);
+  
+  // Bagi kata-kata menjadi chunks 50 kata per halaman
+  const WORDS_PER_PAGE = 70;
+  const contentPages = [];
+  for (let i = 0; i < words.length; i += WORDS_PER_PAGE) {
+    contentPages.push(words.slice(i, i + WORDS_PER_PAGE).join(' '));
+  }
+  
+  const totalPages = contentPages.length;
+  const isFirstPage = currentPageIndex === 0;
+  const isLastPage = currentPageIndex === totalPages - 1;
+  
+  const handleNextPage = () => {
+    if (!isLastPage) {
+      setCurrentPageIndex(prev => prev + 1);
+    }
+  };
+  
+  const handlePrevPage = () => {
+    if (!isFirstPage) {
+      setCurrentPageIndex(prev => prev - 1);
+    }
+  };
+  
+  // Reset page index ketika service berubah
+  useEffect(() => {
+    setCurrentPageIndex(0);
+  }, [servicesName]);
+
   if (!isOpen) return null;
 
   return (
@@ -24,7 +57,7 @@ const ServicesCard = ({
       onClick={onClose}
     >
       <div 
-        className="relative bg-white rounded-lg max-w-5xl w-full max-h-[90vh] overflow-hidden shadow-2xl"
+        className="relative bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="relative z-10 p-6 md:p-8 overflow-y-auto max-h-[90vh]">
@@ -50,14 +83,14 @@ const ServicesCard = ({
             <div className="w-full flex flex-col gap-4">
               <div className="relative bg-white rounded-lg border-2 border-accent-red-300">
                 {/* SVG Border - tidak ikut scroll */}
-                <ModalDashedBorder className="absolute inset-0 pointer-events-none stroke-accent-red-400 z-20" />
+                <ModalDashedBorder className="absolute inset-0 pointer-events-none p-1 stroke-accent-red-400 z-20" />
                 
-                {/* Scrollable content area */}
-                <div className="p-6 md:p-8 max-h-[50vh] lg:max-h-none overflow-y-auto">
+                {/* Content area - tidak perlu scroll karena sudah dipaginasi */}
+                <div className="p-6 md:p-8">
                   <div className="relative z-10 text-base text-accent-neutral-1000 leading-relaxed">
-                    {/* Render deskripsi dengan support untuk line breaks */}
+                    {/* Tampilkan konten halaman saat ini */}
                     <div className="whitespace-pre-line">
-                      {servicesDesc}
+                      {contentPages[currentPageIndex]}
                     </div>
                   </div>
                 </div>
@@ -65,14 +98,14 @@ const ServicesCard = ({
               
               {/* Navigation Buttons with Dots */}
               <div className="flex items-center justify-between mt-4">
-                {/* Dot Indicators */}
+                {/* Dot Indicators - untuk halaman dalam service */}
                 <div className="flex gap-2 items-center">
-                  {Array.from({ length: totalServices }).map((_, index) => (
+                  {contentPages.map((_, index) => (
                     <div
                       key={index}
                       className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                        index === currentIndex
-                          ? 'bg-accent-yellow-400 '
+                        index === currentPageIndex
+                          ? 'bg-accent-yellow-400'
                           : 'bg-accent-neutral-300'
                       }`}
                     />
@@ -82,11 +115,11 @@ const ServicesCard = ({
                 {/* Navigation Buttons */}
                 <div className="flex gap-4">
                   <button 
-                    onClick={onPrev}
-                    disabled={isFirst}
-                    aria-label="Previous service"
+                    onClick={handlePrevPage}
+                    disabled={isFirstPage}
+                    aria-label="Previous page"
                     className={`w-10 h-10 md:w-11 md:h-11 rounded-lg flex items-center justify-center text-accent-neutral-1000 duration-300 hover:shadow-md ${
-                      isFirst 
+                      isFirstPage 
                         ? 'bg-accent-neutral-250 opacity-50 cursor-not-allowed' 
                         : 'bg-accent-neutral-250 hover:bg-accent-yellow-400'
                     }`}
@@ -94,11 +127,11 @@ const ServicesCard = ({
                     <ChevronLeftIcon className="w-5 h-5" />
                   </button>
                   <button 
-                    onClick={onNext}
-                    disabled={isLast}
-                    aria-label="Next service"
+                    onClick={handleNextPage}
+                    disabled={isLastPage}
+                    aria-label="Next page"
                     className={`w-10 h-10 md:w-11 md:h-11 rounded-lg flex items-center justify-center text-accent-neutral-1000 duration-300 hover:shadow-md ${
-                      isLast 
+                      isLastPage 
                         ? 'bg-accent-yellow-300 opacity-50 cursor-not-allowed' 
                         : 'bg-accent-yellow-300 hover:bg-accent-yellow-400'
                     }`}

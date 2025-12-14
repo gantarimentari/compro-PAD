@@ -36,15 +36,28 @@ const blobSvg = "/Assets/blob.svg";
         
         {/* Paw Footer Pattern - positioned above footer */}
         <div className="relative w-full">
+          {/* Mobile version - hidden on sm and above */}
           <div 
-            className="absolute w-full left-0 z-0"
+            className="sm:hidden absolute w-full left-0 z-0"
             style={{
               backgroundImage: 'url(/Assets/paw-footer.svg)',
               backgroundRepeat: 'repeat-x',
-              backgroundSize: 'auto 250px', // auto untuk lebar (mempertahankan aspect ratio), 100px untuk tinggi
+              backgroundSize: 'auto 120px', // Mobile: 150px tinggi
               backgroundPosition: 'center top',
-              height: '130px',
-              top: '-90px', // Nilai NEGATIF untuk naik ke atas footer. Semakin kecil (lebih negatif) = lebih turun, semakin besar (mendekati 0) = lebih naik
+              height: '80px', // Mobile: 80px container height
+              top: '-45px', // Mobile: -50px offset
+            }}
+          />
+          {/* Desktop version - hidden below sm */}
+          <div 
+            className="hidden sm:block absolute w-full left-0 z-0"
+            style={{
+              backgroundImage: 'url(/Assets/paw-footer.svg)',
+              backgroundRepeat: 'repeat-x',
+              backgroundSize: 'auto 250px', // Desktop: 250px tinggi
+              backgroundPosition: 'center top',
+              height: '130px', // Desktop: 130px container height
+              top: '-90px', // Desktop: -90px offset
             }}
           />
           <Footer

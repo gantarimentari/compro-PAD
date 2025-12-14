@@ -25,7 +25,7 @@ export default function Input({
 }) {
   return (
     <div>
-      <label htmlFor={id} className="block mb-1.5 text-body-1 font-medium text-accent-neutral-1000">
+      <label htmlFor={id} className="block mb-1 sm:mb-1.5 text-xs sm:text-body-1 font-medium text-accent-neutral-1000">
         {label}
       </label>
       <input
@@ -38,15 +38,16 @@ export default function Input({
         onChange={onChange}
         className="
                       block w-full                    
-                      h-[4.125rem]                     
+                      h-10 sm:h-[4.125rem]                     
                       border-[0.0625rem] border-accent-yellow-300
-                      rounded-[0.625rem]
+                      sm:rounded-[0.625rem] rounded-md
                       shadow-e2
-                      text-body-1 
+                      text-xs sm:text-body-1 
+                      placeholder:text-xs sm:placeholder:text-body-1
                       
                       focus:border-accent-yellow-300 focus:ring-primary-orange
                       
-                      px-3                           
+                      px-2 sm:px-3                           
                     "
         placeholder={placeholder}
       />

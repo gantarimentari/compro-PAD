@@ -10,38 +10,81 @@ const ARTICLES_PER_PAGE = 6;
 
 
 // helper strip html buat summary
+// ✅ FIXED: helper strip html TAPI preserve paragraph breaks
 const stripHtmlTags = (html) => {
-    if (!html) return '';
-    const tmp = document.createElement('div');
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || '';
+  if (!html) return '';
+
+  let cleaned = html;
+
+  // 1️⃣ Empty paragraph = SINGLE blank line
+  cleaned = cleaned.replace(/<p><br\s*\/?><\/p>/gi, '\n');
+
+  // 2️⃣ Normal paragraph end = SINGLE newline
+  cleaned = cleaned.replace(/<\/p>/gi, '\n');
+
+  // 3️⃣ Remove opening <p>
+  cleaned = cleaned.replace(/<p>/gi, '');
+
+  // 4️⃣ Strip remaining HTML safely
+  const tmp = document.createElement('div');
+  tmp.innerHTML = cleaned;
+  let text = tmp.textContent || tmp.innerText || '';
+
+  // 5️⃣ Normalize spacing: max 2 newlines
+  text = text.replace(/\n{3,}/g, '\n\n');
+
+  return text.trim();
 };
 
 // --- Article Detail Modal Component ---
-const ArticleModal = ({ article, isOpen, onClose, onNavigate, allArticles }) => {
+const ArticleModal = ({ article, isOpen, onClose }) => {
+    const [currentPageIndex, setCurrentPageIndex] = useState(0);
+    
     if (!isOpen) return null;
 
     const defaultPlaceholder = "/images/gambarkucingarticle.png";
     
-    const currentArticleIndex = allArticles.findIndex(a => a.id === article.id);
-    const isFirstArticle = currentArticleIndex === 0;
-    const isLastArticle = currentArticleIndex === allArticles.length - 1;
+    const WORDS_PER_PAGE = 70;
     
-    const handleNextArticle = () => {
-        if (!isLastArticle) {
-            const nextArticle = allArticles[currentArticleIndex + 1];
-            onNavigate(nextArticle);
+    // ✅ Strip HTML dengan preserve paragraph breaks
+    const textWithBreaks = stripHtmlTags(article.content || '');
+    
+    // ✅ Split by SINGLE space only (preserve \n\n)
+    const words = textWithBreaks.split(' ').filter(word => word.trim());
+    
+    // Create pages with exactly 70 words each
+    const contentPages = [];
+    for (let i = 0; i < words.length; i += WORDS_PER_PAGE) {
+        const pageWords = words.slice(i, i + WORDS_PER_PAGE);
+        contentPages.push(pageWords.join(' '));
+    }
+    
+    // Fallback if no content
+    if (contentPages.length === 0) {
+        contentPages.push(article.summary || 'Konten tidak tersedia');
+    }
+    
+    const totalPages = contentPages.length;
+    const isFirstPage = currentPageIndex === 0;
+    const isLastPage = currentPageIndex === totalPages - 1;
+    
+    const handleNextPage = () => {
+        if (!isLastPage) {
+            setCurrentPageIndex(prev => prev + 1);
         }
     };
     
-    const handlePrevArticle = () => {
-        if (!isFirstArticle) {
-            const prevArticle = allArticles[currentArticleIndex - 1];
-            onNavigate(prevArticle);
+    const handlePrevPage = () => {
+        if (!isFirstPage) {
+            setCurrentPageIndex(prev => prev - 1);
         }
     };
+    
+    // Reset page when article changes
+    React.useEffect(() => {
+        setCurrentPageIndex(0);
+    }, [article.id]);
 
-    // biar ga kebalik imageurl
     const imageUrl = article.imageUrl;
 
     return (
@@ -53,27 +96,23 @@ const ArticleModal = ({ article, isOpen, onClose, onNavigate, allArticles }) => 
                 className="relative bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
             >
-            
-                {/* Modal Content */}
                 <div className="relative z-10 p-8 flex flex-col max-h-[90vh]">
-                    {/* Header - Fixed */}
                     <div className="flex items-center justify-between mb-6 flex-shrink-0">
-                         <h2 className="sm:text-h-5 text-body-1 font-bold text-accent-neutral-1000">
-                                {article.title}
-                            </h2>
-                            <button 
-                             onClick={onClose}
-                             aria-label="Close modal"
-                            className="w-10 h-10 md:w-11 md:h-11 bg-accent-yellow-300 rounded-lg flex items-center justify-center text-accent-neutral-1000 hover:bg-accent-yellow-400 duration-300 hover:shadow-md">
-                                <CloseCircleIcon className="w-5 h-5" />
-                            </button>
+                        <h2 className="sm:text-h-5 text-body-1 font-bold text-accent-neutral-1000">
+                            {article.title}
+                        </h2>
+                        <button 
+                            onClick={onClose}
+                            aria-label="Close modal"
+                            className="w-10 h-10 md:w-11 md:h-11 bg-accent-yellow-300 rounded-lg flex items-center justify-center text-accent-neutral-1000 hover:bg-accent-yellow-400 duration-300 hover:shadow-md"
+                        >
+                            <CloseCircleIcon className="w-5 h-5" />
+                        </button>
                     </div>
-                           
+                    
                     <div className="w-full h-px bg-accent-neutral-200 mb-6 flex-shrink-0" />
 
-                    {/* Scrollable Content Area */}
                     <div className="flex flex-col md:flex-row gap-6 overflow-y-auto flex-1 hide-scrollbar">
-                        {/* Image Section */}
                         <div className="md:w-1/3 flex-shrink-0">
                             <div className="w-full aspect-square rounded-lg overflow-hidden shadow-md">
                                 <img
@@ -81,87 +120,71 @@ const ArticleModal = ({ article, isOpen, onClose, onNavigate, allArticles }) => 
                                     alt={article.title || "Article image"}
                                     src={imageUrl || defaultPlaceholder}
                                     onError={(e) => { 
-                                        console.error('❌ Modal image failed:', imageUrl);
                                         e.target.onerror = null; 
-                                        e.target.src = "/images/gambarkucingarticle.png"; 
+                                        e.target.src = defaultPlaceholder; 
                                     }}
                                 />
                             </div>
                         </div>
 
-                        {/* Content Section */}
                         <div className="md:w-2/3 flex flex-col gap-4">
-                            <div className="relative bg-white p-8 rounded-lg border-2 border-accent-yellow-300">
-                                {/* Modal Border SVG */}
+                            <div className="relative bg-white p-6 rounded-lg border-2 border-accent-yellow-300">
                                 <ModalDashedBorder className="absolute inset-0 pointer-events-none p-1 stroke-accent-yellow-300" />
                                 
-                                {/*  Option 1: Render HTML safely */}
-                                <div 
-                                    className="relative z-10 text-body-2 text-accent-neutral-1000 leading-relaxed space-y-4 prose prose-sm max-w-none"
-                                    dangerouslySetInnerHTML={{ __html: article.content }}
-                                />
-
-                                {/*  Option 2: Plain text with paragraphs (safer)
-                                <div className="relative z-10 text-body-2 text-accent-neutral-1000 leading-relaxed space-y-4">
-                                    {stripHtmlTags(article.content)
-                                        .split('\n')
-                                        .filter(p => p.trim())
-                                        .map((paragraph, index) => (
-                                            <p key={index} className="text-justify">
-                                                {paragraph}
-                                            </p>
-                                        ))
-                                    }
+                                {/* whitespace buat spacing */}
+                                <div className="relative z-10 text-body-2 text-accent-neutral-1000 leading-relaxed text-justify whitespace-pre-line">
+                                    {contentPages[currentPageIndex]}
                                 </div>
-                                */}
+                                
                             </div>
                         </div>
                     </div>
 
-                    {/* Navigation - Fixed at bottom */}
-                    <div className="flex items-center justify-between mt-4 pt-4 border-t border-accent-neutral-200 flex-shrink-0">
-                        {/* Dot Indicators */}
-                        <div className="flex gap-2 items-center">
-                            {allArticles.map((_, index) => (
-                                <div
-                                    key={index}
-                                    className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                                        index === currentArticleIndex
-                                            ? 'bg-accent-yellow-400'
-                                            : 'bg-accent-neutral-300'
+                    {totalPages > 1 && (
+                        <div className="flex items-center justify-between mt-4 pt-4 border-t border-accent-neutral-200 flex-shrink-0">
+                            <div className="flex gap-2 items-center">
+                                {contentPages.map((_, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => setCurrentPageIndex(index)}
+                                        className={`w-2.5 h-2.5 rounded-full transition-colors duration-300 ${
+                                            index === currentPageIndex
+                                                ? 'bg-accent-yellow-400'
+                                                : 'bg-accent-neutral-300 hover:bg-accent-neutral-400'
+                                        }`}
+                                        aria-label={`Go to page ${index + 1}`}
+                                    />
+                                ))}
+                            </div>
+                            
+                            <div className="flex gap-4">
+                                <button 
+                                    onClick={handlePrevPage}
+                                    disabled={isFirstPage}
+                                    aria-label="Previous page"
+                                    className={`w-10 h-10 md:w-11 md:h-11 rounded-lg flex items-center justify-center text-accent-neutral-1000 duration-300 hover:shadow-md ${
+                                        isFirstPage 
+                                            ? 'bg-accent-neutral-250 opacity-50 cursor-not-allowed' 
+                                            : 'bg-accent-neutral-250 hover:bg-accent-yellow-400'
                                     }`}
-                                />
-                            ))}
+                                >
+                                    <ChevronLeftIcon className="w-5 h-5" />
+                                </button>
+                                <button 
+                                    onClick={handleNextPage}
+                                    disabled={isLastPage}
+                                    aria-label="Next page"
+                                    className={`w-10 h-10 md:w-11 md:h-11 rounded-lg flex items-center justify-center text-accent-neutral-1000 duration-300 hover:shadow-md ${
+                                        isLastPage 
+                                            ? 'bg-accent-yellow-300 opacity-50 cursor-not-allowed' 
+                                            : 'bg-accent-yellow-300 hover:bg-accent-yellow-400'
+                                    }`}
+                                >
+                                    <ChevronRightIcon className="w-5 h-5" />
+                                </button>
+                            </div>
                         </div>
-                        
-                        {/* Navigation Buttons */}
-                        <div className="flex gap-4">
-                            <button 
-                                onClick={handlePrevArticle}
-                                disabled={isFirstArticle}
-                                aria-label="Previous article"
-                                className={`w-10 h-10 md:w-11 md:h-11 rounded-lg flex items-center justify-center text-accent-neutral-1000 duration-300 hover:shadow-md ${
-                                    isFirstArticle 
-                                        ? 'bg-accent-neutral-250 opacity-50 cursor-not-allowed' 
-                                        : 'bg-accent-neutral-250 hover:bg-accent-yellow-400'
-                                }`}
-                            >
-                                <ChevronLeftIcon className="w-5 h-5" />
-                            </button>
-                            <button 
-                                onClick={handleNextArticle}
-                                disabled={isLastArticle}
-                                aria-label="Next article"
-                                className={`w-10 h-10 md:w-11 md:h-11 rounded-lg flex items-center justify-center text-accent-neutral-1000 duration-300 hover:shadow-md ${
-                                    isLastArticle 
-                                        ? 'bg-accent-yellow-300 opacity-50 cursor-not-allowed' 
-                                        : 'bg-accent-yellow-300 hover:bg-accent-yellow-400'
-                                }`}
-                            >
-                                <ChevronRightIcon className="w-5 h-5" />
-                            </button>
-                        </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </div>
