@@ -4,7 +4,6 @@ import TagLabel from "@ds/Button/TagLabel";
 import { DashedBorder } from '@ds/frame/garisputus';
 import PromoCard from './components/PromoCard';
 import api from '@lib/api';
-import { transform } from 'next/dist/build/swc/generated-native';
 
 export default function Promo() {
   const svgBackground = "/Background/bg-bone-blue.svg";

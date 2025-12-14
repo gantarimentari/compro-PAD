@@ -8,31 +8,6 @@ import { CloseCircleIcon, ChevronLeftIcon, ChevronRightIcon } from '@ds/icons/UI
 
 const ARTICLES_PER_PAGE = 6;
 
-const ModalDashedBorder = ({ className }) => (
-    <svg 
-        className={className}
-        width="100%" 
-        height="100%" 
-        viewBox="0 0 663 297" 
-        fill="none" 
-        xmlns="http://www.w3.org/2000/svg"
-        preserveAspectRatio="none"
-    >
-        <rect
-            x="8.9"
-            y="7.9"
-            width="645.2"
-            height="282.2"
-            rx="5.1"
-            className="stroke-accent-yellow-300"
-            strokeWidth="1.8"
-            strokeLinecap="square"
-            strokeLinejoin="round"
-            strokeDasharray="18 8"
-            vectorEffect="non-scaling-stroke"
-        />
-    </svg>
-);
 
 // helper strip html buat summary
 const stripHtmlTags = (html) => {
