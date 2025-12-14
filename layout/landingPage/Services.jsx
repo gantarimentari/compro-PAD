@@ -242,11 +242,11 @@ export default function Services() {
               <img 
                 src='/Assets/animate-doctor.webp' 
                 alt='Doctor Illustration' 
-                className='w-48 md:w-64 h-auto object-contain drop-shadow-lg'
+                className='w-48 md:w-64 h-auto object-contain drop-shadow-lg sm:mb-[-30px] mb-[-22px]'
               />
 
               {/* 4 Services buttons vertikal */}
-              <div className='w-full max-w-md flex flex-col gap-4 pb-2'>
+              <div className='w-full max-w-md flex flex-col gap-4 pb-4'>
                 <div 
                   onClick={() => openServiceModal('pemeriksaan')} 
                   className='block w-full cursor-pointer'
@@ -299,6 +299,7 @@ export default function Services() {
                     buttonClass='w-full text-center py-3'
                   />
                 </div>
+                
               </div>
 
               {/* Button Info Lebih Lanjut di bawah */}

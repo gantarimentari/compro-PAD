@@ -99,31 +99,45 @@ const ARTICLES_PER_PAGE = 6;
 
 // --- Article Detail Modal Component ---
 const ArticleModal = ({ article, isOpen, onClose, onNavigate }) => {
+    const [currentPageIndex, setCurrentPageIndex] = useState(0);
+    
     if (!isOpen) return null;
 
     const defaultPlaceholder = "/images/gambarkucingarticle.png";
     
-    // Ambil full content dari artikel, atau fallback ke summary saja jika tidak ada
-    const contentSections = article.fullContent || [article.summary];
+    // Gabungkan semua content menjadi satu string
+    const fullText = (article.fullContent || [article.summary]).join(' ');
     
-    // Cari index artikel saat ini dalam MOCK_ARTICLES
-    const currentArticleIndex = MOCK_ARTICLES.findIndex(a => a.id === article.id);
-    const isFirstArticle = currentArticleIndex === 0;
-    const isLastArticle = currentArticleIndex === MOCK_ARTICLES.length - 1;
+    // Split text menjadi array kata
+    const words = fullText.split(/\s+/);
     
-    const handleNextArticle = () => {
-        if (!isLastArticle) {
-            const nextArticle = MOCK_ARTICLES[currentArticleIndex + 1];
-            onNavigate(nextArticle);
+    // Bagi kata-kata menjadi chunks 50 kata per halaman
+    const WORDS_PER_PAGE = 70;
+    const contentPages = [];
+    for (let i = 0; i < words.length; i += WORDS_PER_PAGE) {
+        contentPages.push(words.slice(i, i + WORDS_PER_PAGE).join(' '));
+    }
+    
+    const totalPages = contentPages.length;
+    const isFirstPage = currentPageIndex === 0;
+    const isLastPage = currentPageIndex === totalPages - 1;
+    
+    const handleNextPage = () => {
+        if (!isLastPage) {
+            setCurrentPageIndex(prev => prev + 1);
         }
     };
     
-    const handlePrevArticle = () => {
-        if (!isFirstArticle) {
-            const prevArticle = MOCK_ARTICLES[currentArticleIndex - 1];
-            onNavigate(prevArticle);
+    const handlePrevPage = () => {
+        if (!isFirstPage) {
+            setCurrentPageIndex(prev => prev - 1);
         }
     };
+    
+    // Reset page index ketika artikel berubah
+    React.useEffect(() => {
+        setCurrentPageIndex(0);
+    }, [article.id]);
 
     return (
         <div 
@@ -174,13 +188,9 @@ const ArticleModal = ({ article, isOpen, onClose, onNavigate }) => {
                             <div className="relative bg-white p-8 rounded-lg border-2 border-accent-yellow-300">
                                 {/* Modal Border SVG */}
                                 <ModalDashedBorder className="absolute inset-0 pointer-events-none p-1 stroke-accent-yellow-300" />
-                                <div className="relative z-10 text-body-2 text-accent-neutral-1000 leading-relaxed space-y-4">
-                                    {/* Tampilkan semua konten lengkap */}
-                                    {contentSections.map((paragraph, index) => (
-                                        <p key={index}>
-                                            {paragraph}
-                                        </p>
-                                    ))}
+                                <div className="relative z-10 text-body-2 text-accent-neutral-1000 leading-relaxed">
+                                    {/* Tampilkan konten halaman saat ini */}
+                                    <p>{contentPages[currentPageIndex]}</p>
                                 </div>
                             </div>
                         </div>
@@ -188,13 +198,13 @@ const ArticleModal = ({ article, isOpen, onClose, onNavigate }) => {
 
                     {/* Navigation - Fixed at bottom */}
                     <div className="flex items-center justify-between mt-4 pt-4 border-t border-accent-neutral-200 flex-shrink-0">
-                        {/* Dot Indicators */}
+                        {/* Dot Indicators - untuk halaman dalam artikel */}
                         <div className="flex gap-2 items-center">
-                            {MOCK_ARTICLES.map((_, index) => (
+                            {contentPages.map((_, index) => (
                                 <div
                                     key={index}
                                     className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                                        index === currentArticleIndex
+                                        index === currentPageIndex
                                             ? 'bg-accent-yellow-400'
                                             : 'bg-accent-neutral-300'
                                     }`}
@@ -204,11 +214,11 @@ const ArticleModal = ({ article, isOpen, onClose, onNavigate }) => {
                         
                         <div className="flex gap-4">
                             <button 
-                                onClick={handlePrevArticle}
-                                disabled={isFirstArticle}
-                                aria-label="Previous article"
+                                onClick={handlePrevPage}
+                                disabled={isFirstPage}
+                                aria-label="Previous page"
                                 className={`w-10 h-10 md:w-11 md:h-11 rounded-lg flex items-center justify-center text-accent-neutral-1000 duration-300 hover:shadow-md ${
-                                    isFirstArticle 
+                                    isFirstPage 
                                         ? 'bg-accent-neutral-250 opacity-50 cursor-not-allowed' 
                                         : 'bg-accent-neutral-250 hover:bg-accent-yellow-400'
                                 }`}
@@ -216,11 +226,11 @@ const ArticleModal = ({ article, isOpen, onClose, onNavigate }) => {
                                 <ChevronLeftIcon className="w-5 h-5" />
                             </button>
                             <button 
-                                onClick={handleNextArticle}
-                                disabled={isLastArticle}
-                                aria-label="Next article"
+                                onClick={handleNextPage}
+                                disabled={isLastPage}
+                                aria-label="Next page"
                                 className={`w-10 h-10 md:w-11 md:h-11 rounded-lg flex items-center justify-center text-accent-neutral-1000 duration-300 hover:shadow-md ${
-                                    isLastArticle 
+                                    isLastPage 
                                         ? 'bg-accent-yellow-300 opacity-50 cursor-not-allowed' 
                                         : 'bg-accent-yellow-300 hover:bg-accent-yellow-400'
                                 }`}

@@ -44,7 +44,7 @@ export default function RegisterPage() {
     <AuthLayout>
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-h-4 font-bold text-accent-neutral ">
+        <h1 className="sm:text-h-4 text-h-7 font-bold text-accent-neutral ">
           Register
         </h1>
       </div>
@@ -114,12 +114,12 @@ export default function RegisterPage() {
       </div>
 
       {/* Link ke halaman Login */}
-      <div className=" pt-4">
-        <p className="text-accent-neutral-700 text-body-1">
+      <div className=" py-4">
+        <p className="text-accent-neutral-700 sm:text-body-1 text-xs">
           Sudah punya akun?{' '}
           <Link 
             href="/auth/login" 
-            className="text-body-1 text-accent-blue-200 hover:text-indigo-500"
+            className="sm:text-body-1 text-xs text-accent-blue-200 hover:text-indigo-500"
           >
             Login
           </Link>

@@ -1,5 +1,6 @@
 'use client'
 import React, { useState, useRef, useEffect, } from 'react';
+import { createPortal } from 'react-dom';
 import { TrashIcon, WarningIcon, PenIcon, ChevronDownIcon} from '@ds/icons';
 import Button from '@ds/Button';
 import Table from '@ds/dashboard/components/Table';
@@ -59,6 +60,7 @@ const flattenReservasiData = (ownerData)=>{
 // Status Dropdown Component
 const StatusDropdown = ({ currentStatus, onStatusChange, itemId }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const buttonRef = useRef(null);
   const dropdownRef = useRef(null);
 
@@ -72,6 +74,16 @@ const StatusDropdown = ({ currentStatus, onStatusChange, itemId }) => {
   const currentStatusOption = statusOptions.find(option => option.value === currentStatus) || statusOptions[0];
 
   useEffect(() => {
+    const updatePosition = () => {
+      if (buttonRef.current && isOpen) {
+        const rect = buttonRef.current.getBoundingClientRect();
+        setDropdownPosition({
+          top: rect.bottom + 4,
+          left: rect.left
+        });
+      }
+    };
+
     const handleClickOutside = (event) => {
       if (
         buttonRef.current && 
@@ -84,11 +96,16 @@ const StatusDropdown = ({ currentStatus, onStatusChange, itemId }) => {
     };
 
     if (isOpen) {
+      updatePosition();
       document.addEventListener('mousedown', handleClickOutside);
+      window.addEventListener('scroll', updatePosition, true);
+      window.addEventListener('resize', updatePosition);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('resize', updatePosition);
     };
   }, [isOpen]);
 
@@ -97,48 +114,54 @@ const StatusDropdown = ({ currentStatus, onStatusChange, itemId }) => {
     setIsOpen(false);
   };
   
+  const dropdownContent = isOpen && (
+    <div 
+      ref={dropdownRef}
+      className="fixed z-[9999] w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-1"
+      style={{
+        top: `${dropdownPosition.top}px`,
+        left: `${dropdownPosition.left}px`
+      }}
+    >
+      {statusOptions.map((option) => {
+        const isSelected = option.value === currentStatus;
+        return (
+          <button
+            key={option.value}
+            type="button"
+            onClick={() => handleStatusSelect(option.value)}
+            className={`
+              w-full text-left px-3 py-2 text-sm transition-colors text-gray-800
+              ${isSelected 
+                ? 'bg-gray-100 font-medium' 
+                : 'hover:bg-gray-50'
+              }
+            `}
+          >
+            {option.label}
+          </button>
+        );
+      })}
+    </div>
+  );
 
   return (
-    <div className="relative" ref={buttonRef}>
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-150 hover:shadow-md whitespace-nowrap bg-gray-100 text-gray-800"
-      >
-        <span>{currentStatusOption.label}</span>
-        <ChevronDownIcon 
-          className={`w-4 h-4 transition-transform duration-150 ${isOpen ? 'rotate-180' : ''}`}
-          color="currentColor"
-        />
-      </button>
-
-      {isOpen && (
-        <div 
-          ref={dropdownRef}
-          className="absolute top-full left-0 mt-1 z-[9999] w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-1 flex flex-col"
+    <>
+      <div className="relative inline-block" ref={buttonRef}>
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-150 hover:shadow-md whitespace-nowrap bg-gray-100 text-gray-800"
         >
-          {statusOptions.map((option) => {
-            const isSelected = option.value === currentStatus;
-            return (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => handleStatusSelect(option.value)}
-                className={`
-                  w-full text-left px-3 py-2 text-sm transition-colors text-gray-800
-                  ${isSelected 
-                    ? 'bg-gray-100 font-medium' 
-                    : 'hover:bg-gray-50'
-                  }
-                `}
-              >
-                {option.label}
-              </button>
-            );
-          })}
-        </div>
-      )}
-    </div>
+          <span>{currentStatusOption.label}</span>
+          <ChevronDownIcon 
+            className={`w-4 h-4 transition-transform duration-150 ${isOpen ? 'rotate-180' : ''}`}
+            color="currentColor"
+          />
+        </button>
+      </div>
+      {typeof document !== 'undefined' && dropdownContent && createPortal(dropdownContent, document.body)}
+    </>
   );
 };
 
@@ -303,13 +326,14 @@ export default function Reservasi(){
       addButtonText= 'Tambah Reservasi'
       onAddClick= {() => setIsModalOpen(true)}
       />
-      <div className="space-y-4">
+      <div className="space-y-4 pb-32">
         <SearchBar 
         placeholderText="Cari nama hewan, jenis, atau pemilik..." 
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         />
         <Table
+        
         columns={RESERVASI_COLUMNS}
         data={filteredData}
         renderCell={renderCell} 
