@@ -9,38 +9,6 @@ import SearchBar from '@ds/dashboard/layouts/ManagementSearch';
 import PageHeader from '@ds/dashboard/layouts/PageHeader';
 import {TambahHewanModal,EditHewanModal,DeleteConfirmModal} from '@ds/dashboard/modals';
 
-// ✅ Function to calculate age from birth date
-const calculateAge = (birthDate) => {
-  if (!birthDate) return '-';
-  
-  const birth = new Date(birthDate);
-  const today = new Date();
-  
-  let years = today.getFullYear() - birth.getFullYear();
-  let months = today.getMonth() - birth.getMonth();
-  let days = today.getDate() - birth.getDate();
-  
-  // Adjust if current month/day is before birth month/day
-  if (days < 0) {
-    months--;
-    const lastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
-    days += lastMonth.getDate();
-  }
-  
-  if (months < 0) {
-    years--;
-    months += 12;
-  }
-  
-  // Format output
-  if (years > 0) {
-    return months > 0 ? `${years} tahun ${months} bulan` : `${years} tahun`;
-  } else if (months > 0) {
-    return days > 0 ? `${months} bulan ${days} hari` : `${months} bulan`;
-  } else {
-    return `${days} hari`;
-  }
-};
 
 // Fungsi untuk flatten data dari owner dengan pets menjadi array hewan
 const flattenHewanData = (ownerData) => {
@@ -55,8 +23,6 @@ const flattenHewanData = (ownerData) => {
           ownerName: owner.name,
           ownerId: owner.id,
           speciesId: pet.speciesId,
-          birthDate: pet.birthDate,
-          age: calculateAge(pet.birthDate), // ✅ Calculate age from birthDate
         });
       });
     }
@@ -70,8 +36,6 @@ const HEWAN_COLUMNS = [
   {key: 'petName', header: 'Nama Hewan'},
   {key: 'species', header: 'Jenis Hewan'},
   {key: 'ownerName', header: 'Pemilik'},
-  {key: 'birthDate', header: 'Tanggal Lahir'},
-  {key: 'age', header: 'Umur'},
   {key: 'actions', header: 'Aksi', isAction: true},
 ];
 
@@ -173,7 +137,6 @@ export default function ManagementHewan() {
         id_pasien: formData.ownerId,
         id_jenisHewan: formData.speciesId,
         nama_hewan: formData.petName,
-        tanggal_lahir_hewan: formData.birthDate || null,
       };
 
       console.log('📤 Saving Hewan:', payload);
@@ -198,7 +161,6 @@ export default function ManagementHewan() {
         id_pasien: formData.ownerId,
         id_jenisHewan: formData.speciesId,
         nama_hewan: formData.petName,
-        tanggal_lahir_hewan: formData.birthDate || null,
       };
 
       await api.put(`/api/hewan/${id}`, payload);

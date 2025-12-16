@@ -37,7 +37,7 @@ const EditPasienModal = ({ isOpen, onClose, pasien, onSave }) => {
       description="Perbarui data pasien"
       maxWidth="max-w-lg"
     >
-      <form onSubmit={handleSubmit} className="p-6 space-y-2">
+      <form onSubmit={handleSubmit} className="px-6 pb-6 pt-2  space-y-2">
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Nama Lengkap
@@ -47,7 +47,7 @@ const EditPasienModal = ({ isOpen, onClose, pasien, onSave }) => {
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             placeholder="Masukkan nama lengkap"
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 text-body-2 placeholder:text-accent-neutral-800"
             required              
           />
         </div>
@@ -61,7 +61,7 @@ const EditPasienModal = ({ isOpen, onClose, pasien, onSave }) => {
             value={formData.phoneNumber}
             onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
             placeholder="081234567890"   
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 text-body-2 placeholder:text-accent-neutral-800"
             required        
           />
         </div>
@@ -75,7 +75,7 @@ const EditPasienModal = ({ isOpen, onClose, pasien, onSave }) => {
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             placeholder="email@example.com"
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 text-body-2 placeholder:text-accent-neutral-800"
             required 
           />
         </div>

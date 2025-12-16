@@ -89,9 +89,9 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
       description="Buat artikel baru untuk konten edukasi"
       maxWidth="max-w-2xl"
     >
-      <form onSubmit={handleSubmit} className="p-6 space-y-6">
+      <form onSubmit={handleSubmit} className="px-6 pb-6 pt-2 space-y-2">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Judul
           </label>
           <input
@@ -99,19 +99,19 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
             value={formData.judul}
             onChange={(e) => setFormData(prev => ({ ...prev, judul: e.target.value }))}
             placeholder="Masukkan judul artikel"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            className="text-body-2  w-full px-4 py-2 border bg-accent-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 placeholder:text-accent-neutral-800"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Kategori
           </label>
           <select
             value={formData.kategori}
             onChange={(e) => setFormData(prev => ({ ...prev, kategori: e.target.value }))}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none bg-white"
+            className="w-full px-4 py-2 text-body-2 text-accent-neutral-800 border bg-accent-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none "
             required
           >
             <option value="">Pilih kategori</option>
@@ -123,26 +123,30 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Isi Artikel
           </label>
           <QuillEditor
             value={formData.isiArtikel}
-            onChange={(html) => setFormData(prev => ({ ...prev, isiArtikel: html }))}
+            onChange={(html) =>
+              setFormData(prev => ({ ...prev, isiArtikel: html }))
+            }
+            placeholder="Tulis konten artikel disini..."
+            className="w-full rounded-lg border bg-accent-neutral-200 focus-within:ring-2 focus-within:ring-blue-500"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-h-8 font-bold text-accent-neutral-1000 mb-2">
             Upload Media (Gambar)
           </label>
           <div className="relative">
-            <div className="relative border-2 border-gray-300 rounded-lg p-8 text-center transition duration-150">
-              <div className="relative z-10">
-                <div className="flex justify-center mb-2">
-                  <UploadIcon className="w-5 h-5 text-gray-400" />
-                </div>
-                <p className="text-sm text-gray-600">Upload media anda disini</p>
+            <div className="relative border-2 bg-accent-neutral-200 rounded-lg p-2 cursor-pointer transition duration-150 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500">
+              <div className="relative z-10 flex items-center justify-between">
+                <p className={`text-sm ${formData.file ? 'text-accent-neutral-1000 font-medium' : 'text-accent-neutral-800'} truncate pr-2`}>
+                  {formData.file ? formData.file.name : 'Upload media anda disini'}
+                </p>
+                <UploadIcon className="w-5 h-5 flex-shrink-0" />
                 <input
                   type="file"
                   onChange={handleFileChange}
@@ -160,15 +164,15 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Status
           </label>
           <select
             value={formData.status}
             onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value }))}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none bg-white"
+            className="text-body-2 w-full px-4 font-bold py-2 border bg-accent-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none "
           >
-            <option value="Draft">Draft</option>
+            <option value="Draft" className='bg-accent-neutral-200'>Draft</option>
             <option value="Publish">Publish</option>
           </select>
         </div>

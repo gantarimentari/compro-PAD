@@ -113,92 +113,78 @@ const EditReservasiModal = ({ isOpen, onClose, onSave, reservasi }) => {
       isOpen={isOpen}
       onClose={handleClose}
       title="Edit Reservasi"
-      description={`Ubah data reservasi untuk ${reservasi.petName}`}
-      maxWidth="max-w-lg"
+      description="Perbarui data reservasi"
+      maxWidth='max-w-lg'
     >
-      <form onSubmit={handleSubmit} className="p-6 space-y-3">
-        {/* ✅ Info Pemilik (Read-only) */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-          <p className="text-sm text-blue-800">
-            <strong>Pemilik:</strong> {reservasi.ownerName}
-          </p>
-          <p className="text-xs text-blue-600 mt-1">
-            ID: {reservasi.ownerId}
-          </p>
+      <form onSubmit={handleSubmit} className="px-6 pb-6 pt-2 space-y-2">
+        
+        {/* ✅ Nama Pasien (Read-only - UI Baru) */}
+        <div>
+          <label className="block text-h-8 font-bold text-accent-neutral-1000 mb-1">
+            Nama Pasien
+          </label>
+          <div className="text-body-2 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg border border-accent-neutral-300">
+            {reservasi.ownerName}
+          </div>
         </div>
 
-        {/* ✅ Dropdown Hewan */}
+        {/* ✅ Dropdown Hewan (UI Baru + Logic HEAD) */}
         <div>
-          <label className="block text-h-8 font-bold text-accent-neutral-1000 mb-2">
-            Hewan <span className="text-red-500">*</span>
+          <label className="block text-h-8 font-bold text-accent-neutral-1000 mb-1">
+            Hewan
           </label>
           <select
             value={formData.petId}
             onChange={(e) => setFormData({ ...formData, petId: e.target.value })}
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 disabled:opacity-50"
-            disabled={isLoadingPets}
+            className="text-body-2 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none disabled:opacity-50"
+            disabled={isLoadingPets || petOptions.length === 0}
             required
           >
             <option value="">
-              {isLoadingPets ? 'Memuat hewan...' : 'Pilih hewan'}
+              {isLoadingPets 
+                ? 'Memuat hewan...' 
+                : petOptions.length === 0 
+                ? 'Pemilik ini belum memiliki hewan' 
+                : 'Pilih hewan'}
             </option>
-            {!isLoadingPets && petOptions.length === 0 ? (
-              <option disabled>Tidak ada hewan terdaftar</option>
-            ) : (
-              petOptions.map((pet) => (
-                <option key={pet.id_hewan} value={pet.id_hewan}>
-                  {pet.nama_hewan} ({pet.jenis_hewan?.nama_jenis || 'Unknown'})
-                </option>
-              ))
-            )}
+            {petOptions.map((pet) => (
+              <option key={pet.id_hewan} value={pet.id_hewan}>
+                {pet.nama_hewan} ({pet.jenis_hewan?.nama_jenis || 'Unknown'})
+              </option>
+            ))}
           </select>
-          
-          {/* ✅ Status indicator */}
-          {!isLoadingPets && (
-            <p className="text-xs mt-1">
-              {petOptions.length === 0 ? (
-                <span className="text-red-500">
-                  ⚠️ Pemilik ini belum memiliki hewan terdaftar
-                </span>
-              ) : (
-                <span className="text-green-600">
-                  ✅ Ditemukan {petOptions.length} hewan
-                </span>
-              )}
-            </p>
-          )}
         </div>
 
-        {/* ✅ Tanggal Reservasi */}
+        {/* ✅ Tanggal Reservasi (UI Baru) */}
         <div>
-          <label className="block text-h-8 font-bold text-accent-neutral-1000 mb-2">
-            Tanggal Reservasi <span className="text-red-500">*</span>
+          <label className="block text-h-8 font-bold text-accent-neutral-1000 mb-1">
+            Tanggal Reservasi
           </label>
           <input
-            type="date"
+            type='date'
             value={formData.date}
             onChange={(e) => setFormData({ ...formData, date: e.target.value })}
             min={new Date().toISOString().split('T')[0]}
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            className="text-body-2 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
             required
           />
         </div>
 
-        {/* ✅ Keluhan */}
+        {/* ✅ Keluhan (UI Baru) */}
         <div>
-          <label className="block text-h-8 font-bold text-accent-neutral-1000 mb-2">
-            Keluhan <span className="text-red-500">*</span>
+          <label className="block text-h-8 font-bold text-accent-neutral-1000 mb-1">
+            Keluhan
           </label>
           <textarea
             value={formData.keluhan}
             onChange={(e) => setFormData({ ...formData, keluhan: e.target.value })}
-            placeholder="Deskripsikan keluhan atau tujuan kunjungan"
-            className="w-full bg-accent-neutral-200 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 min-h-[80px]"
+            placeholder='Deskripsikan keluhan atau tujuan kunjungan'
+            className="text-body-2 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 min-h-[80px]"
             required
           />
         </div>
 
-        {/* ✅ Buttons */}
+        {/* ✅ Buttons (UI Baru) */}
         <div className="flex justify-end space-x-3 pt-3">
           <button
             type="button"

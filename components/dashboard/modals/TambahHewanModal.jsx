@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState } from 'react';
 import BaseModal from './BaseModal';
 import api from '@lib/api';
 
@@ -14,7 +14,6 @@ const TambahHewanModal = ({
     petName: '',
     speciesId: '',
     ownerId: '',
-    birthDate: '',
   });
   
   const [jenisHewanOptions, setJenisHewanOptions] = useState([]);
@@ -50,30 +49,6 @@ const TambahHewanModal = ({
     }
   };
 
-  const calculateAge = (birthDate) => {
-    if (!birthDate) return '-';
-    
-    const birth = new Date(birthDate);
-    const today = new Date();
-    
-    let years = today.getFullYear() - birth.getFullYear();
-    let months = today.getMonth() - birth.getMonth();
-    
-    if (months < 0) {
-      years--;
-      months += 12;
-    }
-    
-    if (years > 0) {
-      return months > 0 ? `${years} tahun ${months} bulan` : `${years} tahun`;
-    } else if (months > 0) {
-      return `${months} bulan`;
-    } else {
-      const days = Math.floor((today - birth) / (1000 * 60 * 60 * 24));
-      return `${days} hari`;
-    }
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     
@@ -86,8 +61,8 @@ const TambahHewanModal = ({
       petName: '',
       speciesId: '',
       ownerId: '',
-      birthDate: '',
     });
+    setJenisHewanOptions([]);
   };
 
   return (
@@ -98,7 +73,7 @@ const TambahHewanModal = ({
       description="Masukkan data hewan pasien"
       maxWidth="max-w-lg"
     >
-      <form onSubmit={handleSubmit} className="p-6 space-y-3">
+      <form onSubmit={handleSubmit} className="px-6 pb-6 pt-2 space-y-2">
         
         {/* Dropdown Pemilik */}
         <div>
@@ -108,13 +83,13 @@ const TambahHewanModal = ({
           <select
             value={formData.ownerId}
             onChange={(e) => handleOwnerChange(e.target.value)}
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            className={`w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none text-body-2 ${!formData.ownerId ? 'text-accent-neutral-800' : 'text-accent-neutral-1000'}`}
             required 
           >
-            <option value="">Pilih nama pemilik</option>
+            <option value="" className='text-accent-neutral-800'>Pilih nama pemilik</option>
             {ownerOptions && ownerOptions.length > 0 ? (
               ownerOptions.map((owner) => (
-                <option key={`owner-${owner.id}`} value={owner.id}>
+                <option key={`owner-${owner.id}`} value={owner.id} className='text-accent-neutral-1000'>
                   {owner.name} - {owner.email}
                 </option>
               ))
@@ -137,7 +112,7 @@ const TambahHewanModal = ({
             value={formData.petName}
             onChange={(e) => setFormData({ ...formData, petName: e.target.value })}
             placeholder="Masukkan nama hewan"
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 text-body-2 placeholder:text-accent-neutral-800"
             required              
           />
         </div>
@@ -150,11 +125,11 @@ const TambahHewanModal = ({
           <select
             value={formData.speciesId}
             onChange={(e) => setFormData({ ...formData, speciesId: e.target.value })}
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            className={`w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none text-body-2 ${!formData.speciesId ? 'text-accent-neutral-800' : 'text-accent-neutral-1000'}`}
             required
             disabled={!formData.ownerId}
           >
-            <option value="">
+            <option value="" className='text-accent-neutral-800'>
               {!formData.ownerId 
                 ? 'Pilih pemilik terlebih dahulu' 
                 : jenisHewanOptions.length === 0
@@ -162,7 +137,7 @@ const TambahHewanModal = ({
                 : 'Pilih jenis hewan'}
             </option>
             {jenisHewanOptions.map((jenis) => (
-              <option key={jenis.id_jenisHewan} value={jenis.id_jenisHewan}>
+              <option key={jenis.id_jenisHewan} value={jenis.id_jenisHewan} className='text-accent-neutral-1000'>
                 {jenis.nama_jenis}
               </option>
             ))}
@@ -174,25 +149,7 @@ const TambahHewanModal = ({
           </p>
         </div>
 
-        {/* Tanggal Lahir */}
-        <div>
-          <label className="block text-h-8 font-bold text-accent-neutral-1000">
-            Tanggal Lahir (Opsional)
-          </label>
-          <input 
-            type="date"
-            value={formData.birthDate}
-            onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
-            max={new Date().toISOString().split('T')[0]}
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          {formData.birthDate && (
-            <p className="text-sm text-blue-600 mt-1">
-              Umur: {calculateAge(formData.birthDate)}
-            </p>
-          )}
-        </div>
-
+        {/* ✅ Buttons */}
         <div className="flex justify-end space-x-3 pt-3">
           <button
             type="button"
@@ -203,7 +160,8 @@ const TambahHewanModal = ({
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150"
+            disabled={!formData.ownerId || jenisHewanOptions.length === 0}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Simpan
           </button>

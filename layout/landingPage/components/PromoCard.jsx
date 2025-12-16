@@ -11,7 +11,7 @@ export default function PromoCard({
   className = "",
 }) {
   return (
-    <div className={`relative ${bgClass} rounded-lg border-2 ${borderColor} shadow-lg p-4 overflow-hidden h-[170px] flex flex-col ${className}`}>
+    <div className={`relative ${bgClass} rounded-lg border-2 ${borderColor} shadow-lg p-3 sm:p-4 overflow-hidden h-[140px] sm:h-[170px] flex flex-col ${className}`}>
       
       <svg
         className="absolute pointer-events-none block"
@@ -42,7 +42,7 @@ export default function PromoCard({
 
       {/* Ornamen Kuning Setengah - Pojok Kanan Atas */}
       <div 
-        className="absolute pointer-events-none z-[1]"
+        className="hidden sm:block absolute pointer-events-none z-[1]"
         style={{
           right: '-80px',
           top: '20px',
@@ -54,16 +54,29 @@ export default function PromoCard({
           backgroundPosition: 'center',
         }}
       />
+      <div 
+        className=" sm:hidden absolute pointer-events-none z-[1]"
+        style={{
+          right: '-80px',
+          top: '10px',
+          width: '120px',
+          height: '120px',
+          backgroundImage: "url('/Assets/ornamen-promo.svg')",
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
+        }}
+      />
 
       
-      <div className="relative p-3 z-10 flex flex-col h-full">
+      <div className="relative p-2 sm:p-3 z-10 flex flex-col h-full">
        
-        <h3 className="text-h-7 font-bold text-accent-neutral-1000 mb-2">
+        <h3 className="text-body-1 sm:text-h-7 font-bold text-accent-neutral-1000 mb-1 sm:mb-2">
           {title}
         </h3>
         
         
-        <p className="text-body-2  text-accent-neutral-1000 leading-snug line-clamp-4">
+        <p className="text-[12px] sm:text-body-2  text-accent-neutral-1000 leading-snug sm:line-clamp-4 line-clamp-3">
           {description}
         </p>
       </div>

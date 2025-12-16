@@ -189,7 +189,7 @@ export default function Content() {
       />
       {/* ini yagn tab kebawah */}
             <div 
-        className="hidden sm:block absolute pointer-events-none z-[1]"
+        className="hidden sm:block lg:hidden absolute pointer-events-none z-[1]"
         style={{
           left: '10px',
           top: '170px',
@@ -205,7 +205,7 @@ export default function Content() {
       
       {/* Ornamen Kanan - Berputar */}
       <div 
-        className="hidden sm:block absolute pointer-events-none z-[1]"
+        className="hidden sm:block lg:hidden absolute pointer-events-none z-[1]"
         style={{
           right: '10px',
           top: '170px',

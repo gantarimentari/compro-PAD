@@ -29,7 +29,7 @@ const TambahAdminModal = ({ isOpen, onClose, onSave }) => {
     description="Buat akun administrator baru"
     maxWidth="max-w-lg"
     >
-      <form onSubmit={handleSubmit} className="p-6 space-y-2">
+      <form onSubmit={handleSubmit} className="px-6 pb-6 pt-2 space-y-2">
       <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Nama Admin
@@ -39,12 +39,12 @@ const TambahAdminModal = ({ isOpen, onClose, onSave }) => {
             value={formData.adminName}
             onChange={(e) => setFormData({ ...formData, adminName: e.target.value })}
             placeholder="Masukkan nama admin"
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            className="text-body-2 placeholder:text-accent-neutral-800 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
             required              
           />
         </div>
         <div>
-          <label className="block text-h-8 font-bold text-accent-neutral-1000">
+          <label className="text-body-2 block text-h-8 font-bold text-accent-neutral-1000">
             Username
           </label>
           <input 
@@ -52,7 +52,7 @@ const TambahAdminModal = ({ isOpen, onClose, onSave }) => {
             value={formData.userName}
             onChange={(e) => setFormData({ ...formData, userName: e.target.value })}
             placeholder="Masukkan username"
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            className="text-body-2 placeholder:text-accent-neutral-800 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
             required              
           />
         </div>
@@ -65,7 +65,7 @@ const TambahAdminModal = ({ isOpen, onClose, onSave }) => {
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             placeholder="email@example.com"
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            className="text-body-2 placeholder:text-accent-neutral-800 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
             required              
           />
         </div>
@@ -78,7 +78,7 @@ const TambahAdminModal = ({ isOpen, onClose, onSave }) => {
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             placeholder="Masukkan password"
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            className="text-body-2 placeholder:text-accent-neutral-800 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
             required 
           />
         </div>

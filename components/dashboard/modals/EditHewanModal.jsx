@@ -10,7 +10,6 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerOptions = [] }) =
     petName: hewan?.petName || '',
     speciesId: hewan?.speciesId || '',
     ownerId: hewan?.ownerId || '',
-    birthDate: hewan?.birthDate || '',
   });
 
   // fetch api
@@ -24,7 +23,6 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerOptions = [] }) =
         petName: hewan.petName || '',
         speciesId: hewan.speciesId || '',
         ownerId: hewan.ownerId || '',
-        birthDate: hewan.birthDate || '',
       });
 
       //fetch ownner ketika modal kebuka
@@ -99,16 +97,15 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerOptions = [] }) =
       description="Perbarui data hewan"
       maxWidth="max-w-lg"
     >
-      <form onSubmit={handleSubmit} className="p-6 space-y-2">
-        {/* Nama Pemilik */}
+      <form onSubmit={handleSubmit} className="px-6 pb-6 pt-2 space-y-2">
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Nama Pemilik
           </label>
           <select
             value={formData.ownerId}
-            onChange={handleOwnerChange} // ✅ Gunakan handler khusus
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
+            onChange={handleOwnerChange}
+            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none text-body-2"
             required 
           >
             <option value="">Pilih nama pemilik</option>
@@ -130,7 +127,7 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerOptions = [] }) =
             value={formData.petName}
             onChange={(e) => setFormData({ ...formData, petName: e.target.value })}
             placeholder="Masukkan nama hewan"
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            className="text-body-2 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
             required              
           />
         </div>
@@ -143,7 +140,7 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerOptions = [] }) =
           <select
             value={formData.speciesId}
             onChange={(e) => setFormData({ ...formData, speciesId: e.target.value })}
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
+            className="text-body-2 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
             required
             disabled={!formData.ownerId || isLoadingSpecies} // ✅ Disabled jika belum pilih owner atau sedang loading
           >

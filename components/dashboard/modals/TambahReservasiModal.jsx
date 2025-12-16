@@ -5,8 +5,8 @@ import BaseModal from './BaseModal';
 
 const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState({
-    ownerId: '',
-    petId: '',
+    ownerId: '', // ✅ Logic HEAD: pakai ownerId
+    petId: '',   // ✅ Logic HEAD: pakai petId
     date: '',
     keluhan: '',
   });
@@ -23,7 +23,7 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
     }
   }, [isOpen]);
 
-  // ✅ Filter hewan berdasarkan pemilik yang dipilih
+  // ✅ Filter hewan berdasarkan pemilik yang dipilih (Logic HEAD)
   useEffect(() => {
     if (formData.ownerId) {
       console.log('🔍 Filtering pets for owner:', formData.ownerId);
@@ -57,6 +57,7 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
     }
   }, [isOpen]);
 
+  // ✅ Fetch owners (Logic HEAD)
   const fetchOwners = async () => {
     try {
       await api.get('/sanctum/csrf-cookie');
@@ -75,6 +76,7 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
     }
   };
 
+  // ✅ Fetch all pets & flatten (Logic HEAD)
   const fetchAllPets = async () => {
     try {
       await api.get('/sanctum/csrf-cookie');
@@ -124,21 +126,23 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
       description="Buat reservasi baru untuk pasien"
       maxWidth="max-w-lg"
     >
-      <form onSubmit={handleSubmit} className="p-6 space-y-3">
-        {/* Dropdown Nama Pemilik */}
+      {/* ✅ UI Baru: px-6 pb-6 pt-2 space-y-2 */}
+      <form onSubmit={handleSubmit} className="px-6 pb-6 pt-2 space-y-2">
+        
+        {/* ✅ Dropdown Nama Pemilik - Logic HEAD + UI Baru */}
         <div>
-          <label className="block text-h-8 font-bold text-accent-neutral-1000 mb-2">
+          <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Nama Pasien
           </label>
           <select
             value={formData.ownerId}
             onChange={(e) => setFormData({ ...formData, ownerId: e.target.value })}
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            className={`w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none text-body-2 ${!formData.ownerId ? 'text-accent-neutral-800' : 'text-accent-neutral-1000'}`}
             required
           >
-            <option value="">Pilih nama pemilik</option>
+            <option value="" className='text-accent-neutral-800'>Pilih nama pemilik</option>
             {ownerOptions.map((owner) => (
-              <option key={owner.id} value={owner.id}>
+              <option key={owner.id} value={owner.id} className='text-accent-neutral-1000'>
                 {owner.name} - {owner.email}
               </option>
             ))}
@@ -148,19 +152,19 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
           </p>
         </div>
 
-        {/* Dropdown Hewan */}
+        {/* ✅ Dropdown Hewan - Logic HEAD + UI Baru */}
         <div>
-          <label className="block text-h-8 font-bold text-accent-neutral-1000 mb-2">
+          <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Hewan
           </label>
           <select
             value={formData.petId}
             onChange={(e) => setFormData({ ...formData, petId: e.target.value })}
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            className={`w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none text-body-2 disabled:opacity-50 ${!formData.petId ? 'text-accent-neutral-800' : 'text-accent-neutral-1000'}`}
             required
             disabled={!formData.ownerId}
           >
-            <option value="">
+            <option value="" className='text-accent-neutral-800'>
               {!formData.ownerId
                 ? 'Pilih pemilik terlebih dahulu'
                 : petOptions.length === 0
@@ -168,7 +172,7 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
                 : 'Pilih hewan'}
             </option>
             {petOptions.map((pet) => (
-              <option key={pet.id_hewan} value={pet.id_hewan}>
+              <option key={pet.id_hewan} value={pet.id_hewan} className='text-accent-neutral-1000'>
                 {pet.nama_hewan} ({pet.jenis_hewan?.nama_jenis || 'Unknown'})
               </option>
             ))}
@@ -178,36 +182,36 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
           </p>
         </div>
 
-        {/* Tanggal Reservasi */}
+        {/* ✅ Tanggal Reservasi - Logic HEAD (min validation) + UI Baru */}
         <div>
-          <label className="block text-h-8 font-bold text-accent-neutral-1000 mb-2">
+          <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Tanggal Reservasi
           </label>
           <input
             type="date"
             value={formData.date}
             onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-            min={new Date().toISOString().split('T')[0]}
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            min={new Date().toISOString().split('T')[0]} // ✅ Logic HEAD: validasi tanggal
+            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 text-body-2"
             required
           />
         </div>
 
-        {/* Keluhan */}
+        {/* ✅ Keluhan - Logic HEAD (textarea) + UI Baru */}
         <div>
-          <label className="block text-h-8 font-bold text-accent-neutral-1000 mb-2">
+          <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Keluhan
           </label>
           <textarea
             value={formData.keluhan}
             onChange={(e) => setFormData({ ...formData, keluhan: e.target.value })}
             placeholder="Deskripsikan keluhan atau tujuan kunjungan"
-            className="w-full bg-accent-neutral-200 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 min-h-[80px]"
+            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 text-body-2 placeholder:text-accent-neutral-800 min-h-[80px] resize-none"
             required
           />
         </div>
 
-        {/* Buttons */}
+        {/* ✅ Buttons - UI Baru */}
         <div className="flex justify-end space-x-3 pt-3">
           <button
             type="button"
@@ -218,7 +222,8 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150"
+            disabled={!formData.ownerId || petOptions.length === 0}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Simpan
           </button>

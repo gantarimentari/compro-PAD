@@ -19,31 +19,27 @@ export default function Promo() {
 
   const [promoData, setPromoData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  
-  // ✅ State untuk judul promo dari database
-  // const [judulPromo, setJudulPromo] = useState("Promo Spesial Untukmu!");
 
   useEffect(() => {
     fetchPromos();
-    fetchSystemInfo(); // ✅ Tambah fetch system info
+    fetchSystemInfo();
   }, []);
 
-  // ✅ Fetch judul promo dari system info
+  // ✅ Fetch judul promo dari system info (Logic HEAD)
   const fetchSystemInfo = async () => {
     try {
       const response = await api.get('/api/system-info');
       
       const judul = response.data.systemInfo?.judul_promo_tersedia;
       if (judul) {
-        // setJudulPromo(judul);
         console.log('✅ Judul Promo from DB:', judul);
       }
     } catch (error) {
       console.error('❌ Error fetching system info:', error);
-      // Gunakan default jika error
     }
   };
 
+  // ✅ Fetch promos (Logic HEAD)
   const fetchPromos = async () => {
     try {
       setIsLoading(true);
@@ -51,8 +47,6 @@ export default function Promo() {
       
       const response = await api.get('/api/public/promos');
       console.log('📦 Promos Response:', response.data);
-
-      
       
       // ✅ Format data dari backend
       const formattedPromos = response.data.map(promo => ({
@@ -100,7 +94,7 @@ export default function Promo() {
     }
   };
 
-  // ✅ Filter promo: available, sort by tanggalDibuat (latest first), max 3
+  // ✅ Filter promo (Logic HEAD): available, sort by tanggalDibuat, max 3
   const availablePromos = promoData
     .filter(promo => {
       console.log('🔍 Filtering promo:', promo.title, 'status:', promo.status);
@@ -128,20 +122,11 @@ export default function Promo() {
             alt="promo-desc" 
             className="h-[40px] md:h-[40px] w-auto"
         />
-        
-        {/* ✅ Dynamic Title from Database with Loading */}
-        {isLoading ? (
-          <div className="h-12 w-2/3 bg-white/20 rounded animate-pulse" />
-        ) : (
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white text-center max-w-3xl px-4">
-            {/* {judulPromo} */}
-          </h2>
-        )}
-        
-        {/* ✅ Promo Cards - 4 Layouts Total */}
-        <div className="w-full max-w-6xl mx-auto mt-8">
+
+        {/* ✅ Promo Cards Section - UI Baru dengan Logic HEAD */}
+        <div className="w-full max-w-6xl mx-auto lg:mt-8">
           {isLoading ? (
-            // Loading State - 2 layouts (Desktop + Mobile)
+            // ✅ Loading State (Logic HEAD) dengan UI Baru
             <>
               {/* Desktop Loading */}
               <div className="hidden lg:grid grid-cols-3 gap-6">
@@ -166,7 +151,7 @@ export default function Promo() {
               </div>
             </>
           ) : availablePromos.length === 0 ? (
-            // Empty State - 1 layout
+            // ✅ Empty State (Logic HEAD)
             <div className="col-span-3 text-center py-12">
               <p className="text-h-7 font-bold text-white">
                 Belum ada promo tersedia
@@ -176,21 +161,22 @@ export default function Promo() {
               </p>
             </div>
           ) : (
-            // Data State - 2 layouts (Desktop + Mobile)
+            // ✅ Data State dengan UI Baru (responsive + centering)
             <>
-              {/* Desktop (lg+) - Grid 3 kolom */}
-              <div className="hidden lg:grid grid-cols-3 gap-6">
+              {/* Desktop (lg+) - Flex dengan centering logic */}
+              <div className={`hidden lg:flex gap-6 ${availablePromos.length < 3 ? 'justify-center' : 'justify-start flex-wrap'}`}>
                 {availablePromos.map((promo) => (
-                  <PromoCard
-                    key={promo.id}
-                    title={promo.title}
-                    description={promo.description}
-                  />
+                  <div key={promo.id} className="w-[calc(33.333%-16px)] flex-shrink-0">
+                    <PromoCard
+                      title={promo.title}
+                      description={promo.description}
+                    />
+                  </div>
                 ))}
               </div>
 
-              {/* Mobile (lg-) - Horizontal scroll */}
-              <div className="lg:hidden flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory px-4 [&::-webkit-scrollbar]:hidden" 
+              {/* Mobile/Tablet (lg-) - Horizontal scroll dengan centering */}
+              <div className={`lg:hidden flex gap-4 sm:gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory px-2 [&::-webkit-scrollbar]:hidden ${availablePromos.length < 3 ? 'justify-center' : ''}`} 
                 style={{ 
                   scrollbarWidth: 'none', 
                   msOverflowStyle: 'none' 
@@ -199,8 +185,7 @@ export default function Promo() {
                 {availablePromos.map((promo) => (
                   <div 
                     key={promo.id} 
-                    className="flex-shrink-0 snap-center" 
-                    style={{ width: '280px' }}
+                    className="flex-shrink-0 snap-center w-[280px] sm:w-[368px]"
                   >
                     <PromoCard
                       title={promo.title}

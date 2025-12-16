@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import "quill/dist/quill.snow.css";
 
-export default function QuillEditor({ value, onChange }) {
+export default function QuillEditor({ value, onChange, placeholder = "", className = "", }) {
   const editorRef = useRef(null);
   const quillInstance = useRef(null);
   const [isClient, setIsClient] = useState(false);
@@ -22,6 +22,7 @@ export default function QuillEditor({ value, onChange }) {
       // Init Quill sekali saja
       quillInstance.current = new Quill(editorRef.current, {
         theme: "snow",
+        placeholder,
         modules: {
           toolbar: [
             [{ header: [1, 2, 3, false] }],
@@ -72,7 +73,7 @@ export default function QuillEditor({ value, onChange }) {
   }
 
   return (
-    <div>
+    <div className={className}>
       <div ref={editorRef} style={{ minHeight: "200px" }} />
     </div>
   );
