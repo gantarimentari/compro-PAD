@@ -32,7 +32,7 @@ const TambahPromoModal = ({ isOpen, onClose, onSave }) => {
       description="Buat promo baru"
       maxWidth="max-w-lg"
     >
-      <form onSubmit={handleSubmit} className="p-6 space-y-6" >
+      <form onSubmit={handleSubmit} className="px-6 pb-6 pt-2 space-y-2" >
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">Judul</label>
           <input
@@ -40,7 +40,7 @@ const TambahPromoModal = ({ isOpen, onClose, onSave }) => {
             value={formData.title}
             onChange={(e) => setFormData({...formData, title: e.target.value})}
             placeholder="Masukkan judul promo"
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            className="text-body-2 placeholder:text-accent-neutral-800 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
             required
           />
         </div>
@@ -51,7 +51,7 @@ const TambahPromoModal = ({ isOpen, onClose, onSave }) => {
             value={formData.description}
             onChange={(e)=>setFormData({...formData, description: e.target.value})}
             placeholder='Tuliskan deskripsikan promo disini...'
-            className="w-full bg-accent-neutral-200 px-4 py-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            className="text-body-2 placeholder:text-accent-neutral-800 w-full bg-accent-neutral-200 px-4 py-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
             required>
             </input>
         </div>
@@ -63,7 +63,7 @@ const TambahPromoModal = ({ isOpen, onClose, onSave }) => {
             type="date"
             value={formData.startDate}
             onChange={(e)=>setFormData({...formData, startDate: e.target.value})}
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            className="text-body-2 placeholder:text-accent-neutral-800 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
             required>
             </input>
         </div>
@@ -73,7 +73,7 @@ const TambahPromoModal = ({ isOpen, onClose, onSave }) => {
             type="date"
             value={formData.endDate}
             onChange={(e)=>setFormData({...formData, endDate: e.target.value})}
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            className="text-body-2 placeholder:text-accent-neutral-800 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
             required>
             </input>
         </div>
@@ -83,7 +83,7 @@ const TambahPromoModal = ({ isOpen, onClose, onSave }) => {
             <select
               value={formData.status}
               onChange={(e)=>setFormData({...formData, status: e.target.value})}
-              className='font-bold w-full bg-accent-neutral-200 px-4 py-2 pr-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none'>
+              className='font-bold text-body-2 placeholder:text-accent-neutral-800 w-full bg-accent-neutral-200 px-4 py-2 pr-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none'>
               <option value="Available">Available</option>
               <option value="Unavailable">Unavailable</option>
             </select>

@@ -16,9 +16,9 @@ const PreviewPasienModal = ({ isOpen, onClose, pasien }) => {
       emptyMessage="Belum ada hewan terdaftar"
     >
       {pasien.pets && pasien.pets.length > 0 ? (
-        <ul className="space-y-3">
+        <ul className="">
           {pasien.pets.map((pet, index) => (
-            <li key={index} className="flex items-center justify-between bg-accent-neutral-100 rounded-lg p-4">
+            <li key={index} className="flex items-center justify-between bg-accent-neutral-100 rounded-lg py-2">
               <div>
                 <p className="text-accent-neutral-1000">{pet.petName} ({pet.species})</p>
               </div>

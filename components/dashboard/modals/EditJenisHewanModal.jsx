@@ -43,7 +43,7 @@ const EditJenisHewanModal = ({ isOpen, onClose, jenisHewan, onSave }) => {
       description="Perbarui jenis hewan"
       maxWidth="max-w-lg"
     >
-      <form onSubmit={handleSubmit} className="p-6 space-y-2">
+      <form onSubmit={handleSubmit} className="px-6 pb-6 pt-2 space-y-2">
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Nama Pemilik
@@ -51,7 +51,7 @@ const EditJenisHewanModal = ({ isOpen, onClose, jenisHewan, onSave }) => {
           <select
             value={formData.ownerName}
             onChange={(e) => setFormData({...formData, ownerName: e.target.value})}
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
+            className="text-body-2 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
             required 
           >
             <option value="">Pilih nama pemilik</option>
@@ -71,7 +71,7 @@ const EditJenisHewanModal = ({ isOpen, onClose, jenisHewan, onSave }) => {
             value={formData.species}
             onChange={(e) => setFormData({...formData, species: e.target.value})}
             placeholder="Masukkan jenis hewan"
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            className="text-body-2 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
             required
           />
         </div>

@@ -67,7 +67,7 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave, ownerData = [] }) => {
       description="Buat reservasi baru untuk pasien"
       maxWidth="max-w-lg"
     >
-      <form onSubmit={handleSubmit} className="p-6 space-y-2">
+      <form onSubmit={handleSubmit} className="px-6 pb-6 pt-2 space-y-2">
         <div>
           <label className='block text-h-8 font-bold text-accent-neutral-1000'>
             Nama Pasien
@@ -75,11 +75,11 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave, ownerData = [] }) => {
           <select
            value={formData.ownerName}
            onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
-           className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
+           className={`w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none text-body-2 ${!formData.ownerName ? 'text-accent-neutral-800' : 'text-accent-neutral-1000'}`}
            required >
-            <option value="">Pilih nama pemilik</option>
+            <option value="" className='text-accent-neutral-800'>Pilih nama pemilik</option>
             {availableOwners.map((pemilik) => (
-              <option key={pemilik.id} value={pemilik.name}>
+              <option key={pemilik.id} value={pemilik.name} className='text-accent-neutral-1000'>
                 {pemilik.name}
               </option>
             ))}
@@ -92,19 +92,19 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave, ownerData = [] }) => {
           <select
            value={formData.petName}
            onChange={(e) => setFormData({ ...formData, petName: e.target.value })}
-           className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
+           className={`w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none text-body-2 disabled:opacity-100 ${!formData.petName ? 'text-accent-neutral-800' : 'text-accent-neutral-1000'}`}
            required 
            disabled={!formData.ownerName || availablePets.length === 0}
            >
-            <option value="">
+            <option value="" className='text-accent-neutral-800'>
               {!formData.ownerName
-              ? 'Pilih Hewan' 
+              ? 'Pilih hewan' 
               : availablePets.length === 0
               ? 'Pemilik ini belum memiliki hewan'
               : 'Pilih hewan'}
             </option>
             {availablePets.map((hewan, index) => (
-              <option key={index} value={hewan}>
+              <option key={index} value={hewan} className='text-accent-neutral-1000'>
                 {hewan}
               </option>
             ))}
@@ -120,7 +120,7 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave, ownerData = [] }) => {
             type="date"
             value={formData.date}
             onChange={(e)=>setFormData({...formData, date: e.target.value})}
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 text-body-2"
             required>
             </input>
            </div>
@@ -133,7 +133,7 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave, ownerData = [] }) => {
             value={formData.keluhan}
             onChange={(e)=>setFormData({...formData, keluhan: e.target.value})}
             placeholder='Deskripsikan keluhan atau tujuan kunjungan'
-            className="w-full bg-accent-neutral-200 px-4 py-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            className="w-full bg-accent-neutral-200 px-4 py-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 text-body-2 placeholder:text-accent-neutral-800"
             required>
             </input>
 

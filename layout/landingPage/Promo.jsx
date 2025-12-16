@@ -88,21 +88,22 @@ export default function Promo() {
         
         {/* Promo Cards - Grid untuk lg+, Scroll horizontal untuk lg- */}
         <div className="w-full max-w-6xl mx-auto lg:mt-8 ">
-          {/* Desktop (lg+) - Grid 3 kolom */}
-          <div className="hidden lg:grid grid-cols-3 gap-6">
+          {/* Desktop (lg+) - Grid 3 kolom atau flex center jika kurang dari 3 */}
+          <div className={`hidden lg:flex gap-6 ${availablePromos.length < 3 ? 'justify-center' : 'justify-start flex-wrap'}`}>
             {availablePromos.map((promo) => (
-              <PromoCard
-                key={promo.id}
-                title={promo.judulPromo}
-                description={promo.isiPromo}
-              />
+              <div key={promo.id} className="w-[calc(33.333%-16px)] flex-shrink-0">
+                <PromoCard
+                  title={promo.judulPromo}
+                  description={promo.isiPromo}
+                />
+              </div>
             ))}
           </div>
 
-          {/* Mobile/Tablet (lg-) - Horizontal scroll dengan lebar sama persis seperti desktop */}
-          <div className="lg:hidden flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory px-2 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          {/* Mobile/Tablet (lg-) - Horizontal scroll atau center jika kurang dari 3 */}
+          <div className={`lg:hidden flex gap-4 sm:gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory px-2 [&::-webkit-scrollbar]:hidden ${availablePromos.length < 3 ? 'justify-center' : ''}`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {availablePromos.map((promo) => (
-              <div key={promo.id} className="flex-shrink-0 snap-center w-[368px]">
+              <div key={promo.id} className="flex-shrink-0 snap-center w-[280px] sm:w-[368px]">
                 <PromoCard
                   title={promo.judulPromo}
                   description={promo.isiPromo}

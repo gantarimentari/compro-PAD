@@ -69,7 +69,7 @@ const EditReservasiModal = ({ isOpen, onClose, reservasi, onSave, ownerData = []
     title="Edit Reservasi"
     description="Perbarui data reservasi"
     maxWidth='max-w-lg'>
-      <form onSubmit={handleSubmit} className="p-6 space-y-2">
+      <form onSubmit={handleSubmit} className="px-6 pb-6 pt-2 space-y-2">
         <div>
         <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Nama Pasien
@@ -77,7 +77,7 @@ const EditReservasiModal = ({ isOpen, onClose, reservasi, onSave, ownerData = []
         <select
           value={formData.ownerName}
           onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
-          className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
+          className="text-body-2 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
           required >
           <option value="">Pilih nama pemilik</option>
           {availableOwners.map((pemilik) => (
@@ -92,7 +92,7 @@ const EditReservasiModal = ({ isOpen, onClose, reservasi, onSave, ownerData = []
         <select
           value={formData.petName}
           onChange={(e)=>setFormData({...formData, petName: e.target.value})}
-          className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
+          className="text-body-2 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
           required
           disabled={!formData.ownerName || availablePets.length === 0}>
             <option value="">
@@ -117,7 +117,7 @@ const EditReservasiModal = ({ isOpen, onClose, reservasi, onSave, ownerData = []
           type='date'
           value={formData.date}
           onChange={(e)=>setFormData({...formData, date: e.target.value})}
-          className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+          className="text-body-2 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
           required>
         </input>
 
@@ -131,7 +131,7 @@ const EditReservasiModal = ({ isOpen, onClose, reservasi, onSave, ownerData = []
         value={formData.keluhan}
         onChange={(e)=>setFormData({...formData, keluhan: e.target.value})}
         placeholder='Deskripsikan keluhan atau tujuan kunjungan'
-        className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+        className="text-body-2 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
         required>
         </input>
         </div>

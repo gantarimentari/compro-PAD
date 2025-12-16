@@ -74,7 +74,7 @@ const TambahHewanModal = ({ isOpen, onClose, onSave, ownerData = [] }) => {
       description="Masukkan data hewan baru"
       maxWidth="max-w-lg"
     >
-      <form onSubmit={handleSubmit} className="p-6 space-y-2">
+      <form onSubmit={handleSubmit} className="px-6 pb-6 pt-2 space-y-2">
       <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Nama Pemilik
@@ -82,12 +82,12 @@ const TambahHewanModal = ({ isOpen, onClose, onSave, ownerData = [] }) => {
           <select
             value={formData.ownerName}
             onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
+            className={`w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none text-body-2 ${!formData.ownerName ? 'text-accent-neutral-800' : 'text-accent-neutral-1000'}`}
             required 
           >
-            <option value="">Pilih nama pemilik</option>
+            <option value="" className='text-accent-neutral-800'>Pilih nama pemilik</option>
             {availableOwners.map((pemilik) => (
-              <option key={pemilik.id} value={pemilik.name}>
+              <option key={pemilik.id} value={pemilik.name} className='text-accent-neutral-1000'>
                 {pemilik.name}
               </option>
             ))}
@@ -102,7 +102,7 @@ const TambahHewanModal = ({ isOpen, onClose, onSave, ownerData = [] }) => {
             value={formData.petName}
             onChange={(e) => setFormData({ ...formData, petName: e.target.value })}
             placeholder="Masukkan nama hewan"
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 text-body-2 placeholder:text-accent-neutral-800"
             required              
           />
         </div>
@@ -114,11 +114,11 @@ const TambahHewanModal = ({ isOpen, onClose, onSave, ownerData = [] }) => {
           <select
             value={formData.species}
             onChange={(e) => setFormData({ ...formData, species: e.target.value })}
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
+            className={`w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none text-body-2 ${!formData.species ? 'text-accent-neutral-800' : 'text-accent-neutral-1000'}`}
             required
             disabled={!formData.ownerName || availableSpecies.length === 0}
           >
-            <option value="">
+            <option value="" className='text-accent-neutral-800'>
               {!formData.ownerName 
                 ? 'Pilih nama pemilik terlebih dahulu' 
                 : availableSpecies.length === 0 
@@ -126,7 +126,7 @@ const TambahHewanModal = ({ isOpen, onClose, onSave, ownerData = [] }) => {
                   : 'Pilih jenis hewan'}
             </option>
             {availableSpecies.map((jenis, index) => (
-              <option key={index} value={jenis}>
+              <option key={index} value={jenis} className='text-accent-neutral-1000'>
                 {jenis}
               </option>
             ))}

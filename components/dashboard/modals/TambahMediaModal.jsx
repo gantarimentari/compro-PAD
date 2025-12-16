@@ -37,24 +37,24 @@ const TambahMediaModal = ({ isOpen, onClose, onSave }) => {
       description="Buat media baru untuk klinik anda"
       maxWidth="max-w-2xl"
     >
-      <form onSubmit={handleSubmit} className="p-6 space-y-6">
+      <form onSubmit={handleSubmit} className="px-6 pb-6 pt-2 space-y-2">
         {formData.kategori === 'Foto' && (
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-h-8 font-bold text-accent-neutral-1000 ">
               Upload Media
             </label>
             <div className="relative">
-              <div className="relative border-2 border-gray-300 rounded-lg p-8 text-center transition duration-150">
-                <div className="relative z-10">
-                  <div className="flex justify-center">
-                    <UploadIcon className="w-5 h-5" />
-                  </div>
-                  <p className="text-sm text-gray-600">Upload media anda disini</p>
+              <div className="relative border-2 rounded-lg text-center transition duration-150 p-2 hover:border-gray-400 bg-accent-neutral-200 cursor-pointer">
+                <div className="relative z-10 flex items-center justify-between">
+                  <p className={`text-sm ${formData.file ? 'text-accent-neutral-1000 font-medium' : 'text-gray-600'} truncate pr-2`}>
+                    {formData.file ? formData.file.name : 'Upload media anda disini'}
+                  </p>
+                  <UploadIcon className="w-5 h-5 flex-shrink-0" />
                   <input
                     type="file"
                     onChange={handleFileChange}
                     accept="image/*"
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    className="text-body-2 absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   />
                 </div>
               </div>
@@ -63,22 +63,22 @@ const TambahMediaModal = ({ isOpen, onClose, onSave }) => {
         )}
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Kategori Media
           </label>
           <select
             value={formData.kategori}
             onChange={(e) => setFormData({ ...formData, kategori: e.target.value })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none bg-white"
+            className="text-body-2 w-full px-4 py-2 border bg-accent-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
           >
-            <option value="Foto">Foto</option>
+            <option value="Foto" >Foto</option>
             <option value="Video">Video</option>
           </select>
         </div>
 
         {formData.kategori === 'Video' && (
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-h-8 font-bold text-accent-neutral-1000 ">
               Link Youtube Video
             </label>
             <input
@@ -86,7 +86,7 @@ const TambahMediaModal = ({ isOpen, onClose, onSave }) => {
               value={formData.linkYoutube}
               onChange={(e) => setFormData({ ...formData, linkYoutube: e.target.value })}
               placeholder="https://youtube.com/..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+              className="text-body-2 w-full px-4 py-2 border bg-accent-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 placeholder:text-accent-neutral-800"
             />
           </div>
         )}
