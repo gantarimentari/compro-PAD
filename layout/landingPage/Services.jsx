@@ -14,6 +14,11 @@ export default function Services() {
   const [selectedService, setSelectedService] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const [whatsappData, setWhatsappData] = useState({
+    phone: '',
+    template: ''
+  });
+
   useEffect(() => {
     fetchSystemInfo();
   }, []);
@@ -30,11 +35,71 @@ export default function Services() {
         setJudulLayanan(judul);
         console.log('✅ Judul Layanan from DB:', judul);
       }
+
+      setWhatsappData({
+        phone: response.data.systemInfo?.phone || '',
+        template: response.data.systemInfo?.whatsapp_template || ''
+      });
+
     } catch (error) {
       console.error('❌ Error fetching system info:', error);
       // Gunakan default jika error
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleOpenWhatsApp = () => {
+    try {
+      console.log('📱 Opening WhatsApp from Services...');
+      console.log('📞 Clinic phone:', whatsappData.phone);
+
+      // Validate clinic phone exists
+      if (!whatsappData.phone) {
+        alert('❌ Nomor WhatsApp klinik belum tersedia. Silakan hubungi admin.');
+        return;
+      }
+
+      // Clean & format clinic's phone number
+      const cleanNumber = whatsappData.phone.replace(/[\s\-\+]/g, '');
+      let formattedNumber = cleanNumber;
+      
+      if (cleanNumber.startsWith('0')) {
+        formattedNumber = '62' + cleanNumber.substring(1);
+      } else if (!cleanNumber.startsWith('62')) {
+        formattedNumber = '62' + cleanNumber;
+      }
+
+      // Validate format
+      if (!/^62\d{9,12}$/.test(formattedNumber)) {
+        alert('❌ Format nomor WhatsApp klinik tidak valid. Hubungi admin.');
+        console.error('Invalid clinic number:', formattedNumber);
+        return;
+      }
+
+      console.log('📱 Formatted clinic number:', formattedNumber);
+
+      // Use dynamic template from database OR fallback to default
+      const messageTemplate = whatsappData.template
+
+      console.log('📝 Message template:', messageTemplate);
+
+      // Encode message for URL
+      const encodedMessage = encodeURIComponent(messageTemplate);
+
+      // Create WhatsApp URL
+      const whatsappUrl = `https://wa.me/${formattedNumber}?text=${encodedMessage}`;
+      
+      console.log('🚀 WhatsApp URL:', whatsappUrl);
+
+      // Open WhatsApp in new tab
+      window.open(whatsappUrl, '_blank');
+
+      console.log('✅ WhatsApp opened successfully');
+
+    } catch (err) {
+      console.error('❌ Error opening WhatsApp:', err);
+      alert('❌ Gagal membuka WhatsApp. Silakan coba lagi.');
     }
   };
 
@@ -220,7 +285,8 @@ export default function Services() {
                 />
                 {/* Button Info Lebih Lanjut - Nempel dengan Gambar Dokter */}
                 <Link href='/'>
-                  <Button 
+                  <Button
+                    onClick={handleOpenWhatsApp} 
                     icon={<RightArrowIcon className="h-4 w-4" />} 
                     iconPosition="right"
                     roundedClass="rounded-md"

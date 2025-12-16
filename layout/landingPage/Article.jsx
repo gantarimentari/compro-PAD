@@ -36,6 +36,15 @@ export default function Article() {
         const publishedArticles = articleRes.data.filter(article => article.status === 'Publish');
         console.log(' Published articles only:', publishedArticles);
 
+        const stripHtmlPreserveSpace = (html) => {
+          return html
+            .replace(/<br\s*\/?>/gi, '\n')
+            .replace(/<\/p>/gi, '\n')
+            .replace(/<[^>]*>/g, '')
+            .replace(/\n+/g, '\n')
+            .trim();
+        };
+
         //  Process articles: use imageUrl from backend & strip HTML
         const processedArticles = publishedArticles.slice(0, 2).map(article => {
           console.log('🔍 Processing article:', article.id, 'ImageURL:', article.imageUrl);
@@ -51,7 +60,7 @@ export default function Article() {
             //  Use imageUrl from backend (already full URL)
             imageUrl: article.imageUrl || '/images/placeholder-article.png',
             //  Strip HTML tags from content (for preview)
-            contentPreview: article.content?.replace(/<[^>]*>/g, '').substring(0, 200) + '...',
+            contentPreview: stripHtmlPreserveSpace(article.content).substring(0, 200) + '...',
           };
         });
 
@@ -147,7 +156,7 @@ export default function Article() {
           {isLoading ? (
             <div className="h-6 bg-gray-200 rounded animate-pulse flex-1"></div>
           ) : (
-            <p className='text-body-1 text-black lg:pr-4 flex-1 text-center lg:text-left'>
+            <p className='text-body-1 text-black lg:pr-4 flex-1 text-center lg:text-left break-words whitespace-pre-line'>
               {articleData.deskripsi_artikel}
             </p>
           )}

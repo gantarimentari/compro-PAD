@@ -77,7 +77,7 @@ const ArticleCard = ({
           <h3 className='sm:text-h-7 text-body-2 font-bold text-white leading-tight line-clamp-2'>
             {judul}
           </h3>
-          <p className='sm:text-body-2 text-body-5 text-white sm:line-clamp-6 line-clamp-4 leading-relaxed '>
+          <p className='sm:text-body-2 text-body-5 text-white whitespace-pre-line break-words leading-relaxed '>
             {deskripsi}
           </p>
         </div>

@@ -30,7 +30,7 @@ export default function Content() {
   const GAP = 40; // 40px = gap-10
   
   const [systemData, setSystemData] = useState({
-    judul_video_edukasi: 'video edukasi kami',
+    // judul_video_edukasi: 'video edukasi kami',
     deksripsi_video_edukasi: '',
   });
   
@@ -51,7 +51,7 @@ export default function Content() {
         console.log('system info(content):', sysRes.data);
 
         setSystemData({
-          judul_video_edukasi: sysRes.data.systemInfo.judul_video_edukasi,
+          // judul_video_edukasi: sysRes.data.systemInfo.judul_video_edukasi,
           deksripsi_video_edukasi: sysRes.data.systemInfo.deskripsi_video_edukasi,
         });
 
@@ -276,7 +276,7 @@ export default function Content() {
           ) : (
             <>
               <p className='lg:text-h-7 text-body-2 font-bold text-accent-neutral-1000 text-center max-w-2xl leading-relaxed'>
-                {systemData.judul_video_edukasi}
+                {/* {systemData.judul_video_edukasi} */}
               </p>
               <p className='text-h-7 font-bold text-accent-neutral-1000 text-center max-w-2xl leading-relaxed'>
                 {systemData.deksripsi_video_edukasi}

@@ -102,7 +102,7 @@ export default function JenisHewan() {
 
       const payload = {
         nama_jenis: formData.species,
-        // id_pasien tidak bisa diubah (karena jenis hewan milik pasien tertentu)
+        id_pasien: formData.patient_id
       };
 
       console.log('📤 Updating jenis hewan:', payload);

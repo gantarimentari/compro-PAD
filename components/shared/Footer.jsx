@@ -84,7 +84,7 @@ export default function Footer({
           {/* Left Column: Contact Information */}
           <div className="flex flex-col items-start gap-6">
             {/* Clinic Name */}
-            <h3 className="text-xl md:text-2xl font-extrabold text-white uppercase tracking-tight">
+            <h3 className="text-xl md:text-2xl font-extrabold text-white uppercase tracking-tight break-words whitespace-normal max-w-full">
               {data.clinic_name}
             </h3>
 

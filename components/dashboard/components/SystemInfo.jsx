@@ -107,7 +107,28 @@ export default function SystemInfo() {
     return option ? option.icon : null;
   };
 
+  const validateWordCount = (text, maxWords) => {
+    const words = text.trim().split(/\s+/).filter(word => word.length > 0);
+    return words.length <= maxWords;
+  }
+
   const handleInputChange = (field, value) => {
+    if (field === 'clinic_name') {
+      const words = value.trim().split(/\s+/).filter(word => word.length > 0);
+      if (words.length > 15) {
+        alert(`Nama klinik maksimal 15 kata!\nSaat ini: ${words.length} kata`);
+        return; // Jangan update state
+      }
+    }
+    
+    if (field === 'address') {
+      const words = value.trim().split(/\s+/).filter(word => word.length > 0);
+      if (words.length > 50) {
+        alert(`Alamat maksimal 50 kata!\nSaat ini: ${words.length} kata`);
+        return; // Jangan update state
+      }
+    }
+
     setSystemData(prev => ({
       ...prev,
       [field]: value || ''
@@ -283,11 +304,12 @@ export default function SystemInfo() {
           <label className="block text-h-8 font-bold text-accent-neutral-1000 mb-1">
             Nama Klinik
           </label>
-          <input
-            type="text"
+          <textarea
             value={systemData.clinic_name || ''}
             onChange={(e) => handleInputChange('clinic_name', e.target.value)}
-            className="w-full text-body-2 bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            className="w-full text-body-2 bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 resize-none break-words"
+            rows={2}
+            placeholder="Contoh: Klinik Dokter Hewan Fanina (Max 15 kata)"
           />
         </div>
 
@@ -299,6 +321,8 @@ export default function SystemInfo() {
             value={systemData.address || ''}
             onChange={(e) => handleInputChange('address', e.target.value)}
             className="w-full text-body-2 bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+            rows={3}
+            placeholder="Masukkan alamat lengkap (Max 50 kata)"
           />
         </div>
 

@@ -21,7 +21,7 @@ export default function Promo() {
   const [isLoading, setIsLoading] = useState(true);
   
   // ✅ State untuk judul promo dari database
-  const [judulPromo, setJudulPromo] = useState("Promo Spesial Untukmu!");
+  // const [judulPromo, setJudulPromo] = useState("Promo Spesial Untukmu!");
 
   useEffect(() => {
     fetchPromos();
@@ -35,7 +35,7 @@ export default function Promo() {
       
       const judul = response.data.systemInfo?.judul_promo_tersedia;
       if (judul) {
-        setJudulPromo(judul);
+        // setJudulPromo(judul);
         console.log('✅ Judul Promo from DB:', judul);
       }
     } catch (error) {
@@ -51,6 +51,8 @@ export default function Promo() {
       
       const response = await api.get('/api/public/promos');
       console.log('📦 Promos Response:', response.data);
+
+      
       
       // ✅ Format data dari backend
       const formattedPromos = response.data.map(promo => ({
@@ -132,7 +134,7 @@ export default function Promo() {
           <div className="h-12 w-2/3 bg-white/20 rounded animate-pulse" />
         ) : (
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white text-center max-w-3xl px-4">
-            {judulPromo}
+            {/* {judulPromo} */}
           </h2>
         )}
         
