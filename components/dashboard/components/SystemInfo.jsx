@@ -107,10 +107,6 @@ export default function SystemInfo() {
     return option ? option.icon : null;
   };
 
-  const validateWordCount = (text, maxWords) => {
-    const words = text.trim().split(/\s+/).filter(word => word.length > 0);
-    return words.length <= maxWords;
-  }
 
   const handleInputChange = (field, value) => {
     if (field === 'clinic_name') {

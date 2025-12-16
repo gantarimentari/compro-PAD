@@ -31,7 +31,7 @@ export default function Header() {
         }
         setIsLoggedIn(false);
       } finally {
-        setIsCheckingAuth(false); // ✅ Stop loading
+        setIsCheckingAuth(false); // this for stop loading
       }
     };
 

@@ -69,76 +69,6 @@ const ProfileDetails = ({ user, formData, isEditing, onChange, errors }) => {
     );
 };
 
-// --- Password Change Component ---
-const PasswordChangeForm = ({ formData, onChange, errors }) => {
-    return (
-        <div className="space-y-6 mt-8">
-            <p className="sm:text-h-4 text-h-7 font-medium text-accent-neutral-1000">
-                Ubah Password
-            </p>
-            
-            <div className="space-y-6">
-                <div>
-                    <label className="block sm:text-h-6 text-body-1 font-medium text-accent-neutral-1000 mb-2">
-                        Password Lama
-                    </label>
-                    <div className="relative bg-white rounded-lg border-2 border-accent-yellow-300 p-1">
-                        <ModalDashedBorder className="absolute inset-0 w-full h-full z-0 pointer-events-none p-1" />
-                        <input 
-                            type="password"
-                            name="current_password"
-                            value={formData.current_password}
-                            onChange={onChange}
-                            className="relative pl-4 z-10 w-full p-3 sm:text-h-7 text-body-1 font-medium bg-transparent rounded-lg focus:outline-none text-accent-neutral-1000"
-                        />
-                    </div>
-                    {errors.current_password && (
-                        <p className="mt-1 text-sm text-red-500">{errors.current_password}</p>
-                    )}
-                </div>
-                
-                <div>
-                    <label className="block sm:text-h-6 text-body-1 font-medium text-accent-neutral-1000 mb-2">
-                        Password Baru
-                    </label>
-                    <div className="relative bg-white rounded-lg border-2 border-accent-yellow-300 p-1">
-                        <ModalDashedBorder className="absolute inset-0 w-full h-full z-0 pointer-events-none p-1" />
-                        <input 
-                            type="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={onChange}
-                            className="relative pl-4 z-10 w-full p-3 sm:text-h-7 text-body-1 font-medium bg-transparent rounded-lg focus:outline-none text-accent-neutral-1000"
-                        />
-                    </div>
-                    {errors.password && (
-                        <p className="mt-1 text-sm text-red-500">{errors.password}</p>
-                    )}
-                </div>
-                
-                <div>
-                    <label className="block sm:text-h-6 text-body-1 font-medium text-accent-neutral-1000 mb-2">
-                        Konfirmasi Password Baru
-                    </label>
-                    <div className="relative bg-white rounded-lg border-2 border-accent-yellow-300 p-1">
-                        <ModalDashedBorder className="absolute inset-0 w-full h-full z-0 pointer-events-none p-1" />
-                        <input 
-                            type="password"
-                            name="password_confirmation"
-                            value={formData.password_confirmation}
-                            onChange={onChange}
-                            className="relative pl-4 z-10 w-full p-3 sm:text-h-7 text-body-1 font-medium bg-transparent rounded-lg focus:outline-none text-accent-neutral-1000"
-                        />
-                    </div>
-                    {errors.password_confirmation && (
-                        <p className="mt-1 text-sm text-red-500">{errors.password_confirmation}</p>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-};
-
 // --- Input Group Component ---
 const InputGroup = ({ label, name, value, isEditing, readOnly, onChange, error }) => (
     <div>
@@ -175,19 +105,15 @@ export default function UserProfile() {
     const router = useRouter();
     const [userProfile, setUserProfile] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
-    const [isChangingPassword, setIsChangingPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [errors, setErrors] = useState({});
     const [successMessage, setSuccessMessage] = useState('');
 
-    // Form data
+    // Form data - hanya username dan phone_number
     const [formData, setFormData] = useState({
         username: '',
         phone_number: '',
-        current_password: '',
-        password: '',
-        password_confirmation: '',
     });
 
     // ✅ Fetch user profile from API
@@ -204,9 +130,6 @@ export default function UserProfile() {
             setFormData({
                 username: res.data.user.username,
                 phone_number: res.data.user.phone_number || '',
-                current_password: '',
-                password: '',
-                password_confirmation: '',
             });
         } catch (err) {
             console.error('❌ Error fetching profile:', err);
@@ -238,14 +161,10 @@ export default function UserProfile() {
             setFormData({
                 username: userProfile.username,
                 phone_number: userProfile.phone_number || '',
-                current_password: '',
-                password: '',
-                password_confirmation: '',
             });
             setErrors({});
         }
         setIsEditing(!isEditing);
-        setIsChangingPassword(false);
     };
 
     // ✅ Save profile changes
@@ -274,46 +193,6 @@ export default function UserProfile() {
                 setErrors(err.response.data.errors);
             } else {
                 setErrors({ general: 'Gagal memperbarui profile. Silakan coba lagi.' });
-            }
-        } finally {
-            setIsSaving(false);
-        }
-    };
-
-    // ✅ Save password change
-    const handleSavePassword = async () => {
-        try {
-            setIsSaving(true);
-            setErrors({});
-            setSuccessMessage('');
-
-            await api.put('/api/profile/password', {
-                current_password: formData.current_password,
-                password: formData.password,
-                password_confirmation: formData.password_confirmation,
-            });
-
-            setSuccessMessage('Password berhasil diperbarui!');
-            setIsChangingPassword(false);
-            setIsEditing(false);
-            
-            // Reset password fields
-            setFormData(prev => ({
-                ...prev,
-                current_password: '',
-                password: '',
-                password_confirmation: '',
-            }));
-
-            setTimeout(() => setSuccessMessage(''), 3000);
-
-        } catch (err) {
-            console.error('❌ Error updating password:', err);
-            
-            if (err.response?.data?.errors) {
-                setErrors(err.response.data.errors);
-            } else {
-                setErrors({ general: 'Gagal memperbarui password. Silakan coba lagi.' });
             }
         } finally {
             setIsSaving(false);
@@ -378,15 +257,6 @@ export default function UserProfile() {
                     errors={errors}
                 />
 
-                {/* Password Change Form (only in edit mode) */}
-                {isEditing && isChangingPassword && (
-                    <PasswordChangeForm 
-                        formData={formData}
-                        onChange={handleChange}
-                        errors={errors}
-                    />
-                )}
-
                 {/* Action Buttons */}
                 <div className="flex justify-between mt-8 gap-2">
                     {isEditing ? (
@@ -399,26 +269,14 @@ export default function UserProfile() {
                                 Batal Perubahan 
                             </button>
                             
-                            <div className="flex gap-3">
-                                {!isChangingPassword && (
-                                    <button 
-                                        onClick={() => setIsChangingPassword(true)}
-                                        disabled={isSaving}
-                                        className="sm:px-6 px-4 sm:py-4 py-2 h-10 font-bold bg-accent-blue-400 sm:text-body-2 text-body-5 text-white rounded-lg hover:bg-accent-blue-500 transition font-medium flex items-center justify-center gap-2 disabled:opacity-50"
-                                    >
-                                        Ubah Password
-                                    </button>
-                                )}
-                                
-                                <button 
-                                    onClick={isChangingPassword ? handleSavePassword : handleSaveProfile}
-                                    disabled={isSaving}
-                                    className="sm:px-6 px-4 sm:py-4 py-2 h-10 font-bold bg-accent-yellow-300 border-accent-yellow-300 ease-out duration-300 sm:text-body-2 text-body-5 text-white rounded-lg hover:bg-accent-yellow-400 transition font-medium flex items-center justify-center gap-2 disabled:opacity-50"
-                                >
-                                    <DocumentIcon className="sm:w-5 sm:h-5 w-4 h-4" />
-                                    <span>{isSaving ? 'Menyimpan...' : 'Simpan Perubahan'}</span>
-                                </button>
-                            </div>
+                            <button 
+                                onClick={handleSaveProfile}
+                                disabled={isSaving}
+                                className="sm:px-6 px-4 sm:py-4 py-2 h-10 font-bold bg-accent-yellow-300 border-accent-yellow-300 ease-out duration-300 sm:text-body-2 text-body-5 text-white rounded-lg hover:bg-accent-yellow-400 transition font-medium flex items-center justify-center gap-2 disabled:opacity-50"
+                            >
+                                <DocumentIcon className="sm:w-5 sm:h-5 w-4 h-4" />
+                                <span>{isSaving ? 'Menyimpan...' : 'Simpan Perubahan'}</span>
+                            </button>
                         </>
                     ) : (
                         <>
