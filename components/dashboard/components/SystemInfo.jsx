@@ -215,6 +215,32 @@ export default function SystemInfo() {
 
   //  Save system info - send snake_case to backend
   const handleSave = async () => {
+      // ✅ Validasi sebelum submit
+    const errors = [];
+
+    // Validasi jam operasional
+    if (!systemData.operating_hours || systemData.operating_hours.trim() === '') {
+      errors.push('Jam operasional tidak boleh kosong');
+    }
+
+    // Validasi nama klinik
+    if (!systemData.clinic_name || systemData.clinic_name.trim() === '') {
+      errors.push('Nama klinik tidak boleh kosong');
+    }
+
+    // Validasi email format (jika diisi)
+    if (systemData.email && systemData.email.trim() !== '') {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(systemData.email)) {
+        errors.push('Format email tidak valid');
+      }
+    }
+
+    // ✅ Tampilkan semua error
+    if (errors.length > 0) {
+      alert('Gagal karena:\n\n' + errors.map((err, i) => `${i + 1}. ${err}`).join('\n'));
+      return; // Stop jangan submit
+    }
     try {
       await api.get('/sanctum/csrf-cookie');
 
@@ -227,9 +253,9 @@ export default function SystemInfo() {
       alert(' Data berhasil disimpan!');
       await fetchSystemInfo();
     } catch (err) {
-      console.error('❌ Error saving system info:', err);
+      console.error(' Error saving system info:', err);
       console.error('Error details:', err.response?.data);
-      alert(`❌ Gagal menyimpan: ${err.response?.data?.message || err.message}`);
+      alert(` Gagal menyimpan: ${err.response?.data?.message || err.message}`);
     }
   };
 
@@ -248,8 +274,8 @@ export default function SystemInfo() {
         await fetchSystemInfo();
         alert(' Social media berhasil ditambahkan!');
       } catch (err) {
-        console.error('❌ Error adding social media:', err);
-        alert('❌ Gagal menambahkan social media');
+        console.error('Error adding social media:', err);
+        alert('Gagal menambahkan social media');
       }
     }
   };
@@ -264,7 +290,7 @@ export default function SystemInfo() {
       alert(' Social media berhasil diupdate!');
     } catch (err) {
       console.error('❌ Error updating social media:', err);
-      alert('❌ Gagal mengupdate social media');
+      alert('Gagal mengupdate social media');
     }
   };
 

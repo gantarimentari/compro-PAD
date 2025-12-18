@@ -157,7 +157,7 @@ export default function ManagemenMedia() {
       alert(' Media berhasil ditambahkan!');
     } catch (err) {
       console.error('Error uploading media:', err);
-      alert('❌ Gagal menambahkan media');
+      alert('Gagal menambahkan media, coba dengan file gambar');
     }
   };
 

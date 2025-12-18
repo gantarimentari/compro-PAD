@@ -401,7 +401,8 @@ export default function Services() {
 
               {/* Button Info Lebih Lanjut di bawah */}
               <Link href='/'>
-                <Button 
+                <Button
+                  onClick={handleOpenWhatsApp} 
                   icon={<RightArrowIcon className="h-4 w-4" />} 
                   iconPosition="right"
                   roundedClass="rounded-md"
