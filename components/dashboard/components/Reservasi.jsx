@@ -112,7 +112,7 @@ const StatusDropdown = ({ currentStatus, onStatusChange, itemId }) => {
           />
         </button>
       </div>
-      {/* ✅ Portal to document.body to escape table overflow */}
+      {/* Portal to document.body to escape table overflow */}
       {typeof document !== 'undefined' && dropdownContent && createPortal(dropdownContent, document.body)}
     </>
   );
@@ -143,10 +143,10 @@ export default function Reservasi() {
       await api.get('/sanctum/csrf-cookie');
       const res = await api.get('/api/reservations');
 
-      console.log('📦 Reservasi Data:', res.data);
+      console.log('Reservasi Data:', res.data);
       setReservasiData(res.data);
     } catch (err) {
-      console.error('❌ Error fetching reservations:', err);
+      console.error('Error fetching reservations:', err);
       alert('Gagal memuat data reservasi');
     }
   };
@@ -178,15 +178,15 @@ export default function Reservasi() {
         status: 'pending',
       };
 
-      console.log('📤 Sending reservation:', payload);
+      console.log('Sending reservation:', payload);
 
       await api.post('/api/reservations', payload);
       await fetchReservasi();
       setIsModalOpen(false);
-      alert('✅ Reservasi berhasil ditambahkan!');
+      alert('Reservasi berhasil ditambahkan!');
     } catch (err) {
-      console.error('❌ Error saving reservation:', err);
-      alert(`❌ Gagal menyimpan: ${err.response?.data?.message || err.message}`);
+      console.error('Error saving reservation:', err);
+      alert(`Gagal menyimpan: ${err.response?.data?.message || err.message}`);
     }
   };
 
@@ -204,10 +204,10 @@ export default function Reservasi() {
         item.id === reservasiId ? { ...item, status: newStatus } : item
       ));
 
-      console.log(`✅ Status updated: ${reservasiId} → ${newStatus}`);
+      console.log(`Status updated: ${reservasiId} → ${newStatus}`);
     } catch (err) {
-      console.error('❌ Error updating status:', err);
-      alert('❌ Gagal mengupdate status');
+      console.error('Error updating status:', err);
+      alert('Gagal mengupdate status');
     }
   };
 
@@ -232,10 +232,10 @@ export default function Reservasi() {
       await fetchReservasi();
       setIsEditModalOpen(false);
       setSelectedReservasi(null);
-      alert('✅ Reservasi berhasil diupdate!');
+      alert('Reservasi berhasil diupdate!');
     } catch (err) {
-      console.error('❌ Error updating reservation:', err);
-      alert(`❌ Gagal mengupdate: ${err.response?.data?.message || err.message}`);
+      console.error('Error updating reservation:', err);
+      alert(`Gagal mengupdate: ${err.response?.data?.message || err.message}`);
     }
   };
 
@@ -253,10 +253,10 @@ export default function Reservasi() {
         await fetchReservasi();
         setIsDeleteModalOpen(false);
         setReservasiToDelete(null);
-        alert('✅ Reservasi berhasil dihapus!');
+        alert('Reservasi berhasil dihapus!');
       } catch (err) {
-        console.error('❌ Error deleting reservation:', err);
-        alert('❌ Gagal menghapus reservasi');
+        console.error('Error deleting reservation:', err);
+        alert('Gagal menghapus reservasi');
       }
     }
   };
@@ -307,7 +307,7 @@ export default function Reservasi() {
         onAddClick={() => setIsModalOpen(true)}
       />
 
-      {/* ✅ Add pb-32 from 6297f7a for better spacing */}
+      {/* Add pb-32 from 6297f7a for better spacing */}
       <div className="space-y-4 pb-32">
         <SearchBar
           placeholderText="Cari nama hewan, jenis, atau pemilik..."

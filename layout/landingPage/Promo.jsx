@@ -25,30 +25,30 @@ export default function Promo() {
     fetchSystemInfo();
   }, []);
 
-  // ✅ Fetch judul promo dari system info (Logic HEAD)
+  // Fetch judul promo dari system info (Logic HEAD)
   const fetchSystemInfo = async () => {
     try {
       const response = await api.get('/api/system-info');
       
       const judul = response.data.systemInfo?.judul_promo_tersedia;
       if (judul) {
-        console.log('✅ Judul Promo from DB:', judul);
+        console.log('Judul Promo from DB:', judul);
       }
     } catch (error) {
-      console.error('❌ Error fetching system info:', error);
+      console.error('Error fetching system info:', error);
     }
   };
 
-  // ✅ Fetch promos (Logic HEAD)
+  // Fetch promos (Logic HEAD)
   const fetchPromos = async () => {
     try {
       setIsLoading(true);
-      console.log('🔄 Fetching promos from API...');
+      console.log('Fetching promos from API...');
       
       const response = await api.get('/api/public/promos');
-      console.log('📦 Promos Response:', response.data);
+      console.log('Promos Response:', response.data);
       
-      // ✅ Format data dari backend
+      // Format data dari backend
       const formattedPromos = response.data.map(promo => ({
         id: promo.id,
         title: promo.title,
@@ -59,13 +59,13 @@ export default function Promo() {
         endDate: promo.end_date,
       }));
       
-      console.log('✅ Formatted promos:', formattedPromos);
+      console.log('Formatted promos:', formattedPromos);
       setPromoData(formattedPromos);
       
     } catch (error) {
-      console.error('❌ Error fetching promos:', error);
+      console.error('Error fetching promos:', error);
       
-      // ✅ Fallback to dummy data
+      // Fallback to dummy data
       setPromoData([
         {
           id: 1,
@@ -94,7 +94,7 @@ export default function Promo() {
     }
   };
 
-  // ✅ Filter promo (Logic HEAD): available, sort by tanggalDibuat, max 3
+  // Filter promo (Logic HEAD): available, sort by tanggalDibuat, max 3
   const availablePromos = promoData
     .filter(promo => {
       console.log('🔍 Filtering promo:', promo.title, 'status:', promo.status);
@@ -103,7 +103,7 @@ export default function Promo() {
     .sort((a, b) => new Date(b.tanggalDibuat) - new Date(a.tanggalDibuat))
     .slice(0, 3);
 
-  console.log('🎯 Available promos after filter:', availablePromos);
+  console.log('Available promos after filter:', availablePromos);
 
   return (
     <div className="relative w-full bg-accent-blue-500 py-2" style={backgroundStyle}>
@@ -123,10 +123,10 @@ export default function Promo() {
             className="h-[40px] md:h-[40px] w-auto"
         />
 
-        {/* ✅ Promo Cards Section - UI Baru dengan Logic HEAD */}
+        {/* Promo Cards Section - UI Baru dengan Logic HEAD */}
         <div className="w-full max-w-6xl mx-auto lg:mt-8">
           {isLoading ? (
-            // ✅ Loading State (Logic HEAD) dengan UI Baru
+            // Loading State (Logic HEAD) dengan UI Baru
             <>
               {/* Desktop Loading */}
               <div className="hidden lg:grid grid-cols-3 gap-6">
@@ -151,7 +151,7 @@ export default function Promo() {
               </div>
             </>
           ) : availablePromos.length === 0 ? (
-            // ✅ Empty State (Logic HEAD)
+            // Empty State (Logic HEAD)
             <div className="col-span-3 text-center py-12">
               <p className="text-h-7 font-bold text-white">
                 Belum ada promo tersedia
@@ -161,9 +161,9 @@ export default function Promo() {
               </p>
             </div>
           ) : (
-            // ✅ Data State dengan UI Baru (responsive + centering)
+            // Data State
             <>
-              {/* Desktop (lg+) - Flex dengan centering logic */}
+              {/* Desktop*/}
               <div className={`hidden lg:flex gap-6 ${availablePromos.length < 3 ? 'justify-center' : 'justify-start flex-wrap'}`}>
                 {availablePromos.map((promo) => (
                   <div key={promo.id} className="w-[calc(33.333%-16px)] flex-shrink-0">
@@ -175,7 +175,7 @@ export default function Promo() {
                 ))}
               </div>
 
-              {/* Mobile/Tablet (lg-) - Horizontal scroll dengan centering */}
+              {/* Mobile/Tablet*/}
               <div className={`lg:hidden flex gap-4 sm:gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory px-2 [&::-webkit-scrollbar]:hidden ${availablePromos.length < 3 ? 'justify-center' : ''}`} 
                 style={{ 
                   scrollbarWidth: 'none', 

@@ -69,7 +69,7 @@ export default function JenisHewan() {
         id_pasien: formData.ownerId, //  Send ownerId (not ownerName)
       };
 
-      console.log('📤 Sending payload:', payload);
+      console.log('Sending payload:', payload);
 
       await api.post('/api/jenis-hewan', payload);
       await fetchJenisHewan();
@@ -80,7 +80,7 @@ export default function JenisHewan() {
       
       //  Better error handling
       const errorMessage = err.response?.data?.message || err.message;
-      alert(`❌ Gagal menyimpan: ${errorMessage}`);
+      alert(`Gagal menyimpan: ${errorMessage}`);
     }
   };
 
@@ -105,7 +105,7 @@ export default function JenisHewan() {
         id_pasien: formData.patient_id
       };
 
-      console.log('📤 Updating jenis hewan:', payload);
+      console.log('Updating jenis hewan:', payload);
 
       await api.put(`/api/jenis-hewan/${id}`, payload);
       await fetchJenisHewan();
@@ -114,7 +114,7 @@ export default function JenisHewan() {
       alert(' Jenis hewan berhasil diupdate!');
     } catch (err) {
       console.error('Error updating jenis hewan:', err);
-      alert(`❌ Gagal mengupdate: ${err.response?.data?.message || err.message}`);
+      alert(`Gagal mengupdate: ${err.response?.data?.message || err.message}`);
     }
   };
 
@@ -136,7 +136,7 @@ export default function JenisHewan() {
         alert(' Jenis hewan berhasil dihapus!');
       } catch (err) {
         console.error('Error deleting jenis hewan:', err);
-        alert(`❌ ${err.response?.data?.message || 'Gagal menghapus jenis hewan'}`);
+        alert(` ${err.response?.data?.message || 'Gagal menghapus jenis hewan'}`);
       }
     }
   };

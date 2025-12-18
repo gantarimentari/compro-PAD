@@ -63,15 +63,15 @@ export default function ManagementHewan() {
       await api.get('/sanctum/csrf-cookie');
       const res = await api.get('/api/hewan');
       
-      console.log('📦 Raw Grouped Data:', res.data);
-      console.log('📦 First owner:', res.data[0]);
-      console.log('📦 First owner pets:', res.data[0]?.pets);
+      console.log('Raw Grouped Data:', res.data);
+      console.log('First owner:', res.data[0]);
+      console.log('First owner pets:', res.data[0]?.pets);
     
       setGroupedHewanData(res.data);
-      setHewanData(res.data); // ✅ Keep as res.data (grouped)
+      setHewanData(res.data);
     
     } catch (err) {
-      console.error('❌ Error fetching hewan data:', err);
+      console.error('Error fetching hewan data:', err);
     }
   };
 
@@ -81,17 +81,17 @@ export default function ManagementHewan() {
       await api.get('/sanctum/csrf-cookie');
       const res = await api.get('/api/jenis-hewan');
       
-      console.log('📦 Raw Jenis Hewan Data:', res.data);
+      console.log('Raw Jenis Hewan Data:', res.data);
       
       const formatted = res.data.map(jenis => ({
         id_jenisHewan: jenis.id_jenisHewan || jenis.id,
         nama_jenis: jenis.nama_jenis,
       }));
       
-      console.log('✅ Formatted Jenis Hewan:', formatted);
+      console.log('Formatted Jenis Hewan:', formatted);
       setJenisHewanOptions(formatted);
     } catch (err) {
-      console.error('❌ Error fetching jenis hewan:', err);
+      console.error('Error fetching jenis hewan:', err);
       setJenisHewanOptions([]);
     }
   };
@@ -118,7 +118,7 @@ export default function ManagementHewan() {
     }
   };
 
-  // ✅ Flatten data untuk ditampilkan di tabel (with age calculation)
+  // flatten data untuk ditampilkan di tabel (with age calculation)
   const flattenedData = useMemo(() => flattenHewanData(HewanData), [HewanData]);
 
   const filteredData = useMemo(() => {
@@ -145,11 +145,11 @@ export default function ManagementHewan() {
 
       await fetchHewanData();
       setIsModalOpen(false);
-      alert('✅ Hewan berhasil ditambahkan!');
+      alert('Hewan berhasil ditambahkan!');
     } catch (err) {
-      console.error('❌ Error saving hewan:', err);
+      console.error('Error saving hewan:', err);
       console.error('Response:', err.response?.data);
-      alert(`❌ Gagal menyimpan hewan: ${err.response?.data?.message || err.message}`);
+      alert(`Gagal menyimpan hewan: ${err.response?.data?.message || err.message}`);
     }
   };
 
@@ -167,10 +167,10 @@ export default function ManagementHewan() {
       await fetchHewanData();
       setIsEditModalOpen(false);
       setSelectedHewan(null);
-      alert('✅ Hewan berhasil diupdate!');
+      alert('Hewan berhasil diupdate!');
     } catch (err) {
-      console.error('❌ Error updating hewan:', err);
-      alert(`❌ Gagal mengupdate hewan: ${err.response?.data?.message || err.message}`);
+      console.error('Error updating hewan:', err);
+      alert(`Gagal mengupdate hewan: ${err.response?.data?.message || err.message}`);
     }
   };
 
@@ -187,10 +187,10 @@ export default function ManagementHewan() {
       await fetchHewanData();
       setIsDeleteModalOpen(false);
       setHewanToDelete(null);
-      alert('✅ Hewan berhasil dihapus!');
+      alert('Hewan berhasil dihapus!');
     } catch (err) {
-      console.error('❌ Error deleting hewan:', err);
-      alert('❌ Gagal menghapus hewan');
+      console.error('Error deleting hewan:', err);
+      alert('Gagal menghapus hewan');
     }
   };
 
@@ -234,14 +234,14 @@ export default function ManagementHewan() {
       await api.get('/sanctum/csrf-cookie');
       const res = await api.get(`/api/jenis-hewan?id_pasien=${ownerId}`);
       
-      console.log(`📦 Jenis Hewan for Owner ${ownerId}:`, res.data);
+      console.log(`Jenis Hewan for Owner ${ownerId}:`, res.data);
       
       return res.data.map(jenis => ({
         id_jenisHewan: jenis.id_jenisHewan,
         nama_jenis: jenis.nama_jenis,
       }));
     } catch (err) {
-      console.error('❌ Error fetching jenis hewan by owner:', err);
+      console.error('Error fetching jenis hewan by owner:', err);
       return [];
     }
   };

@@ -49,10 +49,10 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerOptions = [] }) =
         nama_jenis: jenis.nama_jenis,
       }));
       
-      console.log('📦 Jenis Hewan for owner:', formatted);
+      console.log('Jenis Hewan for owner:', formatted);
       setJenisHewanOptions(formatted);
     } catch (err) {
-      console.error('❌ Error fetching jenis hewan:', err);
+      console.error('Error fetching jenis hewan:', err);
       setJenisHewanOptions([]);
     } finally {
       setIsLoadingSpecies(false);
@@ -142,7 +142,7 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerOptions = [] }) =
             onChange={(e) => setFormData({ ...formData, speciesId: e.target.value })}
             className="text-body-2 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
             required
-            disabled={!formData.ownerId || isLoadingSpecies} // ✅ Disabled jika belum pilih owner atau sedang loading
+            disabled={!formData.ownerId || isLoadingSpecies} //Disabled jika belum pilih owner atau sedang loading
           >
             <option value="">
               {!formData.ownerId 
@@ -160,7 +160,7 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerOptions = [] }) =
             ))}
           </select>
           
-          {/* ✅ Helper text */}
+          {/* Helper text */}
           {formData.ownerId && !isLoadingSpecies && jenisHewanOptions.length === 0 && (
             <p className="text-sm text-red-500 mt-1">
               Pemilik ini belum memiliki jenis hewan terdaftar. Silakan tambahkan jenis hewan terlebih dahulu.
@@ -183,7 +183,7 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerOptions = [] }) =
             hoverColor="hover:bg-accent-blue-500"
             focusColor="focus:bg-accent-blue-300"
             roundedClass="rounded-lg"
-            disabled={isLoadingSpecies} // ✅ Disable submit saat loading
+            disabled={isLoadingSpecies} // Disable submit saat loading
           >
             Simpan Perubahan
           </Button>

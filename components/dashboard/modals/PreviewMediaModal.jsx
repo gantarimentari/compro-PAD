@@ -19,10 +19,10 @@ const PreviewMediaModal = ({ media, isOpen, onClose }) => {
   if (!isOpen || !media) return null;
 
   const getYouTubeEmbedUrl = (url) => {
-    console.log('🔗 Converting URL:', url);
+    console.log('Converting URL:', url);
     
     if (!url) {
-      console.log('❌ URL is null/undefined');
+      console.log('URL is null/undefined');
       return null;
     }
     
@@ -41,7 +41,7 @@ const PreviewMediaModal = ({ media, isOpen, onClose }) => {
       console.log(' Embed URL:', embedUrl);
       return embedUrl;
     } catch (error) {
-      console.error('❌ Error parsing YouTube URL:', error);
+      console.error('Error parsing YouTube URL:', error);
       return null;
     }
   };
@@ -82,8 +82,8 @@ const PreviewMediaModal = ({ media, isOpen, onClose }) => {
                 src={media.imageUrl || defaultPlaceholder}
                 onLoad={() => console.log(' Image loaded successfully:', media.imageUrl)}
                 onError={(e) => { 
-                  console.error('❌ Image failed to load:', media.imageUrl);
-                  console.error('❌ Error event:', e);
+                  console.error('Image failed to load:', media.imageUrl);
+                  console.error('Error event:', e);
                   e.target.onerror = null; 
                   e.target.src = defaultPlaceholder; 
                 }}

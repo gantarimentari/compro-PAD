@@ -51,22 +51,24 @@ export default function Content() {
         console.log('system info(content):', sysRes.data);
 
         setSystemData({
-          // judul_video_edukasi: sysRes.data.systemInfo.judul_video_edukasi,
           deksripsi_video_edukasi: sysRes.data.systemInfo.deskripsi_video_edukasi,
         });
 
+        // Fetch tanpa exclude_video, jadi video tetap muncul
         const mediaRes = await api.get('/api/media');
-        console.log('media response: ', mediaRes.data);
+        console.log('📹 Media response (with videos):', mediaRes.data);
 
+        // Filter hanya video
         const videoList = mediaRes.data
-          .filter(item => item.videoUrl) // Only items with video URL
+          .filter(item => item.category === 'Video' && item.videoUrl)
           .slice(0, 3);
         
-        console.log('latest video:', videoList);
+        console.log('Latest videos for Content:', videoList);
         setVideos(videoList);
-      }catch (err){
-        console.error('eror fetching content:', err);
+      } catch (err) {
+        console.error('error fetching content:', err);
 
+        // Fallback dummy data
         setVideos([
           {
             id: 1,
@@ -139,7 +141,7 @@ export default function Content() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // ✅ Hitung videoColumns untuk mobile (max 3 per column)
+  // Hitung videoColumns untuk mobile (max 3 per column)
   const videoColumns = [];
   for (let i = 0; i < videos.length; i += 3) {
     videoColumns.push(videos.slice(i, i + 3));
@@ -266,7 +268,7 @@ export default function Content() {
             className="lg:h-[80px] h-[40px] w-auto"
           />
 
-             {/* ✅ Loading skeleton untuk text */}
+             {/* Loading skeleton untuk text */}
           {isLoading ? (
             <div className="flex flex-col items-center gap-3 w-full max-w-2xl">
               <div className="h-8 bg-accent-neutral-200 rounded-lg w-3/4 animate-pulse"></div>
@@ -287,7 +289,7 @@ export default function Content() {
 
         {/* Video Carousel Section */}
         <div className="mt-12 md:mt-16 w-full relative">
-          {/* ✅ Show loading skeleton saat data belum ready */}
+          {/* Show loading skeleton saat data belum ready */}
           {isLoading ? (
             <VideoCarouselSkeleton />
           ) : (
@@ -422,7 +424,7 @@ export default function Content() {
   );
 }
 
-// ✅ Loading Skeleton Component
+// Loading Skeleton Component
 const VideoCarouselSkeleton = () => {
   return (
     <div className="hidden md:flex gap-3 overflow-hidden p-6">

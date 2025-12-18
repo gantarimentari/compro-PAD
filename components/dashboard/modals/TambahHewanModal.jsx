@@ -38,10 +38,10 @@ const TambahHewanModal = ({
           nama_jenis: jenis.nama_jenis,
         }));
         
-        console.log('📦 Jenis Hewan for this owner:', formatted);
+        console.log('Jenis Hewan for this owner:', formatted);
         setJenisHewanOptions(formatted);
       } catch (err) {
-        console.error('❌ Error fetching jenis hewan:', err);
+        console.error('Error fetching jenis hewan:', err);
         setJenisHewanOptions([]);
       }
     } else {
@@ -52,7 +52,7 @@ const TambahHewanModal = ({
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    console.log('📤 Submitting Form Data:', formData);
+    console.log('Submitting Form Data:', formData);
     
     onSave(formData);
     
@@ -149,7 +149,7 @@ const TambahHewanModal = ({
           </p>
         </div>
 
-        {/* ✅ Buttons */}
+        {/* Buttons */}
         <div className="flex justify-end space-x-3 pt-3">
           <button
             type="button"

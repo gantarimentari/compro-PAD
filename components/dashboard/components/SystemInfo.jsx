@@ -49,8 +49,8 @@ export default function SystemInfo() {
       await api.get('/sanctum/csrf-cookie');
       const res = await api.get('/api/system-info');
 
-      console.log('📦 System Info Response:', res.data);
-      console.log('📱 Social Media from systemInfo:', res.data.systemInfo?.socialMedia);
+      console.log('System Info Response:', res.data);
+      console.log('Social Media from systemInfo:', res.data.systemInfo?.socialMedia);
 
       const fetchedData = res.data.systemInfo || {};
       
@@ -91,7 +91,7 @@ export default function SystemInfo() {
       setSocialMedia(socialMediaWithIds);
       
     } catch (err) {
-      console.error('❌ Error fetching system info:', err);
+      console.error('Error fetching system info:', err);
       alert('Gagal memuat data sistem');
     } finally {
       setIsLoading(false);
@@ -155,7 +155,7 @@ export default function SystemInfo() {
       formData.append('name', 'Foto Card - Hero Section');
 
       await api.get('/sanctum/csrf-cookie');
-      console.log('📤 Uploading foto_card to foto-cards folder...');
+      console.log('Uploading foto_card to foto-cards folder...');
 
       const res = await api.post('/api/media', formData, {
         headers: {
@@ -174,9 +174,9 @@ export default function SystemInfo() {
 
       alert(' File berhasil diupload');
     } catch (err) {
-      console.error('❌ Upload error:', err);
+      console.error('Upload error:', err);
       console.error('Error response:', err.response?.data);
-      alert(`❌ Gagal upload: ${err.response?.data?.message || err.message}`);
+      alert(`Gagal upload: ${err.response?.data?.message || err.message}`);
     } finally {
       setIsUploading(false);
     }
@@ -195,9 +195,9 @@ export default function SystemInfo() {
       // Refresh data
       await fetchSystemInfo();
     }catch(err){
-      console.error('❌ Error deleting social media:', err);
+      console.error('Error deleting social media:', err);
     
-      let errorMessage = '❌ Gagal menghapus social media!\n\n';
+      let errorMessage = 'Gagal menghapus social media!\n\n';
     
       if (err.response?.status === 404) {
         errorMessage += 'Social media tidak ditemukan.\nMungkin sudah dihapus sebelumnya.';
@@ -215,7 +215,7 @@ export default function SystemInfo() {
 
   //  Save system info - send snake_case to backend
   const handleSave = async () => {
-      // ✅ Validasi sebelum submit
+      // Validasi sebelum submit
     const errors = [];
 
     // Validasi jam operasional
@@ -236,7 +236,7 @@ export default function SystemInfo() {
       }
     }
 
-    // ✅ Tampilkan semua error
+    // Tampilkan semua error
     if (errors.length > 0) {
       alert('Gagal karena:\n\n' + errors.map((err, i) => `${i + 1}. ${err}`).join('\n'));
       return; // Stop jangan submit
@@ -244,7 +244,7 @@ export default function SystemInfo() {
     try {
       await api.get('/sanctum/csrf-cookie');
 
-      console.log('📤 Saving system info:', systemData);
+      console.log('Saving system info:', systemData);
 
       const res = await api.put('/api/system-info', systemData);
 
@@ -289,7 +289,7 @@ export default function SystemInfo() {
 
       alert(' Social media berhasil diupdate!');
     } catch (err) {
-      console.error('❌ Error updating social media:', err);
+      console.error('Error updating social media:', err);
       alert('Gagal mengupdate social media');
     }
   };

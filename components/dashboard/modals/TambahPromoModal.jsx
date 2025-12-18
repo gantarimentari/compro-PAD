@@ -38,10 +38,10 @@ const TambahPromoModal = ({ isOpen, onClose, onSave }) => {
       description="Buat promo baru"
       maxWidth="max-w-lg"
     >
-      {/* ✅ UI Baru: px-6 pb-6 pt-2 space-y-2 */}
+      {/* px-6 pb-6 pt-2 space-y-2 */}
       <form onSubmit={handleSubmit} className="px-6 pb-6 pt-2 space-y-2">
         
-        {/* ✅ Judul Promo - UI Baru */}
+        {/*Judul Promo*/}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Judul Promo
@@ -56,7 +56,7 @@ const TambahPromoModal = ({ isOpen, onClose, onSave }) => {
           />
         </div>
 
-        {/* ✅ Deskripsi - UI Baru + textarea (bukan input) */}
+        {/*Deskripsi*/}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Deskripsi
@@ -70,7 +70,7 @@ const TambahPromoModal = ({ isOpen, onClose, onSave }) => {
           />
         </div>
 
-        {/* ✅ Tanggal Mulai - UI Baru */}
+        {/*Tanggal Mulai*/}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Tanggal Mulai
@@ -84,7 +84,7 @@ const TambahPromoModal = ({ isOpen, onClose, onSave }) => {
           />
         </div>
 
-        {/* ✅ Tanggal Selesai - Logic HEAD (min validation) + UI Baru */}
+        {/* Tanggal Selesai*/}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Tanggal Selesai
@@ -93,13 +93,13 @@ const TambahPromoModal = ({ isOpen, onClose, onSave }) => {
             type="date"
             value={formData.endDate}
             onChange={(e) => setFormData({...formData, endDate: e.target.value})}
-            min={formData.startDate} // ✅ Logic HEAD: validasi endDate >= startDate
+            min={formData.startDate}
             className="text-body-2 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
             required
           />
         </div>
 
-        {/* ✅ Status - UI Baru (dengan ChevronDownIcon) */}
+        {/* Status */}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Status
@@ -119,7 +119,7 @@ const TambahPromoModal = ({ isOpen, onClose, onSave }) => {
           </div>
         </div>
 
-        {/* ✅ Buttons - UI Baru */}
+        {/*Buttons*/}
         <div className="flex justify-end space-x-3 pt-3">
           <button
             type="button"

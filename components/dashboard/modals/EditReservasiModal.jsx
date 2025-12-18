@@ -14,7 +14,7 @@ const EditReservasiModal = ({ isOpen, onClose, onSave, reservasi }) => {
   const [petOptions, setPetOptions] = useState([]);
   const [isLoadingPets, setIsLoadingPets] = useState(false);
 
-  // ✅ Load data saat modal dibuka
+  // Load data saat modal dibuka
   useEffect(() => {
     if (reservasi && isOpen) {
       console.log('📝 Loading reservation data:', reservasi);
@@ -26,14 +26,13 @@ const EditReservasiModal = ({ isOpen, onClose, onSave, reservasi }) => {
         keluhan: reservasi.keluhan || '',
       });
       
-      // ✅ Fetch hewan milik pemilik ini
       if (reservasi.ownerId) {
         fetchOwnerPets(reservasi.ownerId);
       }
     }
   }, [reservasi, isOpen]);
 
-  // ✅ Fetch pets by owner ID - Filter dari semua hewan
+  // fetch pets by owner ID - Filter dari semua hewan
   const fetchOwnerPets = async (ownerId) => {
     try {
       setIsLoadingPets(true);
@@ -41,17 +40,14 @@ const EditReservasiModal = ({ isOpen, onClose, onSave, reservasi }) => {
       
       console.log('🐾 Fetching all hewan to filter by owner ID:', ownerId);
       
-      // ✅ Fetch ALL hewan data (grouped by owner)
       const res = await api.get('/api/hewan');
-      console.log('📦 All Hewan Data:', res.data);
+      console.log('All Hewan Data:', res.data);
       
-      // ✅ Find owner's data in grouped structure
       const ownerData = res.data.find(owner => owner.id === parseInt(ownerId));
       
       if (ownerData && ownerData.pets) {
-        console.log('✅ Found owner pets:', ownerData.pets);
+        console.log('Found owner pets:', ownerData.pets);
         
-        // ✅ Format pets for dropdown
         const formattedPets = ownerData.pets.map(pet => ({
           id_hewan: pet.id,
           nama_hewan: pet.petName,
@@ -61,14 +57,14 @@ const EditReservasiModal = ({ isOpen, onClose, onSave, reservasi }) => {
         }));
         
         setPetOptions(formattedPets);
-        console.log('✅ Formatted pets:', formattedPets);
+        console.log('Formatted pets:', formattedPets);
       } else {
-        console.log('⚠️ No pets found for owner:', ownerId);
+        console.log('No pets found for owner:', ownerId);
         setPetOptions([]);
       }
       
     } catch (err) {
-      console.error('❌ Error fetching pets:', err);
+      console.error('Error fetching pets:', err);
       console.error('Error details:', err.response?.data);
       setPetOptions([]);
       alert('Gagal memuat data hewan');
@@ -80,13 +76,12 @@ const EditReservasiModal = ({ isOpen, onClose, onSave, reservasi }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // ✅ Validation
     if (!formData.petId || !formData.date || !formData.keluhan) {
-      alert('❌ Semua field wajib diisi!');
+      alert('Semua field wajib diisi!');
       return;
     }
     
-    console.log('📤 Updating Reservation:', {
+    console.log('Updating Reservation:', {
       id: reservasi.id,
       formData
     });
@@ -94,7 +89,6 @@ const EditReservasiModal = ({ isOpen, onClose, onSave, reservasi }) => {
     onSave(reservasi.id, formData);
   };
 
-  // ✅ Reset form saat modal ditutup
   const handleClose = () => {
     setFormData({
       ownerId: '',
@@ -118,7 +112,7 @@ const EditReservasiModal = ({ isOpen, onClose, onSave, reservasi }) => {
     >
       <form onSubmit={handleSubmit} className="px-6 pb-6 pt-2 space-y-2">
         
-        {/* ✅ Nama Pasien (Read-only - UI Baru) */}
+        {/* Nama Pasien */}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000 mb-1">
             Nama Pasien
@@ -128,7 +122,7 @@ const EditReservasiModal = ({ isOpen, onClose, onSave, reservasi }) => {
           </div>
         </div>
 
-        {/* ✅ Dropdown Hewan (UI Baru + Logic HEAD) */}
+        {/* Dropdown Hewan*/}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000 mb-1">
             Hewan
@@ -155,7 +149,7 @@ const EditReservasiModal = ({ isOpen, onClose, onSave, reservasi }) => {
           </select>
         </div>
 
-        {/* ✅ Tanggal Reservasi (UI Baru) */}
+        {/* Tanggal Reservasi*/}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000 mb-1">
             Tanggal Reservasi
@@ -170,7 +164,7 @@ const EditReservasiModal = ({ isOpen, onClose, onSave, reservasi }) => {
           />
         </div>
 
-        {/* ✅ Keluhan (UI Baru) */}
+        {/* Keluhan*/}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000 mb-1">
             Keluhan
@@ -184,7 +178,7 @@ const EditReservasiModal = ({ isOpen, onClose, onSave, reservasi }) => {
           />
         </div>
 
-        {/* ✅ Buttons (UI Baru) */}
+        {/* Buttons*/}
         <div className="flex justify-end space-x-3 pt-3">
           <button
             type="button"

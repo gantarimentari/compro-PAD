@@ -25,7 +25,7 @@ export default function Profile() {
         setIsLoading(true);
 
         const sysRes = await api.get('/api/system-info');
-        console.log('📦 System Info:', sysRes.data);
+        console.log('System Info:', sysRes.data);
 
         setSystemData({
           deskripsi_hero: sysRes.data.systemInfo?.deskripsi_hero || 'Buat pawrent...',
@@ -35,7 +35,7 @@ export default function Profile() {
         });
 
       } catch (err) {
-        console.error('❌ Error fetching system info:', err);
+        console.error('Error fetching system info:', err);
         
         setSystemData({
           deskripsi_hero: 'Buat pawrent...',
@@ -54,12 +54,12 @@ export default function Profile() {
   //  Handle Direct WhatsApp - Use Dynamic Template
   const handleOpenWhatsApp = () => {
     try {
-      console.log('📱 Opening WhatsApp...');
-      console.log('📞 Clinic phone:', systemData.phone);
+      console.log('Opening WhatsApp...');
+      console.log('Clinic phone:', systemData.phone);
 
       //  Validate clinic phone exists
       if (!systemData.phone) {
-        alert('❌ Nomor WhatsApp klinik belum tersedia. Silakan hubungi admin.');
+        alert('Nomor WhatsApp klinik belum tersedia. Silakan hubungi admin.');
         return;
       }
 
@@ -75,24 +75,24 @@ export default function Profile() {
 
       //  Validate format
       if (!/^62\d{9,12}$/.test(formattedNumber)) {
-        alert('❌ Format nomor WhatsApp klinik tidak valid. Hubungi admin.');
+        alert('Format nomor WhatsApp klinik tidak valid. Hubungi admin.');
         console.error('Invalid clinic number:', formattedNumber);
         return;
       }
 
-      console.log('📱 Formatted clinic number:', formattedNumber);
+      console.log('Formatted clinic number:', formattedNumber);
 
       //  Use dynamic template from database OR fallback to default
       const messageTemplate = systemData.whatsapp_template || 
-        `Halo Klinik Dokter Fanina! 👋\n\n` +
+        `Halo Klinik Dokter Fanina! \n\n` +
         `Saya ingin membuat reservasi untuk pemeriksaan hewan peliharaan saya.\n\n` +
         `Mohon informasi lebih lanjut mengenai:\n` +
         `• Jadwal yang tersedia\n` +
         `• Jenis layanan yang ditawarkan\n` +
         `• Estimasi biaya pemeriksaan\n\n` +
-        `Terima kasih! 🐾`;
+        `Terima kasih! `;
 
-      console.log('📝 Message template:', messageTemplate);
+      console.log('Message template:', messageTemplate);
 
       //  Encode message for URL
       const encodedMessage = encodeURIComponent(messageTemplate);
@@ -100,7 +100,7 @@ export default function Profile() {
       //  Create WhatsApp URL
       const whatsappUrl = `https://wa.me/${formattedNumber}?text=${encodedMessage}`;
       
-      console.log('🚀 WhatsApp URL:', whatsappUrl);
+      console.log('WhatsApp URL:', whatsappUrl);
 
       //  Open WhatsApp in new tab
       window.open(whatsappUrl, '_blank');
@@ -108,8 +108,8 @@ export default function Profile() {
       console.log(' WhatsApp opened successfully');
 
     } catch (err) {
-      console.error('❌ Error opening WhatsApp:', err);
-      alert('❌ Gagal membuka WhatsApp. Silakan coba lagi.');
+      console.error('Error opening WhatsApp:', err);
+      alert('Gagal membuka WhatsApp. Silakan coba lagi.');
     }
   };
 

@@ -5,8 +5,8 @@ import BaseModal from './BaseModal';
 
 const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState({
-    ownerId: '', // ✅ Logic HEAD: pakai ownerId
-    petId: '',   // ✅ Logic HEAD: pakai petId
+    ownerId: '',
+    petId: '',
     date: '',
     keluhan: '',
   });
@@ -15,7 +15,6 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
   const [petOptions, setPetOptions] = useState([]);
   const [allPets, setAllPets] = useState([]);
 
-  // ✅ Fetch pemilik dan hewan saat modal dibuka
   useEffect(() => {
     if (isOpen) {
       fetchOwners();
@@ -23,18 +22,17 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
     }
   }, [isOpen]);
 
-  // ✅ Filter hewan berdasarkan pemilik yang dipilih (Logic HEAD)
   useEffect(() => {
     if (formData.ownerId) {
-      console.log('🔍 Filtering pets for owner:', formData.ownerId);
-      console.log('📦 All Pets:', allPets);
+      console.log('Filtering pets for owner:', formData.ownerId);
+      console.log('All Pets:', allPets);
       
       const filtered = allPets.filter(pet => {
         console.log(`   - Pet ${pet.nama_hewan}: id_pasien=${pet.id_pasien}, match=${pet.id_pasien === parseInt(formData.ownerId)}`);
         return pet.id_pasien === parseInt(formData.ownerId);
       });
       
-      console.log('✅ Filtered Pets:', filtered);
+      console.log('Filtered Pets:', filtered);
       setPetOptions(filtered);
       
       // Reset petId jika pemilik berubah
@@ -44,7 +42,6 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
     }
   }, [formData.ownerId, allPets]);
 
-  // ✅ Reset form saat modal ditutup
   useEffect(() => {
     if (!isOpen) {
       setFormData({
@@ -57,7 +54,6 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
     }
   }, [isOpen]);
 
-  // ✅ Fetch owners (Logic HEAD)
   const fetchOwners = async () => {
     try {
       await api.get('/sanctum/csrf-cookie');
@@ -70,21 +66,19 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
       }));
       
       setOwnerOptions(formatted);
-      console.log('📦 Owner Options:', formatted);
+      console.log('Owner Options:', formatted);
     } catch (err) {
       console.error('Error fetching owners:', err);
     }
   };
 
-  // ✅ Fetch all pets & flatten (Logic HEAD)
   const fetchAllPets = async () => {
     try {
       await api.get('/sanctum/csrf-cookie');
       const res = await api.get('/api/hewan');
       
-      console.log('📦 Raw Hewan Data (Grouped):', res.data);
+      console.log('Raw Hewan Data (Grouped):', res.data);
       
-      // ✅ FLATTEN: Transform grouped data ke flat array
       const flatPets = [];
       res.data.forEach(owner => {
         if (owner.pets && owner.pets.length > 0) {
@@ -102,7 +96,7 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
         }
       });
       
-      console.log('✅ Flattened Pets:', flatPets);
+      console.log('Flattened Pets:', flatPets);
       setAllPets(flatPets);
     } catch (err) {
       console.error('Error fetching pets:', err);
@@ -113,7 +107,7 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    console.log('📤 Submitting Reservation:', formData);
+    console.log('Submitting Reservation:', formData);
     
     onSave(formData);
   };
@@ -126,10 +120,10 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
       description="Buat reservasi baru untuk pasien"
       maxWidth="max-w-lg"
     >
-      {/* ✅ UI Baru: px-6 pb-6 pt-2 space-y-2 */}
+      {/*px-6 pb-6 pt-2 space-y-2 */}
       <form onSubmit={handleSubmit} className="px-6 pb-6 pt-2 space-y-2">
         
-        {/* ✅ Dropdown Nama Pemilik - Logic HEAD + UI Baru */}
+        {/*Dropdown Nama Pemilik */}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Nama Pasien
@@ -152,7 +146,7 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
           </p>
         </div>
 
-        {/* ✅ Dropdown Hewan - Logic HEAD + UI Baru */}
+        {/*Dropdown Hewan*/}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Hewan
@@ -182,7 +176,7 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
           </p>
         </div>
 
-        {/* ✅ Tanggal Reservasi - Logic HEAD (min validation) + UI Baru */}
+        {/* Tanggal Reservasi */}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Tanggal Reservasi
@@ -191,13 +185,13 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
             type="date"
             value={formData.date}
             onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-            min={new Date().toISOString().split('T')[0]} // ✅ Logic HEAD: validasi tanggal
+            min={new Date().toISOString().split('T')[0]}
             className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 text-body-2"
             required
           />
         </div>
 
-        {/* ✅ Keluhan - Logic HEAD (textarea) + UI Baru */}
+        {/*Keluhan*/}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Keluhan
@@ -211,7 +205,7 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
           />
         </div>
 
-        {/* ✅ Buttons - UI Baru */}
+        {/*Buttons*/}
         <div className="flex justify-end space-x-3 pt-3">
           <button
             type="button"

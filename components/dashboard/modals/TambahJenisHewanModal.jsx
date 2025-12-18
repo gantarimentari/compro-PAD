@@ -6,12 +6,11 @@ import api from '@lib/api';
 
 const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState({
-    ownerId: '', // ✅ Pakai ownerId (logic HEAD)
+    ownerId: '',
     species: '',
   });
   const [pemilikOptions, setPemilikOptions] = useState([]);
 
-  // ✅ Fetch data pemilik dari database
   useEffect(() => {
     if (isOpen) {
       fetchPemilik();
@@ -31,14 +30,13 @@ const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
       }));
       
       setPemilikOptions(formatted);
-      console.log('📦 Pemilik Options:', formatted);
+      console.log('Pemilik Options:', formatted);
     } catch (err) {
       console.error('Error fetching pemilik:', err);
       setPemilikOptions([]);
     }
   };
 
-  // ✅ Reset form saat modal ditutup
   useEffect(() => {
     if (!isOpen) {
       setFormData({ ownerId: '', species: '' });
@@ -48,7 +46,7 @@ const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    console.log('📤 Form Data:', formData);
+    console.log('Form Data:', formData);
     
     onSave(formData); // Kirim ke parent (JenisHewan.jsx)
     
@@ -64,10 +62,10 @@ const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
       description="Tambahkan jenis hewan baru ke dalam sistem"
       maxWidth="max-w-lg"
     >
-      {/* ✅ UI Baru: px-6 pb-6 pt-2 space-y-2 */}
+      {/* UI Baru: px-6 pb-6 pt-2 space-y-2 */}
       <form onSubmit={handleSubmit} className="px-6 pb-6 pt-2 space-y-2">
         
-        {/* ✅ Dropdown Nama Pemilik - Logic HEAD + UI Baru */}
+        {/* Dropdown Nama Pemilik - Logic HEAD + UI Baru */}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Nama Pemilik
@@ -94,7 +92,7 @@ const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
           </p>
         </div>
 
-        {/* ✅ Input Jenis Hewan - UI Baru */}
+        {/* Input Jenis Hewan */}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Jenis Hewan
@@ -112,7 +110,7 @@ const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
           </p>
         </div>
 
-        {/* ✅ Buttons - UI Baru */}
+        {/* Buttons*/}
         <div className="flex justify-end space-x-3 pt-3">
           <button
             type="button"

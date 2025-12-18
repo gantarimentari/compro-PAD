@@ -8,7 +8,7 @@ import api from '@lib/api';
 const EditJenisHewanModal = ({ isOpen, onClose, jenisHewan, onSave }) => {
   const [formData, setFormData] = useState({
     species: jenisHewan?.species || '',
-    patient_id: jenisHewan?.patient_id || '', // ✅ Simpan patient_id, bukan ownerName
+    patient_id: jenisHewan?.patient_id || '',
   });
   const [pemilikList, setPemilikList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -23,36 +23,34 @@ const EditJenisHewanModal = ({ isOpen, onClose, jenisHewan, onSave }) => {
   const fetchPemilik = async () => {
     try {
       setLoading(true);
-      // ✅ Pastikan endpoint ini mengembalikan list pasien dengan struktur:
-      // [{ id: 1, username: "rakai", ... }, { id: 2, username: "john", ... }]
       const response = await api.get('/api/patients');
       console.log('📦 Pemilik list:', response.data);
       
-      // ✅ Cek struktur data yang diterima
+      // Cek struktur data yang diterima
       if (Array.isArray(response.data)) {
         setPemilikList(response.data);
       } else if (response.data.data && Array.isArray(response.data.data)) {
         // Jika backend wrap data dalam object { data: [...] }
         setPemilikList(response.data.data);
       } else {
-        console.error('❌ Unexpected data structure:', response.data);
+        console.error('Unexpected data structure:', response.data);
         setPemilikList([]);
       }
     } catch (err) {
-      console.error('❌ Error fetching pemilik:', err);
+      console.error('Error fetching pemilik:', err);
       setPemilikList([]);
     } finally {
       setLoading(false);
     }
   };
   
-  // ✅ Update formData saat jenisHewan berubah
+  // Update formData saat jenisHewan berubah
   useEffect(() => {
     if (jenisHewan) {
-      console.log('📝 Editing jenis hewan:', jenisHewan);
+      console.log('Editing jenis hewan:', jenisHewan);
       setFormData({
         species: jenisHewan.species || '',
-        patient_id: jenisHewan.patient_id || '', // ✅ Ambil patient_id dari jenisHewan
+        patient_id: jenisHewan.patient_id || '',
       });
     }
   }, [jenisHewan]);
@@ -62,22 +60,21 @@ const EditJenisHewanModal = ({ isOpen, onClose, jenisHewan, onSave }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    console.log('💾 Submitting edit:', {
+    console.log('Submitting edit:', {
       id: jenisHewan.id,
       formData
     });
     
     try {
-      // ✅ Kirim data dengan struktur yang benar
       await onSave(jenisHewan.id, {
         species: formData.species,
-        patient_id: parseInt(formData.patient_id) // ✅ Convert ke integer
+        patient_id: parseInt(formData.patient_id) 
       });
       
-      console.log('✅ Edit jenis hewan berhasil');
+      console.log('Edit jenis hewan berhasil');
       onClose();
     } catch (err) {
-      console.error('❌ Error saving jenis hewan:', err);
+      console.error('Error saving jenis hewan:', err);
       alert('Gagal menyimpan perubahan: ' + (err.response?.data?.message || err.message));
     }
   };
@@ -95,7 +92,7 @@ const EditJenisHewanModal = ({ isOpen, onClose, jenisHewan, onSave }) => {
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Nama Pemilik
           </label>
-          {/* ✅ Value sekarang menggunakan patient_id */}
+          {/* Value sekarang menggunakan patient_id */}
           <select
             value={formData.patient_id}
             onChange={(e) => {
@@ -109,7 +106,7 @@ const EditJenisHewanModal = ({ isOpen, onClose, jenisHewan, onSave }) => {
             <option value="">
               {loading ? 'Memuat data...' : 'Pilih nama pemilik'}
             </option>
-            {/* ✅ Option value sekarang menggunakan patient.id */}
+            {/* Option value sekarang menggunakan patient.id */}
             {pemilikList.map((pemilik) => (
               <option key={pemilik.id} value={pemilik.id}>
                 {pemilik.username}

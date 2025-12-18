@@ -9,7 +9,7 @@ export default function Header() {
   //  Start with false (assume guest)
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true); // ✅ Loading state
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true); 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   //  Check auth status on mount
@@ -20,14 +20,14 @@ export default function Header() {
         const response = await api.get('/api/user');
         
         if (response.data) {
-          console.log('✅ User authenticated:', response.data);
+          console.log('User authenticated:', response.data);
           setIsLoggedIn(true);
         }
       } catch (err) {
         if (err.response?.status === 401) {
-          console.log('👤 User not authenticated (guest)');
+          console.log('User not authenticated (guest)');
         } else {
-          console.error('❌ Auth check error:', err);
+          console.error('Auth check error:', err);
         }
         setIsLoggedIn(false);
       } finally {
@@ -92,7 +92,7 @@ export default function Header() {
               <NotificationIcon className="w-5 h-5" />
             </button>
 
-            {/* ✅ Show loading skeleton saat checking auth */}
+            {/* Show loading skeleton saat checking auth */}
             {isCheckingAuth ? (
               <AuthLoadingSkeleton />
             ) : isLoggedIn ? (
@@ -150,7 +150,7 @@ export default function Header() {
                 Notifikasi
               </button>
 
-              {/* ✅ Show loading atau buttons sesuai auth status */}
+              {/* Show loading atau buttons sesuai auth status */}
               {isCheckingAuth ? (
                 <div className="w-full space-y-3">
                   <div className="w-full h-11 bg-accent-neutral-200 rounded-lg animate-pulse"></div>
@@ -192,7 +192,7 @@ export default function Header() {
   );
 }
 
-// ✅ Loading Skeleton Component untuk Desktop
+// Loading Skeleton Component untuk Desktop
 const AuthLoadingSkeleton = () => (
   <div className="flex items-center gap-4">
     <div className="w-20 h-10 bg-accent-neutral-200 rounded-lg animate-pulse"></div>

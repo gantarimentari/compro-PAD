@@ -28,12 +28,12 @@ export default function Services() {
       setIsLoading(true);
       const response = await api.get('/api/system-info');
       
-      console.log('📦 System Info Response:', response.data);
+      console.log('System Info Response:', response.data);
       
       const judul = response.data.systemInfo?.judul_layanan_tersedia;
       if (judul) {
         setJudulLayanan(judul);
-        console.log('✅ Judul Layanan from DB:', judul);
+        console.log('Judul Layanan from DB:', judul);
       }
 
       setWhatsappData({
@@ -42,7 +42,7 @@ export default function Services() {
       });
 
     } catch (error) {
-      console.error('❌ Error fetching system info:', error);
+      console.error('Error fetching system info:', error);
       // Gunakan default jika error
     } finally {
       setIsLoading(false);
@@ -51,12 +51,12 @@ export default function Services() {
 
   const handleOpenWhatsApp = () => {
     try {
-      console.log('📱 Opening WhatsApp from Services...');
-      console.log('📞 Clinic phone:', whatsappData.phone);
+      console.log('Opening WhatsApp from Services...');
+      console.log('Clinic phone:', whatsappData.phone);
 
       // Validate clinic phone exists
       if (!whatsappData.phone) {
-        alert('❌ Nomor WhatsApp klinik belum tersedia. Silakan hubungi admin.');
+        alert('Nomor WhatsApp klinik belum tersedia. Silakan hubungi admin.');
         return;
       }
 
@@ -72,7 +72,7 @@ export default function Services() {
 
       // Validate format
       if (!/^62\d{9,12}$/.test(formattedNumber)) {
-        alert('❌ Format nomor WhatsApp klinik tidak valid. Hubungi admin.');
+        alert('Format nomor WhatsApp klinik tidak valid. Hubungi admin.');
         console.error('Invalid clinic number:', formattedNumber);
         return;
       }
@@ -82,7 +82,7 @@ export default function Services() {
       // Use dynamic template from database OR fallback to default
       const messageTemplate = whatsappData.template
 
-      console.log('📝 Message template:', messageTemplate);
+      console.log('Message template:', messageTemplate);
 
       // Encode message for URL
       const encodedMessage = encodeURIComponent(messageTemplate);
@@ -90,16 +90,16 @@ export default function Services() {
       // Create WhatsApp URL
       const whatsappUrl = `https://wa.me/${formattedNumber}?text=${encodedMessage}`;
       
-      console.log('🚀 WhatsApp URL:', whatsappUrl);
+      console.log('WhatsApp URL:', whatsappUrl);
 
       // Open WhatsApp in new tab
       window.open(whatsappUrl, '_blank');
 
-      console.log('✅ WhatsApp opened successfully');
+      console.log('WhatsApp opened successfully');
 
     } catch (err) {
-      console.error('❌ Error opening WhatsApp:', err);
-      alert('❌ Gagal membuka WhatsApp. Silakan coba lagi.');
+      console.error('Error opening WhatsApp:', err);
+      alert('Gagal membuka WhatsApp. Silakan coba lagi.');
     }
   };
 

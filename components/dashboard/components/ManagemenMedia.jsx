@@ -76,36 +76,18 @@ export default function ManagemenMedia() {
   const [mediaData, setMediaData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
 
-  //  Fetch media dari database
+  //  Fetch media dari database (SEMUA media, termasuk video)
   const fetchMedia = async () => {
     try {
-      console.log('🔄 Fetching media from API...');
+      console.log('Fetching media from API...');
       await api.get('/sanctum/csrf-cookie');
+      
+      // Fetch tanpa parameter exclude_video
       const res = await api.get('/api/media');
       
       console.log('📦 Raw API Response:', res.data);
-      console.log('📊 Response type:', typeof res.data);
-      console.log('📊 Is Array:', Array.isArray(res.data));
-      
-      if (res.data && res.data.length > 0) {
-        console.log('🔍 First item structure:', res.data[0]);
-        console.log('🔍 First item keys:', Object.keys(res.data[0]));
-      }
       
       const formatted = res.data.map((item, index) => {
-        console.log(`\n📝 Processing item ${index + 1}:`, {
-          id: item.id,
-          name: item.name,
-          category: item.category,
-          imageUrl: item.imageUrl,
-          videoUrl: item.videoUrl,
-          date: item.date,
-          timeStamp: item.timeStamp,
-          //  Cek juga snake_case
-          image_url: item.image_url,
-          video_url: item.video_url
-        });
-        
         return {
           id: item.id,
           name: item.name || 'Untitled',
@@ -116,11 +98,10 @@ export default function ManagemenMedia() {
         };
       });
       
-      console.log(' Formatted Data:', formatted);
+      console.log('Formatted Data:', formatted);
       setMediaData(formatted);
     } catch (err) {
-      console.error('❌ Error fetching media:', err);
-      console.error('❌ Error response:', err.response?.data);
+      console.error('Error fetching media:', err);
     }
   };
 
@@ -179,7 +160,7 @@ export default function ManagemenMedia() {
         alert(' Media berhasil dihapus!');
       } catch (err) {
         console.error('Error deleting media:', err);
-        alert('❌ Gagal menghapus media');
+        alert('Gagal menghapus media');
       }
     }
   };

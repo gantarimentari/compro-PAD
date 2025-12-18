@@ -281,10 +281,19 @@ const GaleryApp = ({ activeFilter }) => {
     const fetchImages = async () => {
         try {
             setLoading(true);
-            const params = activeFilter !== 'all' ? { days: activeFilter } : {};
+            
+            // ✅ Tambahkan exclude_video=true untuk gallery
+            const params = {
+                exclude_video: 'true' // ✅ Video tidak akan muncul di gallery
+            };
+            
+            if (activeFilter !== 'all') {
+                params.days = activeFilter;
+            }
+            
             const response = await api.get('/api/media', { params });
             
-            console.log('📦 Gallery API Response:', response.data);
+            console.log('📦 Gallery API Response (without videos):', response.data);
             
             setImages(response.data);
         } catch (error) {
@@ -415,7 +424,10 @@ export const GaleryFilterButtons = ({ activeFilter, onFilterChange }) => {
 
     const fetchStatistics = async () => {
         try {
-            const response = await api.get('/api/media/statistics');
+            // ✅ Tambahkan exclude_video=true untuk statistics
+            const response = await api.get('/api/media/statistics', {
+                params: { exclude_video: 'true' }
+            });
             setStatistics(response.data);
         } catch (error) {
             console.error('Error fetching statistics:', error);

@@ -79,7 +79,7 @@ export default function ManagemenArtikel() {
       await api.get("/sanctum/csrf-cookie");
       const res = await api.get("/api/articles");
 
-      console.log('📚 Fetched articles (Admin - should show ALL):', res.data);
+      console.log('Fetched articles:', res.data);
 
       const formatted = res.data.map(item => ({
         id: item.id,
@@ -93,7 +93,7 @@ export default function ManagemenArtikel() {
 
       setArticleData(formatted);
     } catch (err) {
-      console.error('❌ Error fetching articles:', err);
+      console.error('Error fetching articles:', err);
     }
   };
 
@@ -112,12 +112,12 @@ export default function ManagemenArtikel() {
       await api.get("/sanctum/csrf-cookie");
 
       const data = new FormData();
-      data.append("title", formData.judul); // ✅ judul → title
-      data.append("category", formData.kategori); // ✅ kategori → category
-      data.append("content", formData.isiArtikel); // ✅ isiArtikel → content
+      data.append("title", formData.judul);
+      data.append("category", formData.kategori);
+      data.append("content", formData.isiArtikel);
       data.append("status", formData.status);
       
-      // ✅ PENTING: Hanya append image jika ada dan valid
+      // hanya append image jika ada dan valid
       if (formData.file && formData.file instanceof File) {
         console.log('📎 Appending image file:', {
           name: formData.file.name,
@@ -126,10 +126,10 @@ export default function ManagemenArtikel() {
         });
         data.append("image", formData.file);
       } else {
-        console.log('⚠️ No image file to upload');
+        console.log('no image file to upload');
       }
 
-      console.log('📤 Posting article to API...', {
+      console.log('posting article to API...', {
         title: formData.judul,
         category: formData.kategori,
         status: formData.status,
@@ -142,20 +142,20 @@ export default function ManagemenArtikel() {
         }
       });
 
-      console.log('✅ Article saved successfully:', response.data);
+      console.log('Article saved successfully:', response.data);
 
       await fetchCsrfAndArticles();
       setIsModalOpen(false);
-      alert('✅ Artikel berhasil ditambahkan!');
+      alert('Artikel berhasil ditambahkan!');
     } catch (err) {
-      console.error('❌ Error saving article:', err);
+      console.error('Error saving article:', err);
       console.error('Error details:', {
         message: err.message,
         status: err.response?.status,
         data: err.response?.data,
         headers: err.response?.headers
       });
-      alert(`❌ Gagal menyimpan artikel: ${err.response?.data?.message || err.message}`);
+      alert(`Gagal menyimpan artikel: ${err.response?.data?.message || err.message}`);
     }
   };
 
@@ -173,9 +173,9 @@ export default function ManagemenArtikel() {
 
       await api.post(`/api/articles/${id}`, data);
       await fetchCsrfAndArticles();
-      setIsEditModalOpen(false); // ✅ Tutup modal setelah berhasil
+      setIsEditModalOpen(false);
       setSelectedArticle(null);
-      alert('✅ Artikel berhasil diupdate!');
+      alert('Artikel berhasil diupdate!');
     } catch (err) {
       console.error('Error details:', {
         message: err.message,
@@ -183,7 +183,7 @@ export default function ManagemenArtikel() {
         data: err.response?.data,
         headers: err.response?.headers
       });
-      alert(`❌ Gagal mengupdate artikel: ${err.response?.data?.message || err.message}`);
+      alert(`Gagal mengupdate artikel: ${err.response?.data?.message || err.message}`);
     }
   };
 
@@ -200,10 +200,10 @@ export default function ManagemenArtikel() {
         await fetchCsrfAndArticles();
         setIsDeleteModalOpen(false);
         setArticleToDelete(null);
-        alert('✅ Artikel berhasil dihapus!');
+        alert('Artikel berhasil dihapus!');
       } catch (err) {
         console.error('Error deleting article:', err);
-        alert('❌ Gagal menghapus artikel');
+        alert('Gagal menghapus artikel');
       }
     }
   };
@@ -225,7 +225,7 @@ export default function ManagemenArtikel() {
 
   return (
     <div className="space-y-6">
-      {/* ✅ Hanya satu PageHeader */}
+      {/* Hanya satu PageHeader */}
       <PageHeader 
         title="Konten Artikel"
         description="Kelola Artikel dan Konten Edukasi"
@@ -234,7 +234,7 @@ export default function ManagemenArtikel() {
       />
      
       <div className="space-y-4">
-        {/* ✅ Hanya satu SearchBar */}
+        {/* Hanya satu SearchBar */}
         <SearchBar
           placeholderText="Cari judul atau kategori..." 
           value={searchQuery}
@@ -248,7 +248,7 @@ export default function ManagemenArtikel() {
         />
       </div>
 
-      {/* ✅ Modals */}
+      {/* Modals */}
       <TambahArtikelModal 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -262,7 +262,7 @@ export default function ManagemenArtikel() {
         article={selectedArticle}
       />
 
-      {/* ✅ Hanya satu DeleteConfirmModal */}
+      {/* Hanya satu DeleteConfirmModal */}
       <DeleteConfirmModal 
         isOpen={isDeleteModalOpen}
         onClose={handleCancelDelete}

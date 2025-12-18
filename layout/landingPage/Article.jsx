@@ -22,7 +22,7 @@ export default function Article() {
         setIsLoading(true);
 
         const res = await api.get('/api/system-info');
-        console.log('📦 System Info (Article):', res.data);
+        console.log('System Info (Article):', res.data);
 
         setArticleData({
           deskripsi_artikel: res.data.systemInfo?.deskripsi_artikel || 
@@ -30,7 +30,7 @@ export default function Article() {
         });
 
         const articleRes = await api.get('/api/articles');
-        console.log('📦 Articles Response:', articleRes.data);
+        console.log('Articles Response:', articleRes.data);
         
         //  FILTER: Hanya ambil artikel dengan status 'Publish'
         const publishedArticles = articleRes.data.filter(article => article.status === 'Publish');
@@ -47,7 +47,7 @@ export default function Article() {
 
         //  Process articles: use imageUrl from backend & strip HTML
         const processedArticles = publishedArticles.slice(0, 2).map(article => {
-          console.log('🔍 Processing article:', article.id, 'ImageURL:', article.imageUrl);
+          console.log('Processing article:', article.id, 'ImageURL:', article.imageUrl);
           
           return {
             id: article.id,
@@ -68,7 +68,7 @@ export default function Article() {
         setRecentArticles(processedArticles);
 
       } catch (err) {
-        console.error('❌ Error fetching articles:', err);
+        console.error('Error fetching articles:', err);
         
         //  Fallback to dummy data
         setRecentArticles([
@@ -152,7 +152,7 @@ export default function Article() {
           onMouseLeave={() => setIsCardHovered(false)}
           />
           
-          {/* ✅ Show loading state + responsive text */}
+          {/* Show loading state + responsive text */}
           {isLoading ? (
             <div className="h-6 bg-gray-200 rounded animate-pulse flex-1"></div>
           ) : (
@@ -161,7 +161,7 @@ export default function Article() {
             </p>
           )}
           
-          {/* ✅ Button - hanya tampil di lg+ */}
+          {/* Button - hanya tampil di lg+ */}
           <Link href='/article' className='hidden lg:block'>
             <Button 
               icon={<RightArrowIcon className="h-4 w-4" />} 
@@ -180,10 +180,10 @@ export default function Article() {
           </Link>
         </div>
 
-        {/* ✅ Article Cards Section with Loading State */}
+        {/* Article Cards Section with Loading State */}
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8'>
           {isLoading ? (
-            // ✅ Loading skeleton
+            // Loading skeleton
             <>
               {[1, 2].map((i) => (
                 <div key={i} className="bg-accent-blue-500 rounded-lg p-6 animate-pulse">
@@ -199,7 +199,7 @@ export default function Article() {
               ))}
             </>
           ) : recentArticles.length === 0 ? (
-            // ✅ Empty state
+            // Empty state
             <div className="col-span-2 text-center py-12">
               <p className="text-h-7 font-bold text-accent-neutral-1000">
                 Belum ada artikel yang dipublikasikan
@@ -209,7 +209,7 @@ export default function Article() {
               </p>
             </div>
           ) : (
-            // ✅ Render articles - Use imageUrl prop from database
+            // Render articles - Use imageUrl prop from database
             recentArticles.map((article) => (
               <ArticleCard
                 key={article.id}
@@ -223,7 +223,7 @@ export default function Article() {
           )}
         </div>
 
-        {/* ✅ Button - hanya tampil di mobile (lg ke bawah), di bawah cards */}
+        {/* Button - hanya tampil di mobile (lg ke bawah), di bawah cards */}
         <div className='lg:hidden mt-6 flex justify-center'>
           <Link href='/article' className='w-full'>
             <Button 
