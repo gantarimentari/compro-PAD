@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { UserIcon, LogOutDoor, PencilIcon, DocumentIcon } from '@ds/icons/UIIcons'; 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import api from '@lib/api.js'; // ✅ Import API client
+import api from '@lib/api.js'; //  Import API client
 
 // SVG Component untuk border putus-putus
 const ModalDashedBorder = ({ className, style = {} }) => (
@@ -116,7 +116,7 @@ export default function UserProfile() {
         phone_number: '',
     });
 
-    // ✅ Fetch user profile from API
+    //  Fetch user profile from API
     useEffect(() => {
         fetchUserProfile();
     }, []);
@@ -146,9 +146,40 @@ export default function UserProfile() {
     // Handle input change
     const handleChange = (e) => {
         const { name, value } = e.target;
+        
+        // ✅ Validasi khusus untuk phone_number
+        if (name === 'phone_number') {
+            // Cek apakah ada karakter selain angka, +, -, spasi, atau tanda kurung
+            if (value && !/^[\d\s\-\+\(\)]*$/.test(value)) {
+                setErrors(prev => ({ 
+                    ...prev, 
+                    [name]: 'Format nomor telepon tidak valid' 
+                }));
+                return; // Stop, jangan update formData
+            }
+            
+            // Cek apakah ada huruf
+            if (/[a-zA-Z]/.test(value)) {
+                setErrors(prev => ({ 
+                    ...prev, 
+                    [name]: 'Nomor telepon tidak boleh mengandung huruf' 
+                }));
+                return;
+            }
+            
+            // Validasi panjang (opsional, sesuaikan dengan kebutuhan)
+            if (value.length > 15) {
+                setErrors(prev => ({ 
+                    ...prev, 
+                    [name]: 'Nomor telepon maksimal 15 digit' 
+                }));
+                return;
+            }
+        }
+        
         setFormData(prev => ({ ...prev, [name]: value }));
         
-        // Clear error for this field
+        // Clear error for this field jika valid
         if (errors[name]) {
             setErrors(prev => ({ ...prev, [name]: '' }));
         }
@@ -167,12 +198,39 @@ export default function UserProfile() {
         setIsEditing(!isEditing);
     };
 
-    // ✅ Save profile changes
+    //  Save profile changes
     const handleSaveProfile = async () => {
         try {
             setIsSaving(true);
             setErrors({});
             setSuccessMessage('');
+
+            // ✅ Validasi frontend sebelum submit
+            const newErrors = {};
+            
+            // Validasi username
+            if (!formData.username || formData.username.trim() === '') {
+                newErrors.username = 'Username tidak boleh kosong';
+            }
+            
+            // Validasi phone_number
+            if (formData.phone_number) {
+                if (/[a-zA-Z]/.test(formData.phone_number)) {
+                    newErrors.phone_number = 'Nomor telepon tidak boleh mengandung huruf';
+                } else if (!/^[\d\s\-\+\(\)]*$/.test(formData.phone_number)) {
+                    newErrors.phone_number = 'Format nomor telepon tidak valid';
+                } else if (formData.phone_number.replace(/[\s\-\+\(\)]/g, '').length < 10) {
+                    newErrors.phone_number = 'Nomor telepon minimal 10 digit';
+                } else if (formData.phone_number.length > 15) {
+                    newErrors.phone_number = 'Nomor telepon maksimal 15 digit';
+                }
+            }
+            
+            // Jika ada error, tampilkan dan stop
+            if (Object.keys(newErrors).length > 0) {
+                setErrors(newErrors);
+                return;
+            }
 
             // Update profile
             const res = await api.put('/api/profile', {
@@ -199,7 +257,7 @@ export default function UserProfile() {
         }
     };
 
-    // ✅ Handle logout
+    //  Handle logout
     const handleLogout = async () => {
         try {
             await api.post('/api/logout');

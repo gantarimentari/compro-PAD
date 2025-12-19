@@ -23,6 +23,7 @@ export default function RegisterPage() {
   });
 
   const [error, setError] = useState('');
+  const [errors, setErrors]= useState({});
   const router = useRouter();
 
   const handleChange = (e) => {
@@ -31,10 +32,31 @@ export default function RegisterPage() {
       ...prev,
       [name]: value
     }));
+
+    if (errors[name]){
+      setErrors(prev=> ({ ...prev, [name]: ''}));
+    }
+    if(error){
+      setError('');
+    }
   };
 
 const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const newErrors = {};
+
+    if(!formData.password || formData.password.trim() === ''){
+      newErrors.password = 'password harus terisi';
+    } else if(formData.password.length < 8){
+      newErrors.password = 'Password at least 8 characters'
+    }
+
+    if (Object.keys(newErrors).length > 0){
+      setErrors(newErrors);
+      return;
+    }
+
     try{
       await api.get('/sanctum/csrf-cookie', { withCredentials: true });
 
@@ -48,8 +70,12 @@ const handleSubmit = async (e) => {
       console.log('Register data:', formData);
     router.push('/');
     } catch(err){
+      if(err.response?.data?.errors){
+        setErrors(err.response.data.errors);
+      }else{
       console.error(err.response?.data);
       setError(err.response?.data?.message || 'register gagal');
+      }
     }
   };
 
@@ -67,6 +93,13 @@ const handleSubmit = async (e) => {
           Register
         </h1>
       </div>
+
+      {/*error message*/}
+      {error && (
+        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-sm text-red-600">{error}</p>
+        </div>
+      )}
 
       {/* Form Register */}
       <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -108,6 +141,11 @@ const handleSubmit = async (e) => {
           value={formData.password}
           onChange={handleChange}
         />
+
+        {/*error password handling*/ }
+        {errors.password && (
+            <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+        )}
 
         {/* Tombol Register */}
         <div>

@@ -98,7 +98,7 @@ export default function About() {
               />
             </div>
 
-            {/* ✅ Teks panjang - hanya tampil di lg+ dengan loading state */}
+            {/*Teks panjang - hanya tampil di lg+ dengan loading state */}
             {isLoading ? (
               <div className="hidden lg:block space-y-2">
                 <div className="h-4 bg-white/20 rounded w-full animate-pulse"></div>
@@ -128,7 +128,7 @@ export default function About() {
             </div>
           </div>
 
-          {/* ✅ Teks panjang untuk mobile - order-3 (paling bawah), hidden di lg+ dengan loading state */}
+          {/* Teks panjang untuk mobile - order-3 (paling bawah), hidden di lg+ dengan loading state */}
           <div className="w-full order-3 lg:hidden">
             {isLoading ? (
               <div className="space-y-2">
