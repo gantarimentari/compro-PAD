@@ -1,6 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import api from "@lib/api.js";
+import Cookies from 'js-cookie';
 import Link from 'next/link';
 import AuthLayout from '@ds/auth/AuthLayout';
 import Input from '@ds/auth/Input';
@@ -15,6 +18,9 @@ export default function LoginPage() {
     password: ''
   });
 
+  const [error, setError] = useState('');
+  const router = useRouter();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -23,16 +29,66 @@ export default function LoginPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Implementasi logic login di sini
-    console.log('Login data:', formData);
-    // Setelah berhasil login, bisa redirect ke dashboard
-    // router.push('/dashboard');
+    setError(''); // Clear previous errors
+
+    try {
+      // Get CSRF token
+      await api.get('/sanctum/csrf-cookie');
+      
+      // Login request
+      const res = await api.post('/api/login', {
+        email: formData.email,
+        password: formData.password,
+      }, {
+        headers: {
+          'Accept': 'application/json',
+          'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN'),
+        },
+        withCredentials: true,
+      });
+
+      console.log('Login response:', res.data); // Debug log
+      console.log('Response status:', res.status);
+      console.log('Full response:', res);
+      console.log('Response has user?', res.data?.user);
+      console.log('Response keys:', Object.keys(res.data || {}));
+
+      // Cek apakah response punya property user
+      if (res.data && res.data.user) {
+        const { user } = res.data;
+        
+        // Simpan user info ke localStorage
+        localStorage.setItem('user', JSON.stringify(user));
+
+        // Redirect berdasarkan role
+        if (user.role === 'admin') {
+          router.push('/dashboardAdmin');
+        } else {
+          router.push('/');
+        }
+      } else {
+        // Log detail untuk debugging
+        console.error('Response tidak memiliki user object');
+        console.error('Response data:', res.data);
+        setError('Login berhasil tapi response tidak lengkap. Cek console untuk detail.');
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      
+      if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else if (err.message) {
+        setError(err.message);
+      } else {
+        setError('Login gagal. Silakan coba lagi.');
+      }
+    }
   };
 
   const handleGoogleLogin = () => {
-    // TODO: Implementasi Google OAuth di sini
+    window.location.href = 'http://localhost:8000/auth/google/redirect';
     console.log('Login with Google');
   };
 
@@ -44,6 +100,13 @@ export default function LoginPage() {
           Login
         </h1>
       </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          {error}
+        </div>
+      )}
 
       {/* Form Login */}
       <form className="text-sm sm:text-body-1 mt-4 sm:mt-8 space-y-2 sm:space-y-3 " onSubmit={handleSubmit}>

@@ -1,18 +1,108 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TagLabel from '../../components/Button/TagLabel';
+import api from '@lib/api';
 import Link from "next/link";
 import Button from '@ds/Button';
 import { RightArrowIcon } from '@ds/icons';
 import ServicesCard from './components/ServicesCard';
 
 export default function Services() {
-  const [servicesData] = useState({
-    judulLayanan: "Kami Hadir untuk Memberi Perawatan Terbaik!",
-  });
+  const [judulLayanan, setJudulLayanan] = useState("Kami Hadir untuk Memberi Perawatan Terbaik!");
+  const [isLoading, setIsLoading] = useState(true);
 
   const [selectedService, setSelectedService] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [whatsappData, setWhatsappData] = useState({
+    phone: '',
+    template: ''
+  });
+
+  useEffect(() => {
+    fetchSystemInfo();
+  }, []);
+
+  const fetchSystemInfo = async () => {
+    try {
+      setIsLoading(true);
+      const response = await api.get('/api/system-info');
+      
+      console.log('System Info Response:', response.data);
+      
+      const judul = response.data.systemInfo?.judul_layanan_tersedia;
+      if (judul) {
+        setJudulLayanan(judul);
+        console.log('Judul Layanan from DB:', judul);
+      }
+
+      setWhatsappData({
+        phone: response.data.systemInfo?.phone || '',
+        template: response.data.systemInfo?.whatsapp_template || ''
+      });
+
+    } catch (error) {
+      console.error('Error fetching system info:', error);
+      // Gunakan default jika error
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleOpenWhatsApp = () => {
+    try {
+      console.log('Opening WhatsApp from Services...');
+      console.log('Clinic phone:', whatsappData.phone);
+
+      // Validate clinic phone exists
+      if (!whatsappData.phone) {
+        alert('Nomor WhatsApp klinik belum tersedia. Silakan hubungi admin.');
+        return;
+      }
+
+      // Clean & format clinic's phone number
+      const cleanNumber = whatsappData.phone.replace(/[\s\-\+]/g, '');
+      let formattedNumber = cleanNumber;
+      
+      if (cleanNumber.startsWith('0')) {
+        formattedNumber = '62' + cleanNumber.substring(1);
+      } else if (!cleanNumber.startsWith('62')) {
+        formattedNumber = '62' + cleanNumber;
+      }
+
+      // Validate format
+      if (!/^62\d{9,12}$/.test(formattedNumber)) {
+        alert('Format nomor WhatsApp klinik tidak valid. Hubungi admin.');
+        console.error('Invalid clinic number:', formattedNumber);
+        return;
+      }
+
+      console.log('📱 Formatted clinic number:', formattedNumber);
+
+      // Use dynamic template from database OR fallback to default
+      const messageTemplate = whatsappData.template
+
+      console.log('Message template:', messageTemplate);
+
+      // Encode message for URL
+      const encodedMessage = encodeURIComponent(messageTemplate);
+
+      // Create WhatsApp URL
+      const whatsappUrl = `https://wa.me/${formattedNumber}?text=${encodedMessage}`;
+      
+      console.log('WhatsApp URL:', whatsappUrl);
+
+      // Open WhatsApp in new tab
+      window.open(whatsappUrl, '_blank');
+
+      console.log('WhatsApp opened successfully');
+
+    } catch (err) {
+      console.error('Error opening WhatsApp:', err);
+      alert('Gagal membuka WhatsApp. Silakan coba lagi.');
+    }
+  };
+
   // Data layanan - nanti bisa diambil dari dashboard
   const [servicesInfo] = useState({
     "pemeriksaan": {
@@ -142,9 +232,15 @@ export default function Services() {
           }}
           onMouseEnter={() => setIsCardHovered(true)}
           onMouseLeave={() => setIsCardHovered(false)} />
-          <p className='text-h-7  lg:text-h-6 font-bold text-center max-w-3xl px-4'>
-            {servicesData.judulLayanan}
-          </p>
+          
+          {/* ✅ Dynamic Title from DB with Loading + Responsive Size */}
+          {isLoading ? (
+            <div className="h-10 w-2/3 bg-gray-200 rounded animate-pulse" />
+          ) : (
+            <p className='text-h-7 lg:text-h-6 font-bold text-center max-w-3xl px-4'>
+              {judulLayanan}
+            </p>
+          )}
 
           {/* Services Grid dengan Doctor di Tengah */}
           <div className='w-full max-w-6xl '>
@@ -189,7 +285,8 @@ export default function Services() {
                 />
                 {/* Button Info Lebih Lanjut - Nempel dengan Gambar Dokter */}
                 <Link href='/'>
-                  <Button 
+                  <Button
+                    onClick={handleOpenWhatsApp} 
                     icon={<RightArrowIcon className="h-4 w-4" />} 
                     iconPosition="right"
                     roundedClass="rounded-md"
@@ -304,7 +401,8 @@ export default function Services() {
 
               {/* Button Info Lebih Lanjut di bawah */}
               <Link href='/'>
-                <Button 
+                <Button
+                  onClick={handleOpenWhatsApp} 
                   icon={<RightArrowIcon className="h-4 w-4" />} 
                   iconPosition="right"
                   roundedClass="rounded-md"

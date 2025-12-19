@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import BaseModal from './BaseModal';
 import { UploadIcon } from '@ds/icons';
+import QuillEditor from '@ds/shared/QuillEditor';
 
 const EditArtikelModal = ({ isOpen, onClose, onSave, article }) => {
   const [formData, setFormData] = useState({
@@ -87,13 +88,13 @@ const EditArtikelModal = ({ isOpen, onClose, onSave, article }) => {
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Isi Artikel
           </label>
-          <textarea
+          <QuillEditor
             value={formData.isiArtikel}
-            onChange={(e) => setFormData({ ...formData, isiArtikel: e.target.value })}
+            onChange={(html) =>
+              setFormData(prev => ({ ...prev, isiArtikel: html }))
+            }
             placeholder="Tulis konten artikel disini..."
-            rows={6}
-            className="text-body-2 w-full px-4 py-2 border bg-accent-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 resize-none placeholder:text-accent-neutral-800"
-            required
+            className="w-full rounded-lg border bg-accent-neutral-200 focus-within:ring-2 focus-within:ring-blue-500"
           />
         </div>
 

@@ -1,63 +1,15 @@
-'use client'
-import React, { useState, useRef, useEffect, } from 'react';
+'use client';
+import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { TrashIcon, WarningIcon, PenIcon, ChevronDownIcon} from '@ds/icons';
+import api from '@lib/api';
+import { TrashIcon, PenIcon, ChevronDownIcon } from '@ds/icons';
 import Button from '@ds/Button';
 import Table from '@ds/dashboard/components/Table';
 import SearchBar from '@ds/dashboard/layouts/ManagementSearch';
 import PageHeader from '@ds/dashboard/layouts/PageHeader';
-import Header from '@ds/shared/Header';
-import { TambahReservasiModal,DeleteConfirmModal, EditReservasiModal } from '@ds/dashboard/modals';
+import { TambahReservasiModal, DeleteConfirmModal, EditReservasiModal } from '@ds/dashboard/modals';
 
-// const MOCK_DATA = [
-const MOCK_DATA = [
-  {id: 1, name: "andi",
-    pets: [
-      { petId: 101, species: "Kucing",date: '01/01/2025', petName: "guguk", keluhan:'diare', status: 'pending' },
-      { petId: 102, species: "Anjing", date: '01/01/2025', petName: 'rakai', status: 'belum' },
-      { petId: 107, species: "Ikan", date: '01/01/2025',petName: 'falah', status: 'selesai' } ],
-    },
-    {id: 2, name: "budi",
-    pets: [
-      { petId: 104, species: "Kucing", date: '01/01/2025', petName: 'rakai', status: 'pending' }, 
-      { petId: 105, species: "Anjing",date: '01/01/2025', petName: 'rakai', status: 'batal' },
-      { petId: 103, species: "Ikan", date: '01/01/2024', petName: 'rakai', status: 'selesai' } ],
-    },
-    {id: 3, name: "cinta",
-    pets: [
-      { petId: 106, species: "Kucing", date: '01/01/2012',petName: 'rakai', status: 'belum' }, 
-      { petId: 109, species: "Anjing", date: '01/01/2012', petName: 'rakai', status: 'pending' },
-      ],
-  },
-  {id: 4, name: "Falah",
-    pets: [
-      { petId: 201, species: "Kucing", date: '01/01/2012', petName: 'rakai', status: 'selesai' } ],
-  },
-];
-
-const flattenReservasiData = (ownerData)=>{
-  const flattened =[];
-  ownerData.forEach(owner => {
-    if(owner.pets && owner.pets.length > 0){
-      owner.pets.forEach(pet=>{
-        flattened.push({
-          id: pet.petId,
-          petName: pet.petName, 
-          species: pet.species,
-          date: pet.date,
-          keluhan: pet.keluhan || 'cek kesehatan bulanan',
-          status: pet.status || 'pending',
-          ownerName: owner.name,
-          ownerId: owner.id
-        });
-      });
-    }
-    
-  });
-  return flattened;
-};
-
-// Status Dropdown Component
+// Status Dropdown Component with Portal
 const StatusDropdown = ({ currentStatus, onStatusChange, itemId }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
@@ -160,128 +112,156 @@ const StatusDropdown = ({ currentStatus, onStatusChange, itemId }) => {
           />
         </button>
       </div>
+      {/* Portal to document.body to escape table overflow */}
       {typeof document !== 'undefined' && dropdownContent && createPortal(dropdownContent, document.body)}
     </>
   );
 };
 
-const RESERVASI_COLUMNS=[
-  {key: 'ownerName', header: 'Nama Pasien'},
-  {key:'petName', header:'Hewan'},
-  {key: 'date', header: 'Tanggal Reservasi'},
-  {key: 'keluhan', header: 'Keluhan'},
-  {key: 'status', header: 'Status'},
-  {key: 'actions', header: 'Aksi', isAction: true},
+const RESERVASI_COLUMNS = [
+  { key: 'ownerName', header: 'Nama Pasien' },
+  { key: 'petName', header: 'Hewan' },
+  { key: 'species', header: 'Jenis Hewan' },
+  { key: 'date', header: 'Tanggal Reservasi' },
+  { key: 'keluhan', header: 'Keluhan' },
+  { key: 'status', header: 'Status' },
+  { key: 'actions', header: 'Aksi', isAction: true },
 ];
 
-export default function Reservasi(){
-   const [ReservasiData, setReservasiData]=useState(MOCK_DATA);
-   const [searchQuery, setSearchQuery] = useState('');
-   const [isModalOpen, setIsModalOpen] = useState(false);
-   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-   const [reservasiToDelete, setReservasiToDelete] = useState(null);
-   const [selectedReservasi, setSelectedReservasi] = useState(null);
-   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-   // filter / search
-   const flattenedData = flattenReservasiData(ReservasiData);
-   const filteredData = flattenedData.filter(item=>
-    (item.petName?.toLowerCase()).includes(searchQuery.toLowerCase()) || 
-    (item.ownerName?.toLowerCase()).includes(searchQuery.toLowerCase()) ||
-    (item.species?.toLowerCase()).includes(searchQuery.toLowerCase()) ||
-    (item.date?.toLowerCase()).includes(searchQuery.toLowerCase()) ||
-    (item.keluhan?.toLowerCase()).includes(searchQuery.toLowerCase()) ||
+export default function Reservasi() {
+  const [reservasiData, setReservasiData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [reservasiToDelete, setReservasiToDelete] = useState(null);
+  const [selectedReservasi, setSelectedReservasi] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  //  Fetch reservasi dari database
+  const fetchReservasi = async () => {
+    try {
+      await api.get('/sanctum/csrf-cookie');
+      const res = await api.get('/api/reservations');
+
+      console.log('Reservasi Data:', res.data);
+      setReservasiData(res.data);
+    } catch (err) {
+      console.error('Error fetching reservations:', err);
+      alert('Gagal memuat data reservasi');
+    }
+  };
+
+  useEffect(() => {
+    fetchReservasi();
+  }, []);
+
+  //  Filter data
+  const filteredData = reservasiData.filter(item =>
+    (item.petName?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+    (item.ownerName?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+    (item.species?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+    (item.date?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+    (item.keluhan?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
     (item.status?.toLowerCase() || '').includes(searchQuery.toLowerCase())
-   );
-   
-   const handleSaveReservasi = (formData)=>{
-    const owner = ReservasiData.find(o => o.name === formData.ownerName);
-    if(owner){
-      // untuk cari spesies dari hewan yagn dipilih
-      const selectedPet = owner.pets?.find(p => p.petName === formData.petName);
-      const maxPetId = Math.max(...ReservasiData.flatMap(o => o.pets?.map(p => p.petId) || [0]), 0);
-      const newPet = {
-        petId: maxPetId + 1,
-        petName: formData.petName,
-        species: selectedPet?.species || '',
-        date: formData.date,
+  );
+
+  //  Tambah Reservasi
+  const handleSaveReservasi = async (formData) => {
+    try {
+      await api.get('/sanctum/csrf-cookie');
+
+      const payload = {
+        id_pasien: formData.ownerId,
+        id_hewan: formData.petId,
+        tanggal_reservasi: formData.date,
         keluhan: formData.keluhan,
         status: 'pending',
       };
-      setReservasiData(ReservasiData.map(o => 
-        o.id === owner.id 
-          ? { ...o, pets: [...(o.pets || []), newPet] }
-          : o
+
+      console.log('Sending reservation:', payload);
+
+      await api.post('/api/reservations', payload);
+      await fetchReservasi();
+      setIsModalOpen(false);
+      alert('Reservasi berhasil ditambahkan!');
+    } catch (err) {
+      console.error('Error saving reservation:', err);
+      alert(`Gagal menyimpan: ${err.response?.data?.message || err.message}`);
+    }
+  };
+
+  //  Update Status
+  const handleStatusChange = async (reservasiId, newStatus) => {
+    try {
+      await api.get('/sanctum/csrf-cookie');
+
+      await api.patch(`/api/reservations/${reservasiId}/status`, {
+        status: newStatus,
+      });
+
+      // Update local state
+      setReservasiData(reservasiData.map(item =>
+        item.id === reservasiId ? { ...item, status: newStatus } : item
       ));
+
+      console.log(`Status updated: ${reservasiId} → ${newStatus}`);
+    } catch (err) {
+      console.error('Error updating status:', err);
+      alert('Gagal mengupdate status');
     }
-   }
+  };
 
-   const handleStatusChange = (petId, newStatus) => {
-     setReservasiData(ReservasiData.map(owner => ({
-       ...owner,
-       pets: owner.pets?.map(pet => 
-         pet.petId === petId ? { ...pet, status: newStatus } : pet
-       ) || []
-     })));
-   };
+  //  Edit Reservasi
+  const handleEdit = (item) => {
+    setSelectedReservasi(item);
+    setIsEditModalOpen(true);
+  };
 
-   const handleEdit = (item) => {
-     setSelectedReservasi(item);
-     setIsEditModalOpen(true);
-   };
+  const handleEditReservasi = async (id, formData) => {
+    try {
+      await api.get('/sanctum/csrf-cookie');
 
-   const handleEditReservasi = (id, formData) => {
-     setReservasiData(ReservasiData.map(owner => {
-       if (owner.pets && owner.pets.some(pet => pet.petId === id)) {
-         return {
-           ...owner,
-           pets: owner.pets.map(pet => 
-             pet.petId === id 
-               ? { 
-                   ...pet, 
-                   petName: formData.petName, 
-                   species: formData.species,
-                   date: formData.date,
-                   keluhan: formData.keluhan
-                 }
-               : pet
-           )
-         };
-       }
-       return owner;
-     }));
-     setIsEditModalOpen(false);
-     setSelectedReservasi(null);
-   };
+      const payload = {
+        id_pasien: formData.ownerId,
+        id_hewan: formData.petId,
+        tanggal_reservasi: formData.date,
+        keluhan: formData.keluhan,
+      };
 
-   const handleDelete = (itemId) => {
-    // Cari reservasi dari flattened data (itemId adalah petId)
-    const reservasi = flattenedData.find(item => item.id === itemId);
-    if (reservasi) {
-      setReservasiToDelete(reservasi);
-      setIsDeleteModalOpen(true);
+      await api.put(`/api/reservations/${id}`, payload);
+      await fetchReservasi();
+      setIsEditModalOpen(false);
+      setSelectedReservasi(null);
+      alert('Reservasi berhasil diupdate!');
+    } catch (err) {
+      console.error('Error updating reservation:', err);
+      alert(`Gagal mengupdate: ${err.response?.data?.message || err.message}`);
     }
-   };
+  };
 
-   const confirmDelete = () => {
+  //  Delete Reservasi
+  const handleDelete = (item) => {
+    setReservasiToDelete(item);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
     if (reservasiToDelete) {
-      // Hapus pet dari owner yang sesuai
-      setReservasiData(prevData => 
-        prevData.map(owner => {
-          if (owner.id === reservasiToDelete.ownerId) {
-            return {
-              ...owner,
-              pets: owner.pets?.filter(pet => pet.petId !== reservasiToDelete.id) || []
-            };
-          }
-          return owner;
-        })
-      );
-      setIsDeleteModalOpen(false);
-      setReservasiToDelete(null);
+      try {
+        await api.get('/sanctum/csrf-cookie');
+        await api.delete(`/api/reservations/${reservasiToDelete.id}`);
+        await fetchReservasi();
+        setIsDeleteModalOpen(false);
+        setReservasiToDelete(null);
+        alert('Reservasi berhasil dihapus!');
+      } catch (err) {
+        console.error('Error deleting reservation:', err);
+        alert('Gagal menghapus reservasi');
+      }
     }
-   };
+  };
 
-   const renderCell= (item, key)=>{
+  const renderCell = (item, key) => {
     switch (key) {
       case 'status':
         return (
@@ -294,21 +274,21 @@ export default function Reservasi(){
       case 'actions':
         return (
           <div className="flex justify-center space-x-2">
-            <Button 
-              icon={<PenIcon className="h-4 w-4" />} 
+            <Button
+              icon={<PenIcon className="h-4 w-4" />}
               roundedClass="rounded-lg"
-              color="bg-accent-yellow-300" 
+              color="bg-accent-yellow-300"
               hoverColor="hover:bg-accent-yellow-500"
               focusColor="focus:bg-accent-yellow-400"
               onClick={() => handleEdit(item)}
               label={`Edit ${item.petName}`}
             />
-            <Button 
-              icon={<TrashIcon className="h-4 w-4" />} 
+            <Button
+              icon={<TrashIcon className="h-4 w-4" />}
               roundedClass="rounded-lg"
-              color="bg-accent-red-300" 
+              color="bg-accent-red-300"
               hoverColor="hover:bg-accent-red-400"
-              onClick={() => handleDelete(item.id)}
+              onClick={() => handleDelete(item)}
               label={`Hapus ${item.petName}`}
             />
           </div>
@@ -316,35 +296,48 @@ export default function Reservasi(){
       default:
         return item[key] || '-';
     }
-   }
+  };
 
-   return (
+  return (
     <div className="space-y-6">
-      <PageHeader 
-      title= 'Reservasi'
-      description= 'Kelola data reservasi'
-      addButtonText= 'Tambah Reservasi'
-      onAddClick= {() => setIsModalOpen(true)}
+      <PageHeader
+        title="Reservasi"
+        description="Kelola data reservasi"
+        addButtonText="Tambah Reservasi"
+        onAddClick={() => setIsModalOpen(true)}
       />
+
+      {/* Add pb-32 from 6297f7a for better spacing */}
       <div className="space-y-4 pb-32">
-        <SearchBar 
-        placeholderText="Cari nama hewan, jenis, atau pemilik..." 
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
+        <SearchBar
+          placeholderText="Cari nama hewan, jenis, atau pemilik..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
         />
+
         <Table
-        
-        columns={RESERVASI_COLUMNS}
-        data={filteredData}
-        renderCell={renderCell} 
+          columns={RESERVASI_COLUMNS}
+          data={filteredData}
+          renderCell={renderCell}
         />
       </div>
+
       <TambahReservasiModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={handleSaveReservasi}
-        ownerData={MOCK_DATA}
       />
+
+      <EditReservasiModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedReservasi(null);
+        }}
+        reservasi={selectedReservasi}
+        onSave={handleEditReservasi}
+      />
+
       <DeleteConfirmModal
         isOpen={isDeleteModalOpen}
         onClose={() => {
@@ -355,17 +348,6 @@ export default function Reservasi(){
         itemName={reservasiToDelete?.petName}
         itemType="reservasi"
       />
-      <EditReservasiModal
-        isOpen={isEditModalOpen}
-        onClose={() => {
-          setIsEditModalOpen(false);
-          setSelectedReservasi(null);
-        }}
-        reservasi={selectedReservasi}
-        onSave={handleEditReservasi}
-        ownerData={ReservasiData}
-      />
-      
     </div>
-   )
+  );
 }

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '@lib/api';
 import { TrashIcon, WarningIcon, PenIcon} from '@ds/icons';
 import Button from '@ds/Button';
 import Table from '@ds/dashboard/components/Table';
@@ -8,25 +9,25 @@ import SearchBar from '@ds/dashboard/layouts/ManagementSearch';
 import PageHeader from '@ds/dashboard/layouts/PageHeader';
 import {TambahPasienModal,EditPasienModal,PreviewPasienModal,DeleteConfirmModal,} from '@ds/dashboard/modals';
 
-const MOCK_DATA =[
-  {id: 1, name: "andi", phoneNumber: "02123456789", email: "andi@gmail.com", date:  '01/01/2025', 
-    pets: [
-      { petName: "Luna", species: "Kucing" },
-      { petName: "Rocky", species: "Anjing"},
-      { petName: "Nemo", species: "Ikan" } ],
-    },
-    {id: 2, name: "budi", phoneNumber: "02123456789", email: "budi@gmail.com", date:  '01/01/2025', 
-    pets: [
-      { petName: "Luna", species: "Kucing" },
-      { petName: "Rocky", species: "Anjing"},
-      { petName: "Nemo", species: "Ikan" } ],
-    },
-    {id: 3, name: "cinta", phoneNumber: "02123456789", email: "cinta@gmail.com", date:  '01/01/2025', 
-    pets: [
-      { petName: "Luna", species: "Kucing" },
-      { petName: "Rocky", species: "Anjing"},
-      { petName: "Nemo", species: "Ikan" } ],
-}];
+// const MOCK_DATA =[
+//   {id: 1, name: "andi", phoneNumber: "02123456789", email: "andi@gmail.com", date:  '01/01/2025', 
+//     pets: [
+//       { petName: "Luna", species: "Kucing" },
+//       { petName: "Rocky", species: "Anjing"},
+//       { petName: "Nemo", species: "Ikan" } ],
+//     },
+//     {id: 2, name: "budi", phoneNumber: "02123456789", email: "budi@gmail.com", date:  '01/01/2025', 
+//     pets: [
+//       { petName: "Luna", species: "Kucing" },
+//       { petName: "Rocky", species: "Anjing"},
+//       { petName: "Nemo", species: "Ikan" } ],
+//     },
+//     {id: 3, name: "cinta", phoneNumber: "02123456789", email: "cinta@gmail.com", date:  '01/01/2025', 
+//     pets: [
+//       { petName: "Luna", species: "Kucing" },
+//       { petName: "Rocky", species: "Anjing"},
+//       { petName: "Nemo", species: "Ikan" } ],
+// }];
 
 // buat kolom table
 const PATIENT_COLUMNS = [
@@ -38,7 +39,7 @@ const PATIENT_COLUMNS = [
 ];
 
 export default function ManagementPasien(){
-  const [pasienData, setPasienData] = useState(MOCK_DATA);
+  const [pasienData, setPasienData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -46,33 +47,148 @@ export default function ManagementPasien(){
   const [pasienToDelete, setPasienToDelete] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+  const [jenisHewanOptions, setJenisHewanOptions] = useState([]);
+
+
+  useEffect(() => {
+    fetchJenisHewan();
+    fetchPatients();
+  }, []);
+
 
   //filter 
   const filteredData = pasienData.filter(item =>
-    item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.phoneNumber.toLowerCase().includes(searchQuery.toLowerCase())
+    item.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    item.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    item.phoneNumber?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleSavePasien = (formData) => {
-    const newPasien = {
-      id: pasienData.length + 1,
-      name: formData.name,
-      phoneNumber: formData.phoneNumber,
-      email: formData.email,
-      date: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }),
-      pets: []
-    };
-    setPasienData([...pasienData, newPasien]);
+  
+
+   const fetchJenisHewan = async () => {
+    try {
+      await api.get('/sanctum/csrf-cookie');
+      const res = await api.get("/api/jenis-hewan");
+      setJenisHewanOptions(res.data);
+    } catch (err) {
+      console.error('Error fetching jenis hewan:', err);
+    }
+  };
+  
+
+  const fetchPatients = async () => {
+    try {
+      await api.get("/sanctum/csrf-cookie");
+      const res = await api.get("/api/patients");
+      
+      const formatted = res.data.map(item => ({
+        id: item.id,
+        name: item.username,
+        phoneNumber: item.phone_number,
+        email: item.email,
+        date: new Date(item.created_at).toLocaleDateString('id-ID', { 
+          day: '2-digit', 
+          month: '2-digit', 
+          year: 'numeric' 
+        }),
+        pets: item.hewans?.map(hewan => ({
+          id: hewan.id_hewan,
+          petName: hewan.nama_hewan,
+          species: hewan.jenis_hewan?.nama_jenis || '-',
+          speciesId: hewan.id_jenisHewan,
+          birthDate: hewan.tanggal_lahir_hewan,
+          age: hewan.umur
+        })) || []
+      }));
+
+      setPasienData(formatted);
+    } catch (err) {
+      console.error('Error fetching patients:', err);
+      alert('Gagal memuat data pasien');
+    }
+  };
+  const handleSavePasien = async (formData) => {
+    try{
+      await api.get('/sanctum/csrf-cookie');
+
+      const pasienPayload = {
+        name: formData.name,
+        phoneNumber: formData.phoneNumber,
+        email: formData.email,
+        password: formData.password,
+        pets: []
+      };
+
+      console.log('bismillah sending payload:', pasienPayload);
+
+      const pasienRes = await api.post('/api/patients', pasienPayload);
+      const newPasienId = pasienRes.data.id;
+
+      if (formData.pets && formData.pets.length > 0) {
+        for (const pet of formData.pets) {
+          await api.post("/api/hewan", {
+            id_pasien: newPasienId,
+            id_jenisHewan: pet.speciesId,
+            nama_hewan: pet.petName,
+            tanggal_lahir_hewan: pet.birthDate || null,
+            umur: pet.age || null,
+          });
+        }
+      }
+      await fetchPatients();
+      setIsModalOpen(false);
+    }catch(err){
+      console.error('error saving patieng:', err);
+      console.error('Error response:', err.response?.data);
+      alert(`gagal menyimpan pasien: ${err.response?.data?.message || err.message}`);
+    }
+    // setPasienData([...pasienData, newPasien]);
   };
 
-  const handleEditPasien = (id, formData) => {
-    setPasienData(pasienData.map(item =>
-      item.id === id ? { 
-        ...item, 
-        ...formData 
-      } : item
-    ));
+  const handleEditPasien = async (id, formData) => {
+    try{
+      const pasienPayload = {
+        name: formData.name,
+        phoneNumber: formData.phoneNumber,
+        email: formData.email,
+      };
+
+      if (formData.password){
+        pasienPayload.password = formData.password;
+      }
+
+      await api.put(`/api/patients/${id}`,pasienPayload);
+
+      const oldPets = selectedPasien.pets || [];
+      for (const pet of oldPets) {
+        await api.delete(`/api/hewan/${pet.id}`);
+      }
+
+      if (formData.pets && formData.pets.length > 0) {
+        for (const pet of formData.pets) {
+          await api.post("/api/hewan", {
+            id_pasien: id,
+            id_jenisHewan: pet.speciesId,
+            nama_hewan: pet.petName,
+            tanggal_lahir_hewan: pet.birthDate || null,
+            umur: pet.age || null,
+          });
+        }
+      }
+
+      await fetchPatients();
+      setIsEditModalOpen(false);
+      setSelectedPasien(null);
+    } catch(err){
+      console.error('eror updating patinet:', err);
+      alert(`gagal mengupdate pasien: ${err.response?.data?.message || err.message}`);
+    }
+    // setPasienData(pasienData.map(item =>
+    //   item.id === id ? { 
+    //     ...item, 
+    //     ...formData 
+    //   } : item
+    // ));
     setIsEditModalOpen(false);
     setSelectedPasien(null);
   };
@@ -83,10 +199,18 @@ export default function ManagementPasien(){
     setIsDeleteModalOpen(true);
   };
 
-  const confirmDelete = () => {
-    setPasienData(pasienData.filter(item => item.id !== pasienToDelete.id));
-    setIsDeleteModalOpen(false);
-    setPasienToDelete(null);
+  const confirmDelete = async () => {
+    try {
+      await api.delete(`/api/patients/${pasienToDelete.id}`);
+      
+      // Refresh data setelah berhasil delete
+      await fetchPatients();
+      setIsDeleteModalOpen(false);
+      setPasienToDelete(null);
+    } catch (err) {
+      console.error('Error deleting patient:', err);
+      alert(`Gagal menghapus pasien: ${err.response?.data?.message || err.message}`);
+    }
   };
 
   const handlePreview = (item) => {

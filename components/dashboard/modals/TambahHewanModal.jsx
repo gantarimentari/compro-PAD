@@ -1,98 +1,108 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState } from 'react';
 import BaseModal from './BaseModal';
+import api from '@lib/api';
 
-
-const TambahHewanModal = ({ isOpen, onClose, onSave, ownerData = [] }) => {
+const TambahHewanModal = ({ 
+  isOpen, 
+  onClose, 
+  onSave, 
+  ownerOptions = [],
+}) => {
   const [formData, setFormData] = useState({
     petName: '',
-    species: '',
-    ownerName: ''
+    speciesId: '',
+    ownerId: '',
   });
+  
+  const [jenisHewanOptions, setJenisHewanOptions] = useState([]);
 
-  // Ambil daftar pemilik dari ownerData
-  const availableOwners = useMemo(() => {
-    if (ownerData && ownerData.length > 0) {
-      return ownerData.map(owner => ({ id: owner.id, name: owner.name }));
-    }
-    return [];
-  }, [ownerData]);
-
-  // Filter jenis hewan berdasarkan pemilik yang dipilih
-  const availableSpecies = useMemo(() => {
-    if (!formData.ownerName) {
-      return [];
-    }
+  //  Fetch jenis hewan saat owner dipilih
+  const handleOwnerChange = async (ownerId) => {
+    console.log('👤 Owner selected:', ownerId);
+    setFormData({ 
+      ...formData, 
+      ownerId,
+      speciesId: '' // Reset species
+    });
     
-    // Cari owner berdasarkan nama
-    const selectedOwner = ownerData.find(owner => owner.name === formData.ownerName);
-    
-    if (selectedOwner && selectedOwner.pets && selectedOwner.pets.length > 0) {
-      // Ambil semua jenis hewan unik yang dimiliki pemilik tersebut
-      const speciesSet = new Set(selectedOwner.pets.map(pet => pet.species));
-      return Array.from(speciesSet);
+    if (ownerId) {
+      //  Fetch jenis hewan milik owner ini
+      try {
+        await api.get('/sanctum/csrf-cookie');
+        const res = await api.get(`/api/jenis-hewan?id_pasien=${ownerId}`);
+        
+        const formatted = res.data.map(jenis => ({
+          id_jenisHewan: jenis.id_jenisHewan,
+          nama_jenis: jenis.nama_jenis,
+        }));
+        
+        console.log('Jenis Hewan for this owner:', formatted);
+        setJenisHewanOptions(formatted);
+      } catch (err) {
+        console.error('Error fetching jenis hewan:', err);
+        setJenisHewanOptions([]);
+      }
+    } else {
+      setJenisHewanOptions([]);
     }
-    
-    return [];
-  }, [formData.ownerName, ownerData]);
-
-  // Reset species ketika pemilik berubah
-  useEffect(() => {
-    if (formData.ownerName) {
-      setFormData(prev => ({ ...prev, species: '' }));
-    }
-  }, [formData.ownerName]);
-
-  // Reset form ketika modal ditutup
-  useEffect(() => {
-    if (!isOpen) {
-      setFormData({
-        petName: '',
-        species: '',
-        ownerName: ''
-      });
-    }
-  }, [isOpen]);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    console.log('Submitting Form Data:', formData);
+    
     onSave(formData);
+    
+    // Reset form
     setFormData({
       petName: '',
-      species: '',
-      ownerName: ''
+      speciesId: '',
+      ownerId: '',
     });
-    onClose();
+    setJenisHewanOptions([]);
   };
 
   return (
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Tambah Hewan"
-      description="Masukkan data hewan baru"
+      title="Tambah Hewan Baru"
+      description="Masukkan data hewan pasien"
       maxWidth="max-w-lg"
     >
       <form onSubmit={handleSubmit} className="px-6 pb-6 pt-2 space-y-2">
-      <div>
+        
+        {/* Dropdown Pemilik */}
+        <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Nama Pemilik
           </label>
           <select
-            value={formData.ownerName}
-            onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
-            className={`w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none text-body-2 ${!formData.ownerName ? 'text-accent-neutral-800' : 'text-accent-neutral-1000'}`}
+            value={formData.ownerId}
+            onChange={(e) => handleOwnerChange(e.target.value)}
+            className={`w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none text-body-2 ${!formData.ownerId ? 'text-accent-neutral-800' : 'text-accent-neutral-1000'}`}
             required 
           >
             <option value="" className='text-accent-neutral-800'>Pilih nama pemilik</option>
-            {availableOwners.map((pemilik) => (
-              <option key={pemilik.id} value={pemilik.name} className='text-accent-neutral-1000'>
-                {pemilik.name}
-              </option>
-            ))}
+            {ownerOptions && ownerOptions.length > 0 ? (
+              ownerOptions.map((owner) => (
+                <option key={`owner-${owner.id}`} value={owner.id} className='text-accent-neutral-1000'>
+                  {owner.name} - {owner.email}
+                </option>
+              ))
+            ) : (
+              <option disabled>Tidak ada data pemilik</option>
+            )}
           </select>
+          <p className="text-xs text-gray-500 mt-1">
+            Total pemilik: {ownerOptions?.length || 0}
+          </p>
         </div>
+
+        {/* Nama Hewan */}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Nama Hewan
@@ -107,32 +117,39 @@ const TambahHewanModal = ({ isOpen, onClose, onSave, ownerData = [] }) => {
           />
         </div>
 
+        {/*  Dropdown Jenis Hewan - Dynamic by Owner */}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Jenis Hewan
           </label>
           <select
-            value={formData.species}
-            onChange={(e) => setFormData({ ...formData, species: e.target.value })}
-            className={`w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none text-body-2 ${!formData.species ? 'text-accent-neutral-800' : 'text-accent-neutral-1000'}`}
+            value={formData.speciesId}
+            onChange={(e) => setFormData({ ...formData, speciesId: e.target.value })}
+            className={`w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none text-body-2 ${!formData.speciesId ? 'text-accent-neutral-800' : 'text-accent-neutral-1000'}`}
             required
-            disabled={!formData.ownerName || availableSpecies.length === 0}
+            disabled={!formData.ownerId}
           >
             <option value="" className='text-accent-neutral-800'>
-              {!formData.ownerName 
-                ? 'Pilih nama pemilik terlebih dahulu' 
-                : availableSpecies.length === 0 
-                  ? 'Pemilik ini belum memiliki hewan' 
-                  : 'Pilih jenis hewan'}
+              {!formData.ownerId 
+                ? 'Pilih pemilik terlebih dahulu' 
+                : jenisHewanOptions.length === 0
+                ? 'Pemilik belum punya jenis hewan. Tambahkan di menu Jenis Hewan.'
+                : 'Pilih jenis hewan'}
             </option>
-            {availableSpecies.map((jenis, index) => (
-              <option key={index} value={jenis} className='text-accent-neutral-1000'>
-                {jenis}
+            {jenisHewanOptions.map((jenis) => (
+              <option key={jenis.id_jenisHewan} value={jenis.id_jenisHewan} className='text-accent-neutral-1000'>
+                {jenis.nama_jenis}
               </option>
             ))}
           </select>
+          <p className="text-xs text-gray-500 mt-1">
+            {formData.ownerId 
+              ? `Jenis hewan tersedia: ${jenisHewanOptions.length}`
+              : 'Pilih pemilik untuk melihat jenis hewan'}
+          </p>
         </div>
 
+        {/* Buttons */}
         <div className="flex justify-end space-x-3 pt-3">
           <button
             type="button"
@@ -143,7 +160,8 @@ const TambahHewanModal = ({ isOpen, onClose, onSave, ownerData = [] }) => {
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150"
+            disabled={!formData.ownerId || jenisHewanOptions.length === 0}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Simpan
           </button>

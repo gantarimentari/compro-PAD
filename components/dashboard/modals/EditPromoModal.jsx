@@ -10,45 +10,34 @@ const EditPromoModal = ({ isOpen, onClose, onSave, promo }) => {
     description: '',
     startDate: '',
     endDate: '',
-    status: ''
+    status: 'available',
   });
 
   useEffect(() => {
-    if (promo) {
-      
-      const convertDateToInputFormat = (dateString) => {
-        if (!dateString) return '';
-        if (dateString.includes('/')) {
-          const [day, month, year] = dateString.split('/');
-          return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-        }
-        return dateString;
-      };
-
+    if (promo && isOpen) {
       setFormData({
         title: promo.title || '',
         description: promo.description || '',
-        startDate: convertDateToInputFormat(promo.startDate) || '',
-        endDate: convertDateToInputFormat(promo.endDate) || '',
-        status: promo.status || ''
+        startDate: promo.startDate || '', // Format: YYYY-MM-DD
+        endDate: promo.endDate || '',
+        status: promo.status.toLowerCase() || 'available',
       });
     }
-  }, [promo]);
-
-  if (!isOpen || !promo) return null;
+  }, [promo, isOpen]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave(promo.id, formData);
-    onClose();
   };
+
+  if (!promo) return null;
 
   return (
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
       title="Edit Promo"
-      description="Perbarui data promo"
+      description={`Ubah data promo "${promo.title}"`}
       maxWidth="max-w-lg"
     >
       <form onSubmit={handleSubmit} className="pb-6 pt-2 space-y-2 px-6">
@@ -65,8 +54,7 @@ const EditPromoModal = ({ isOpen, onClose, onSave, promo }) => {
         </div>
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">Isi Promo</label>
-          <input
-            type="text"
+          <textarea
             value={formData.description}
             onChange={(e)=>setFormData({...formData, description: e.target.value})}
             placeholder='Tuliskan deskripsikan promo disini...'
@@ -74,8 +62,9 @@ const EditPromoModal = ({ isOpen, onClose, onSave, promo }) => {
             required
           />
         </div>
+
         <div>
-          <label className='block text-h-8 font-bold text-accent-neutral-1000'>
+          <label className="block text-h-8 font-bold text-accent-neutral-1000 mb-2">
             Tanggal Mulai
           </label>
           <input
@@ -86,42 +75,58 @@ const EditPromoModal = ({ isOpen, onClose, onSave, promo }) => {
             required
           />
         </div>
+
         <div>
-          <label className='block text-h-8 font-bold text-accent-neutral-1000'>Tanggal Selesai</label>
+          <label className="block text-h-8 font-bold text-accent-neutral-1000 mb-2">
+            Tanggal Selesai
+          </label>
           <input
             type="date"
             value={formData.endDate}
+            min={formData.startDate}
             onChange={(e)=>setFormData({...formData, endDate: e.target.value})}
             className="text-body-2 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
             required
           />
         </div>
+
         <div>
-          <label className='block text-h-8 font-bold text-accent-neutral-1000'>Status</label>
+            <label className="block text-h-8 font-bold text-accent-neutral-1000">
+          Status Promo
+          </label>
+
           <div className="relative">
             <select
               value={formData.status}
-              onChange={(e)=>setFormData({...formData, status: e.target.value})}
-              className='text-body-2 font-bold w-full bg-accent-neutral-200 px-4 py-2 pr-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none'>
-              <option value="Available">Available</option>
-              <option value="Unavailable">Unavailable</option>
+              onChange={(e) =>
+                setFormData({ ...formData, status: e.target.value })
+              }
+              className="text-body-2 font-bold w-full bg-accent-neutral-200 px-4 py-2 pr-10
+                        rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500
+                        transition duration-150 appearance-none"
+            >
+              <option value="available">Available</option>
+              <option value="unavailable">Unavailable</option>
             </select>
-            <ChevronDownIcon 
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 pointer-events-none text-accent-neutral-600"
+
+            <ChevronDownIcon
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5
+                        pointer-events-none text-accent-neutral-600"
             />
           </div>
         </div>
+
         <div className="flex justify-end space-x-3 pt-3">
           <button
             type="button"
             onClick={onClose}
-            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-150"
+            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
           >
             Batal
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150"
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             Simpan Perubahan
           </button>

@@ -1,5 +1,7 @@
 import { Plus_Jakarta_Sans, Lora } from "next/font/google";
 import "./globals.css";
+import 'quill/dist/quill.snow.css';
+
 
 const geistPrimary = Plus_Jakarta_Sans({
   variable: "--font-primary",

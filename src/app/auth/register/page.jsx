@@ -1,6 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import Cookies from 'js-cookie';
+import api from '@lib/api.js';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AuthLayout from '@ds/auth/AuthLayout';
 import Input from '@ds/auth/Input';
@@ -19,24 +22,66 @@ export default function RegisterPage() {
     password: ''
   });
 
+  const [error, setError] = useState('');
+  const [errors, setErrors]= useState({});
+  const router = useRouter();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
+
+    if (errors[name]){
+      setErrors(prev=> ({ ...prev, [name]: ''}));
+    }
+    if(error){
+      setError('');
+    }
   };
 
-  const handleSubmit = (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Implementasi logic register di sini
-    console.log('Register data:', formData);
-    // Setelah berhasil register, bisa redirect ke login atau langsung login
-    // router.push('/auth/login');
+
+    const newErrors = {};
+
+    if(!formData.password || formData.password.trim() === ''){
+      newErrors.password = 'password harus terisi';
+    } else if(formData.password.length < 8){
+      newErrors.password = 'Password at least 8 characters'
+    }
+
+    if (Object.keys(newErrors).length > 0){
+      setErrors(newErrors);
+      return;
+    }
+
+    try{
+      await api.get('/sanctum/csrf-cookie', { withCredentials: true });
+
+      const res = await api.post('/api/register', formData, {
+        headers: {
+          Accept: 'application/json', 
+          'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN'),
+        },
+        withCredentials: true,
+      });
+      console.log('Register data:', formData);
+    router.push('/');
+    } catch(err){
+      if(err.response?.data?.errors){
+        setErrors(err.response.data.errors);
+      }else{
+      console.error(err.response?.data);
+      setError(err.response?.data?.message || 'register gagal');
+      }
+    }
   };
 
   const handleGoogleRegister = () => {
     // TODO: Implementasi Google OAuth di sini
+    window.location.href = 'http://localhost:8000/auth/google/redirect';
     console.log('Register with Google');
   };
 
@@ -48,6 +93,13 @@ export default function RegisterPage() {
           Register
         </h1>
       </div>
+
+      {/*error message*/}
+      {error && (
+        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-sm text-red-600">{error}</p>
+        </div>
+      )}
 
       {/* Form Register */}
       <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -89,6 +141,11 @@ export default function RegisterPage() {
           value={formData.password}
           onChange={handleChange}
         />
+
+        {/*error password handling*/ }
+        {errors.password && (
+            <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+        )}
 
         {/* Tombol Register */}
         <div>

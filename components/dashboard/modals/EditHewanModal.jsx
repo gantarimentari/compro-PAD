@@ -3,64 +3,83 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import BaseModal from './BaseModal';
 import Button from '@ds/Button';
+import api from '@lib/api';
 
-const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerData = [] }) => {
+const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerOptions = [] }) => {
   const [formData, setFormData] = useState({
     petName: hewan?.petName || '',
-    species: hewan?.species || '',
-    ownerName: hewan?.ownerName || '',
+    speciesId: hewan?.speciesId || '',
+    ownerId: hewan?.ownerId || '',
   });
 
+  // fetch api
+  const [jenisHewanOptions, setJenisHewanOptions] = useState([]);
+  const [isLoadingSpecies, setIsLoadingSpecies] = useState(false);
+
+  // update kalo isinya berubah
   useEffect(() => {
     if (hewan) {
       setFormData({
         petName: hewan.petName || '',
-        species: hewan.species || '',
-        ownerName: hewan.ownerName || '',
+        speciesId: hewan.speciesId || '',
+        ownerId: hewan.ownerId || '',
       });
+
+      //fetch ownner ketika modal kebuka
+      if (hewan.ownerId) {
+        fetchJenisHewanByOwner(hewan.ownerId);
+      }
     }
   }, [hewan]);
 
-  // Ambil daftar pemilik dari ownerData
-  const availableOwners = useMemo(() => {
-    if (ownerData && ownerData.length > 0) {
-      return ownerData.map(owner => ({ id: owner.id, name: owner.name }));
+  // fetch berdasarkan id
+  const fetchJenisHewanByOwner = async (ownerId) => {
+    if (!ownerId) {
+      setJenisHewanOptions([]);
+      return;
     }
-    return [];
-  }, [ownerData]);
 
-  //  jenis hewan berdasarkan pemilik yang dipilih
-  const availableSpecies = useMemo(() => {
-    if (!formData.ownerName) {
-      return [];
-    }
-    
-    // Cari owner berdasarkan nama
-    const selectedOwner = ownerData.find(owner => owner.name === formData.ownerName);
-    
-    if (selectedOwner && selectedOwner.pets && selectedOwner.pets.length > 0) {
-      // cari jenis hewan yagn dimiliki owner
-      const speciesSet = new Set(selectedOwner.pets.map(pet => pet.species));
-      return Array.from(speciesSet);
-    }
-    
-    return [];
-  }, [formData.ownerName, ownerData]);
-
-  
-  useEffect(() => {
-    // Hanya reset jika ownerName berubah dan bukan saat initial load
-    if (formData.ownerName && hewan && formData.ownerName !== hewan.ownerName) {
-      // Cek apakah species yang sekarang masih valid untuk owner baru
-      const selectedOwner = ownerData.find(owner => owner.name === formData.ownerName);
-      const isValidSpecies = selectedOwner?.pets?.some(pet => pet.species === formData.species);
+    try {
+      setIsLoadingSpecies(true);
+      await api.get('/sanctum/csrf-cookie');
+      const res = await api.get(`/api/jenis-hewan?id_pasien=${ownerId}`);
       
-      // Reset species jika tidak valid untuk owner baru
-      if (!isValidSpecies) {
-        setFormData(prev => ({ ...prev, species: '' }));
-      }
+      const formatted = res.data.map(jenis => ({
+        id_jenisHewan: jenis.id_jenisHewan,
+        nama_jenis: jenis.nama_jenis,
+      }));
+      
+      console.log('Jenis Hewan for owner:', formatted);
+      setJenisHewanOptions(formatted);
+    } catch (err) {
+      console.error('Error fetching jenis hewan:', err);
+      setJenisHewanOptions([]);
+    } finally {
+      setIsLoadingSpecies(false);
     }
-  }, [formData.ownerName, hewan, ownerData, formData.species]);
+  };
+
+  // handle owner change
+  const handleOwnerChange = async (e) => {
+    const newOwnerId = e.target.value;
+    
+    setFormData({ 
+      ...formData, 
+      ownerId: newOwnerId,
+      speciesId: '' // reset jenis hewan if owner change
+    });
+
+    // fetch jenis hewan milik owner baru
+    await fetchJenisHewanByOwner(newOwnerId);
+  };
+
+  // ambil daftar pemilik dari ownerOptions
+  const availableOwners = useMemo(() => {
+    if (ownerOptions && ownerOptions.length > 0) {
+      return ownerOptions.map(owner => ({ id: owner.id, name: owner.name }));
+    }
+    return [];
+  }, [ownerOptions]);
 
   if (!isOpen || !hewan) return null;
 
@@ -84,19 +103,21 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerData = [] }) => {
             Nama Pemilik
           </label>
           <select
-            value={formData.ownerName}
-            onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
+            value={formData.ownerId}
+            onChange={handleOwnerChange}
             className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none text-body-2"
             required 
           >
             <option value="">Pilih nama pemilik</option>
             {availableOwners.map((pemilik) => (
-              <option key={pemilik.id} value={pemilik.name}>
+              <option key={pemilik.id} value={pemilik.id}>
                 {pemilik.name}
               </option>
             ))}
           </select>
         </div>
+
+        {/* Nama Hewan */}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Nama Hewan
@@ -111,34 +132,43 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerData = [] }) => {
           />
         </div>
 
+        {/* Jenis Hewan - Dynamic berdasarkan owner */}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Jenis Hewan
           </label>
           <select
-            value={formData.species}
-            onChange={(e) => setFormData({ ...formData, species: e.target.value })}
+            value={formData.speciesId}
+            onChange={(e) => setFormData({ ...formData, speciesId: e.target.value })}
             className="text-body-2 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
             required
-            disabled={!formData.ownerName || availableSpecies.length === 0}
+            disabled={!formData.ownerId || isLoadingSpecies} //Disabled jika belum pilih owner atau sedang loading
           >
             <option value="">
-              {!formData.ownerName 
-                ? 'Pilih nama pemilik terlebih dahulu' 
-                : availableSpecies.length === 0 
-                  ? 'Pemilik ini belum memiliki hewan' 
-                  : 'Pilih jenis hewan'}
+              {!formData.ownerId 
+                ? 'Pilih pemilik terlebih dahulu'
+                : isLoadingSpecies
+                ? 'Memuat jenis hewan...'
+                : jenisHewanOptions.length === 0
+                ? 'Pemilik ini belum memiliki jenis hewan'
+                : 'Pilih jenis hewan'}
             </option>
-            {availableSpecies.map((jenis, index) => (
-              <option key={index} value={jenis}>
-                {jenis}
+            {jenisHewanOptions.map((jenis) => (
+              <option key={jenis.id_jenisHewan} value={jenis.id_jenisHewan}>
+                {jenis.nama_jenis}
               </option>
             ))}
           </select>
+          
+          {/* Helper text */}
+          {formData.ownerId && !isLoadingSpecies && jenisHewanOptions.length === 0 && (
+            <p className="text-sm text-red-500 mt-1">
+              Pemilik ini belum memiliki jenis hewan terdaftar. Silakan tambahkan jenis hewan terlebih dahulu.
+            </p>
+          )}
         </div>
 
-        
-
+        {/* Action Buttons */}
         <div className="flex justify-end space-x-3 pt-4">
           <button
             type="button"
@@ -153,6 +183,7 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerData = [] }) => {
             hoverColor="hover:bg-accent-blue-500"
             focusColor="focus:bg-accent-blue-300"
             roundedClass="rounded-lg"
+            disabled={isLoadingSpecies} // Disable submit saat loading
           >
             Simpan Perubahan
           </Button>

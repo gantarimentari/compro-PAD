@@ -14,9 +14,9 @@ const EditPasienModal = ({ isOpen, onClose, pasien, onSave }) => {
   useEffect(() => {
     if (pasien) {
       setFormData({
-        name: pasien.name,
-        phoneNumber: pasien.phoneNumber,
-        email: pasien.email,
+        name: pasien.name  || '',
+        phoneNumber: pasien.phoneNumber || '',
+        email: pasien.email || '',
       });
     }
   }, [pasien]);
@@ -104,4 +104,3 @@ const EditPasienModal = ({ isOpen, onClose, pasien, onSave }) => {
 };
 
 export default EditPasienModal;
-

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import { AdminUserIcon } from "@ds/icons"; 
+import api from "@lib/api";
 import { useRouter } from "next/navigation";
 
 const MOCK_ADMIN_PROFILE={
@@ -32,11 +33,19 @@ export default function HeaderDashboard(){
         };
     }, [isDropdownOpen]);
 
-    const handleLogout = () => {
-        // TODO: Implementasi logic logout (clear token, dll)
-        console.log('Logging out...');
-        // Redirect ke homepage
-        router.push('/');
+    const handleLogout = async () => {
+        try{
+          await api.post('/api/logout');
+          localStorage.removeItem('admin');
+          sessionStorage.clear();
+          router.push('/');
+        }catch (err){
+          console.error('Logout error:', err);
+          // force logout anyway
+          localStorage.removeItem('admin');
+          sessionStorage.clear();
+          router.push('/');
+        }
     };
 
     return(
@@ -74,3 +83,5 @@ export default function HeaderDashboard(){
         </header>
     )
 }
+
+//research.rakai.co

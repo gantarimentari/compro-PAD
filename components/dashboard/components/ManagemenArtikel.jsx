@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { TrashIcon, PenIcon} from '@ds/icons';
+import api from "@lib/api.js";
+import { SearchIcon, CloseIcon, TrashIcon, AddIcon, PenIcon, UploadIcon} from '@ds/icons';
 import Button from '@ds/Button';
 import Table from '@ds/dashboard/components/Table';
 import SearchBar from '@ds/dashboard/layouts/ManagementSearch';
@@ -12,26 +13,6 @@ import {
   DeleteConfirmModal
 } from '@ds/dashboard/modals';
 
-// Mock Data
-const MOCK_DATA = [
-  { 
-    id: 1, title: "Manfaat Memelihara Kucing", date: '01/01/2025', category: 'Foto',status: 'Draft',imageUrl: "/images/gambarkucingarticle.png",
-    content: "-"
-  },
-  { 
-    id: 2, title: "Manfaat Memelihara Kucing", date: '01/01/2025', category: 'Fun Fact',status: 'Draft', imageUrl: "/images/hamster.png",
-    content: "-"
-  },
-  { 
-    id: 3, title: "Pentingnya Vaksinasi Hewan", date: '01/01/2025', category: 'Vaksinasi',status: 'Draft',imageUrl: "/images/gambarkucingarticle.png",
-    content: "-"
-  },
-  { 
-    id: 4, title: "Makanan Terbaik untuk Parkit", date: '01/01/2025', category: 'Nutrisi', status: 'Publish', imageUrl: "/images/hamster.png",
-    content: "-"
-  },
-];
-
 // Columns definition
 const ARTICLE_COLUMNS = [
   { key: 'title', header: 'Judul' },
@@ -40,48 +21,46 @@ const ARTICLE_COLUMNS = [
   { key: 'date', header: 'Tanggal Ditambahkan' },
   { key: 'actions', header: 'Aksi', isAction: true },
 ];
-    // status tag
+
+// status tag
 const StatusTag = ({ status }) => {
   const color = status === 'Draft' ? 'bg-accent-yellow-150 text-accent-yellow-550' : 'bg-accent-green-50 text-accent-green-450';
   return (
-    <span className={`px-4 py-2 text-body-2 rounded-lg w-24    ${color}`}>
+    <span className={`px-4 py-2 text-body-2 rounded-lg w-24 ${color}`}>
       {status}
     </span>
   );
 };
 
-
-
-
 // Render cell function
 const renderCell = (item, key, onEdit, onDelete) => {
   switch (key) {
-      case 'status':
-          return <StatusTag status={item.status} />;
-      case 'actions':
-          return (
-              <div className="flex justify-center space-x-2">
-                <Button 
-                    icon={<PenIcon className="h-4 w-4" />} 
-                    roundedClass="rounded-lg"
-                    color="bg-accent-yellow-300" 
-                    hoverColor="hover:bg-accent-yellow-500"
-                    focusColor="focus:bg-accent-yellow-400"
-                    onClick={() => onEdit(item)}
-                    label={`Edit ${item.title}`}
-                  />
-                 <Button 
-                    icon={<TrashIcon className="h-4 w-4" />} 
-                    roundedClass="rounded-lg"
-                    color="bg-accent-red-300" 
-                    hoverColor="hover:bg-accent-red-400"
-                    onClick={() => onDelete(item)}
-                    label={`Hapus ${item.title}`}
-                  />
-              </div>
-          );
-      default:
-          return item[key]; 
+    case 'status':
+      return <StatusTag status={item.status} />;
+    case 'actions':
+      return (
+        <div className="flex justify-center space-x-2">
+          <Button 
+            icon={<PenIcon className="h-4 w-4" />} 
+            roundedClass="rounded-lg"
+            color="bg-accent-yellow-300" 
+            hoverColor="hover:bg-accent-yellow-500"
+            focusColor="focus:bg-accent-yellow-400"
+            onClick={() => onEdit(item)}
+            label={`Edit ${item.title}`}
+          />
+          <Button 
+            icon={<TrashIcon className="h-4 w-4" />} 
+            roundedClass="rounded-lg"
+            color="bg-accent-red-300" 
+            hoverColor="hover:bg-accent-red-400"
+            onClick={() => onDelete(item)}
+            label={`Hapus ${item.title}`}
+          />
+        </div>
+      );
+    default:
+      return item[key]; 
   }
 };
 
@@ -92,8 +71,35 @@ export default function ManagemenArtikel() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [articleToDelete, setArticleToDelete] = useState(null);
-  const [articleData, setArticleData] = useState(MOCK_DATA);
+  const [articleData, setArticleData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const fetchCsrfAndArticles = async() => {
+    try {
+      await api.get("/sanctum/csrf-cookie");
+      const res = await api.get("/api/articles");
+
+      console.log('Fetched articles:', res.data);
+
+      const formatted = res.data.map(item => ({
+        id: item.id,
+        title: item.title,
+        category: item.category,
+        status: item.status,
+        date: new Date(item.created_at).toLocaleDateString('id-ID'),
+        imageUrl: item.image ? process.env.NEXT_PUBLIC_STORAGE_URL + item.image : "/images/default.png",
+        content: item.content
+      }));
+
+      setArticleData(formatted);
+    } catch (err) {
+      console.error('Error fetching articles:', err);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchCsrfAndArticles();
+  }, []);
 
   // Filter data based on search query
   const filteredData = articleData.filter(item =>
@@ -101,34 +107,84 @@ export default function ManagemenArtikel() {
     item.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleSaveArtikel = (formData) => {
-    // Add new article to the list
-    const newArticle = {
-      id: articleData.length + 1,
-      title: formData.judul,
-      date: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }),
-      category: formData.kategori,
-      status: formData.status,
-      imageUrl: formData.file ? URL.createObjectURL(formData.file) : '/images/gambarkucingarticle.png',
-      content: formData.isiArtikel
-    };
-    setArticleData([...articleData, newArticle]);
+  const handleSaveArtikel = async (formData) => {
+    try {
+      await api.get("/sanctum/csrf-cookie");
+
+      const data = new FormData();
+      data.append("title", formData.judul);
+      data.append("category", formData.kategori);
+      data.append("content", formData.isiArtikel);
+      data.append("status", formData.status);
+      
+      // hanya append image jika ada dan valid
+      if (formData.file && formData.file instanceof File) {
+        console.log('📎 Appending image file:', {
+          name: formData.file.name,
+          type: formData.file.type,
+          size: formData.file.size
+        });
+        data.append("image", formData.file);
+      } else {
+        console.log('no image file to upload');
+      }
+
+      console.log('posting article to API...', {
+        title: formData.judul,
+        category: formData.kategori,
+        status: formData.status,
+        hasFile: !!formData.file
+      });
+      
+      const response = await api.post("/api/articles", data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      });
+
+      console.log('Article saved successfully:', response.data);
+
+      await fetchCsrfAndArticles();
+      setIsModalOpen(false);
+      alert('Artikel berhasil ditambahkan!');
+    } catch (err) {
+      console.error('Error saving article:', err);
+      console.error('Error details:', {
+        message: err.message,
+        status: err.response?.status,
+        data: err.response?.data,
+        headers: err.response?.headers
+      });
+      alert(`Gagal menyimpan artikel: ${err.response?.data?.message || err.message}`);
+    }
   };
 
-  const handleEditArtikel = (id, formData) => {
-    // Update article in the list
-    setArticleData(articleData.map(item => 
-      item.id === id 
-        ? {
-            ...item,
-            title: formData.judul,
-            category: formData.kategori,
-            status: formData.status,
-            content: formData.isiArtikel,
-            imageUrl: formData.file ? URL.createObjectURL(formData.file) : item.imageUrl
-          }
-        : item
-    ));
+  const handleEditArtikel = async (id, formData) => {
+    try {
+      await api.get('/sanctum/csrf-cookie');
+
+      const data = new FormData();
+      data.append("title", formData.judul);
+      data.append("category", formData.kategori);
+      data.append("content", formData.isiArtikel);
+      data.append("status", formData.status);
+      if (formData.file) data.append("image", formData.file);
+      data.append("_method", "PUT");
+
+      await api.post(`/api/articles/${id}`, data);
+      await fetchCsrfAndArticles();
+      setIsEditModalOpen(false);
+      setSelectedArticle(null);
+      alert('Artikel berhasil diupdate!');
+    } catch (err) {
+      console.error('Error details:', {
+        message: err.message,
+        status: err.response?.status,
+        data: err.response?.data,
+        headers: err.response?.headers
+      });
+      alert(`Gagal mengupdate artikel: ${err.response?.data?.message || err.message}`);
+    }
   };
 
   const handleDelete = (article) => {
@@ -136,11 +192,19 @@ export default function ManagemenArtikel() {
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (articleToDelete) {
-      setArticleData(articleData.filter(item => item.id !== articleToDelete.id));
-      setIsDeleteModalOpen(false);
-      setArticleToDelete(null);
+      try {
+        await api.get('/sanctum/csrf-cookie');
+        await api.delete(`/api/articles/${articleToDelete.id}`);
+        await fetchCsrfAndArticles();
+        setIsDeleteModalOpen(false);
+        setArticleToDelete(null);
+        alert('Artikel berhasil dihapus!');
+      } catch (err) {
+        console.error('Error deleting article:', err);
+        alert('Gagal menghapus artikel');
+      }
     }
   };
 
@@ -161,6 +225,7 @@ export default function ManagemenArtikel() {
 
   return (
     <div className="space-y-6">
+      {/* Hanya satu PageHeader */}
       <PageHeader 
         title="Konten Artikel"
         description="Kelola Artikel dan Konten Edukasi"
@@ -169,6 +234,7 @@ export default function ManagemenArtikel() {
       />
      
       <div className="space-y-4">
+        {/* Hanya satu SearchBar */}
         <SearchBar
           placeholderText="Cari judul atau kategori..." 
           value={searchQuery}
@@ -180,8 +246,9 @@ export default function ManagemenArtikel() {
           data={filteredData}
           renderCell={(item, key) => renderCell(item, key, handleEdit, handleDelete)}
         />
-      </div>    
+      </div>
 
+      {/* Modals */}
       <TambahArtikelModal 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -195,6 +262,7 @@ export default function ManagemenArtikel() {
         article={selectedArticle}
       />
 
+      {/* Hanya satu DeleteConfirmModal */}
       <DeleteConfirmModal 
         isOpen={isDeleteModalOpen}
         onClose={handleCancelDelete}

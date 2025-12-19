@@ -1,3 +1,5 @@
+'use client';
+
 import Header from "@ds/shared/Header";
 import Footer from "@ds/shared/Footer";
 import Profile from '@layout/landingPage/Profile';

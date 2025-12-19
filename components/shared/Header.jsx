@@ -1,47 +1,65 @@
 "use client";
 
-// import React from "react";
 import React, { useState, useEffect } from "react";
 import { NotificationIcon, UserIcon, CloseIcon } from "@ds/icons";
 import Link from "next/link";
+import api from "@lib/api.js";
 
 export default function Header() {
-  // SIMULASI STATE LOGIN
-    // Ubah nilainya menjadi true untuk melihat tampilan "Sudah Login"
-    // Ubah nilainya menjadi false untuk melihat tampilan "Belum Login"
-    const [isLoggedIn, setIsLoggedIn] = useState(true);
-    const [isScrolled, setIsScrolled] = useState(false);
+  //  Start with false (assume guest)
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true); 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-
-    // Fungsi simulasi logout
-    const handleLogout = () => {
-        setIsLoggedIn(false);  
-    };
-    useEffect(() => {
-      const handleScroll = () => {
-        setIsScrolled(window.scrollY > 0);
+  //  Check auth status on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        setIsCheckingAuth(true);
+        const response = await api.get('/api/user');
+        
+        if (response.data) {
+          console.log('User authenticated:', response.data);
+          setIsLoggedIn(true);
+        }
+      } catch (err) {
+        if (err.response?.status === 401) {
+          console.log('User not authenticated (guest)');
+        } else {
+          console.error('Auth check error:', err);
+        }
+        setIsLoggedIn(false);
+      } finally {
+        setIsCheckingAuth(false); // this for stop loading
       }
-      handleScroll(); // Cek posisi scroll saat komponen dimount
-      window.addEventListener('scroll', handleScroll, {passive: true});
-      return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
     };
-    
+
+    checkAuth();
+  }, []);
+
+  // Scroll handler
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   return (
     <header className={`
-       
-      ${
-      
-      isScrolled 
-        ? "  fixed top-4  scale-95 rounded-[14px]" 
-        : " scale-100"
-    }   w-full bg-white shadow-e2 rounded-b-[14px]  shadow-e4 transition-all duration-1000 ease-in-out z-50 origin-top`}>
-      
-      <div className=" mx-auto px-4 sm:px-6 ">
+      ${isScrolled 
+        ? "fixed top-4 scale-95 rounded-[14px]" 
+        : "scale-100"
+      } w-full bg-white shadow-e2 rounded-b-[14px] shadow-e4 transition-all duration-1000 ease-in-out z-50 origin-top`}
+    >
+      <div className="mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-20">
           {/* Logo and Company Name Section */}
           <div className="flex items-center gap-3">
@@ -59,43 +77,47 @@ export default function Header() {
           <div className="hidden lg:flex items-center gap-4">
             {/* Navigation Links */}
             <nav className="hidden md:flex items-center space-x-8">
-              <Link href="/" className="text-body-1 text-accent-neutral-1000  transition-colors">
+              <Link href="/" className="text-body-1 text-accent-neutral-1000 transition-colors">
                 Home
               </Link>
-              <Link href="/galery" className="text-body-1 text-accent-neutral-1000  transition-colors">
+              <Link href="/galery" className="text-body-1 text-accent-neutral-1000 transition-colors">
                 Galeri
               </Link>
-              <Link href="/article" className="text-body-1 text-accent-neutral-1000  transition-colors">
+              <Link href="/article" className="text-body-1 text-accent-neutral-1000 transition-colors">
                 Artikel
               </Link>
             </nav>
+            
             <button className="w-10 h-10 md:w-11 md:h-11 bg-accent-yellow-300 rounded-lg flex items-center justify-center text-accent-neutral-1000 hover:bg-accent-yellow-400 duration-300 hover:shadow-md">
               <NotificationIcon className="w-5 h-5" />
             </button>
 
-            {/* Logic Kondisional untuk Bagian Action */}
-            {isLoggedIn ? (
-              <UserActions handleLogout={handleLogout} />
+            {/* Show loading skeleton saat checking auth */}
+            {isCheckingAuth ? (
+              <AuthLoadingSkeleton />
+            ) : isLoggedIn ? (
+              <UserActions />
             ) : (
               <AuthActions />
             )}           
           </div>
 
-          {/* Burger Button - Mobile, di kanan */}
+          {/* Burger Button - Mobile */}
           <button
             onClick={toggleMenu}
             className="lg:hidden flex flex-col justify-center items-center gap-1.5 p-2 w-10 h-10 focus:outline-none"
-            aria-label="Toggle menu">
+            aria-label="Toggle menu"
+          >
             <span className={`block w-6 h-0.5 bg-gray-700 transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
             <span className={`block w-6 h-0.5 bg-gray-700 transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''}`}></span>
             <span className={`block w-6 h-0.5 bg-gray-700 transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
           </button>
         </div>
 
-        {/* Mobile Menu Dropdown - Horizontal */}
+        {/* Mobile Menu Dropdown */}
         <div className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
           <div className="px-4 py-4 space-y-3">
-            {/* Navigation Links - Horizontal */}
+            {/* Navigation Links */}
             <nav className="flex flex-col items-center justify-center gap-4">
               <Link 
                 href="/" 
@@ -120,7 +142,7 @@ export default function Header() {
               </Link>
             </nav>
 
-            {/* Buttons - Horizontal */}
+            {/* Buttons */}
             <div className="flex flex-col items-center justify-center gap-3 pt-2">
               {/* Notifikasi Button */}
               <button className="w-full bg-accent-yellow-300 text-accent-neutral-1000 rounded-lg px-4 py-3 text-body-2 font-medium flex items-center justify-center gap-2 hover:bg-accent-yellow-400 transition-colors">
@@ -128,8 +150,13 @@ export default function Header() {
                 Notifikasi
               </button>
 
-              {/* Login Button */}
-              {!isLoggedIn && (
+              {/* Show loading atau buttons sesuai auth status */}
+              {isCheckingAuth ? (
+                <div className="w-full space-y-3">
+                  <div className="w-full h-11 bg-accent-neutral-200 rounded-lg animate-pulse"></div>
+                  <div className="w-full h-11 bg-accent-neutral-200 rounded-lg animate-pulse"></div>
+                </div>
+              ) : !isLoggedIn ? (
                 <>
                   <Link 
                     href="/auth/login"
@@ -147,10 +174,7 @@ export default function Header() {
                     Register
                   </Link>
                 </>
-              )}
-
-              {/* User Actions jika sudah login */}
-              {isLoggedIn && (
+              ) : (
                 <Link 
                   href="/profile"
                   className="w-full bg-accent-yellow-300 text-accent-neutral-1000 rounded-lg px-4 py-3 text-body-2 font-medium flex items-center justify-center gap-2 hover:bg-accent-yellow-400 transition-colors"
@@ -167,33 +191,39 @@ export default function Header() {
     </header>
   );
 }
+
+// Loading Skeleton Component untuk Desktop
+const AuthLoadingSkeleton = () => (
+  <div className="flex items-center gap-4">
+    <div className="w-20 h-10 bg-accent-neutral-200 rounded-lg animate-pulse"></div>
+    <div className="w-24 h-10 bg-accent-neutral-200 rounded-lg animate-pulse"></div>
+  </div>
+);
+
 const AuthActions = () => (
   <>
+    <Link 
+      href="/auth/login"
+      className="px-6 h-10 bg-accent-yellow-300 text-accent-neutral-1000 text-body-2 rounded-lg hover:bg-accent-yellow-400 transition-colors font-medium inline-flex items-center"
+    >
+      Login
+    </Link>
     
-
-            <Link 
-              href="/auth/login"
-              className="px-6 h-10 bg-accent-yellow-300 text-accent-neutral-1000 text-body-2 rounded-lg hover:bg-accent-yellow-400 transition-colors font-medium inline-flex items-center"
-            >
-              Login
-            </Link>
-            
-            <Link 
-              href="/auth/register"
-              className="px-6 h-10 border-2 border-accent-yellow-300 text-accent-neutral-1000 text-body-2 rounded-lg hover:bg-accent-neutral-200 transition-colors font-medium inline-flex items-center"
-            >
-              Register
-            </Link>
+    <Link 
+      href="/auth/register"
+      className="px-6 h-10 border-2 border-accent-yellow-300 text-accent-neutral-1000 text-body-2 rounded-lg hover:bg-accent-neutral-200 transition-colors font-medium inline-flex items-center"
+    >
+      Register
+    </Link>
   </>
- );
- const UserActions = ({ handleLogout }) => (
-    <div className="flex items-center space-x-2 md:space-x-4">
-        <Link 
-            href="/profile"
-            aria-label="Go to Dashboard"
-            className="w-10 h-10 md:w-11 md:h-11 bg-accent-yellow-300 rounded-lg flex items-center justify-center text-accent-neutral-1000 hover:bg-accent-yellow-400 duration-300 hover:shadow-md"
-        >
-            <UserIcon className="w-5 h-5" />
-        </Link>
-    </div>
+);
+
+const UserActions = () => (
+  <Link 
+    href="/profile"
+    aria-label="Go to Profile"
+    className="w-10 h-10 md:w-11 md:h-11 bg-accent-yellow-300 rounded-lg flex items-center justify-center text-accent-neutral-1000 hover:bg-accent-yellow-400 duration-300 hover:shadow-md"
+  >
+    <UserIcon className="w-5 h-5" />
+  </Link>
 );

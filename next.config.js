@@ -1,7 +1,14 @@
 // next.config.js (atau next.config.mjs)
 
 const nextConfig = {
-  // Biarkan kosong atau tambahkan konfigurasi standar di sini
+  async rewrites(){
+    return [
+      {
+        source: '/laravel/:path*',
+        destination:'http://localhost:8000/:path*',
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig; 

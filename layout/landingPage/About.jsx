@@ -1,14 +1,44 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import api from '@lib/api';
 import { DashedBorder } from '@ds/frame/garisputus';
 import TagLabel from '../../components/Button/TagLabel';
 
 export default function About() {
   const [aboutUs, setAboutUs] = useState({
-    aboutUs: "Klinik Dokter Hewan Fanina hadir sebagai sahabat terpercaya bagi para pemilik hewan peliharaan. Kami melayani berbagai jenis hewan, mulai dari kucing, anjing, kelinci, burung, hingga hewan kecil lainnya. Dengan dukungan tim dokter hewan berpengalaman dan fasilitas yang lengkap, kami berkomitmen memberikan layanan terbaik untuk menjaga kesehatan serta kenyamanan hewan kesayangan Pawrents. Layanan kami mencakup vaksinasi, pemeriksaan kesehatan rutin, dll. Bagi kami, setiap hewan bukan sekadar peliharaan, tetapi bagian dari keluarga yang layak mendapat perhatian penuh.",
+    aboutUs: "Loading...",
     image: "/images/dummy-aboutus.png"
   })
+  const [isLoading, setIsLoading]= useState(true);
   const [isCardHovered, setIsCardHovered] = useState(false);
+
+  useEffect(()=>{
+    const fetchAboutUs = async ()=>{
+      try{
+        setIsLoading(true);
+
+        const res = await api.get('/api/system-info');
+
+        console.log('system info(about us):', res.data);
+
+        setAboutUs({
+          aboutUs: res.data.systemInfo.about_us,
+          image: "/images/dummy-aboutus.png",
+        });
+
+      }catch(err){
+        console.log('error fetching about:us', err);
+        setAboutUs({
+          aboutUs:"error",
+          image:"/images/dummy-aboutus.png"
+        });
+      } finally{
+        setIsLoading(false);
+      }
+    };
+    fetchAboutUs();
+  }, []);
+
   return (
 
     <div
@@ -68,29 +98,51 @@ export default function About() {
               />
             </div>
 
-            {/* Teks panjang - hanya tampil di lg+ */}
-            <p className="hidden lg:block text-body-1 font-base text-white leading-relaxed text-justify">
-              {aboutUs.aboutUs}
-            </p>
+            {/*Teks panjang - hanya tampil di lg+ dengan loading state */}
+            {isLoading ? (
+              <div className="hidden lg:block space-y-2">
+                <div className="h-4 bg-white/20 rounded w-full animate-pulse"></div>
+                <div className="h-4 bg-white/20 rounded w-5/6 animate-pulse"></div>
+                <div className="h-4 bg-white/20 rounded w-4/5 animate-pulse"></div>
+                <div className="h-4 bg-white/20 rounded w-full animate-pulse"></div>
+              </div>
+            ) : (
+              <p className="hidden lg:block text-body-1 font-base text-white leading-relaxed text-justify">
+                {aboutUs.aboutUs}
+              </p>
+            )}
           </div>
 
           {/* Gambar - order-2 di mobile (tengah), order-1 di lg (kiri) */}
           <div className="w-full lg:w-[40%] flex justify-center order-2 lg:order-1">
             <div className="bg-white lg:border-4 rounded-2xl shadow-lg overflow-hidden lg:max-w-md w-full">
-              <img
-                src={aboutUs.image}
-                alt="Tentang Klinik Fanina"
-                className="w-full md:max-h-[350px] lg:max-h-[450px] object-cover"
-              
-              />
+              {isLoading ? (
+                <div className="w-full md:h-[350px] lg:h-[450px] bg-white/20 animate-pulse"></div>
+              ) : (
+                <img
+                  src={aboutUs.image}
+                  alt="Tentang Klinik Fanina"
+                  className="w-full md:max-h-[350px] lg:max-h-[450px] object-cover"
+                />
+              )}
             </div>
           </div>
 
-          {/* Teks panjang untuk mobile - order-3 (paling bawah), hidden di lg+ */}
+          {/* Teks panjang untuk mobile - order-3 (paling bawah), hidden di lg+ dengan loading state */}
           <div className="w-full order-3 lg:hidden">
-            <p className="text-body-2 md:text-body-1 text-white leading-relaxed text-justify">
-              {aboutUs.aboutUs}
-            </p>
+            {isLoading ? (
+              <div className="space-y-2">
+                <div className="h-4 bg-white/20 rounded w-full animate-pulse"></div>
+                <div className="h-4 bg-white/20 rounded w-11/12 animate-pulse"></div>
+                <div className="h-4 bg-white/20 rounded w-10/12 animate-pulse"></div>
+                <div className="h-4 bg-white/20 rounded w-full animate-pulse"></div>
+                <div className="h-4 bg-white/20 rounded w-9/12 animate-pulse"></div>
+              </div>
+            ) : (
+              <p className="text-body-2 md:text-body-1 text-white leading-relaxed text-justify">
+                {aboutUs.aboutUs}
+              </p>
+            )}
           </div>
         </div>
       </div>

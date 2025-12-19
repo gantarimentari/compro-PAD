@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import BaseModal from './BaseModal';
 import { UploadIcon } from '@ds/icons';
+import QuillEditor from '@ds/shared/QuillEditor';
 
 const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState({
@@ -15,7 +16,28 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    if (!formData.judul || !formData.kategori || !formData.isiArtikel) {
+      alert('Semua field wajib diisi!');
+      return;
+    }
+    
+    if (formData.file && !(formData.file instanceof File)) {
+      alert('File yang dipilih tidak valid!');
+      return;
+    }
+
+    console.log('Submitting article:', {
+      judul: formData.judul,
+      kategori: formData.kategori,
+      status: formData.status,
+      hasFile: !!formData.file,
+      fileName: formData.file?.name
+    });
+
     onSave(formData);
+    
+    // Reset form
     setFormData({
       judul: '',
       kategori: '',
@@ -28,8 +50,30 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+    
     if (file) {
-      setFormData({ ...formData, file });
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      
+      if (!validTypes.includes(file.type)) {
+        alert('Format file harus JPG, PNG, GIF, atau WebP');
+        e.target.value = '';
+        return;
+      }
+
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      if (file.size > maxSize) {
+        alert('Ukuran file maksimal 10MB');
+        e.target.value = '';
+        return;
+      }
+
+      console.log('File selected:', {
+        name: file.name,
+        type: file.type,
+        size: `${(file.size / 1024).toFixed(2)} KB`
+      });
+
+      setFormData(prev => ({ ...prev, file }));
     }
   };
 
@@ -49,7 +93,7 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
           <input
             type="text"
             value={formData.judul}
-            onChange={(e) => setFormData({ ...formData, judul: e.target.value })}
+            onChange={(e) => setFormData(prev => ({ ...prev, judul: e.target.value }))}
             placeholder="Masukkan judul artikel"
             className="text-body-2  w-full px-4 py-2 border bg-accent-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 placeholder:text-accent-neutral-800"
             required
@@ -62,7 +106,7 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
           </label>
           <select
             value={formData.kategori}
-            onChange={(e) => setFormData({ ...formData, kategori: e.target.value })}
+            onChange={(e) => setFormData(prev => ({ ...prev, kategori: e.target.value }))}
             className="w-full px-4 py-2 text-body-2 text-accent-neutral-800 border bg-accent-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none "
             required
           >
@@ -78,13 +122,13 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Isi Artikel
           </label>
-          <textarea
+          <QuillEditor
             value={formData.isiArtikel}
-            onChange={(e) => setFormData({ ...formData, isiArtikel: e.target.value })}
+            onChange={(html) =>
+              setFormData(prev => ({ ...prev, isiArtikel: html }))
+            }
             placeholder="Tulis konten artikel disini..."
-            rows={6}
-            className="text-body-2 w-full px-4 py-2 border bg-accent-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 resize-none placeholder:text-accent-neutral-800"
-            required
+            className="w-full rounded-lg border bg-accent-neutral-200 focus-within:ring-2 focus-within:ring-blue-500"
           />
         </div>
 
@@ -108,6 +152,11 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
               </div>
             </div>
           </div>
+          {formData.file && (
+            <p className="mt-2 text-sm text-gray-600">
+              File terpilih: {formData.file.name}
+            </p>
+          )}
         </div>
 
         <div>
@@ -116,7 +165,7 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
           </label>
           <select
             value={formData.status}
-            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+            onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value }))}
             className="text-body-2 w-full px-4 font-bold py-2 border bg-accent-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none "
           >
             <option value="Draft" className='bg-accent-neutral-200'>Draft</option>

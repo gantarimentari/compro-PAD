@@ -3,36 +3,80 @@
 import React, { useState, useEffect } from 'react';
 import BaseModal from './BaseModal';
 import Button from '@ds/Button';
-// Data dummy dropdown pemilik 
-const DUMMY_JENIS = [
-  { id: 1, name: 'andi'  },
-  { id: 2, name: 'budi' },
-  { id: 3, name: 'cinta' },
-  { id: 4, name: 'dina' },
-  { id: 5, name: 'eko' },
-];
+import api from '@lib/api';
 
 const EditJenisHewanModal = ({ isOpen, onClose, jenisHewan, onSave }) => {
   const [formData, setFormData] = useState({
     species: jenisHewan?.species || '',
-    ownerName: jenisHewan?.name || '',
+    patient_id: jenisHewan?.patient_id || '',
   });
+  const [pemilikList, setPemilikList] = useState([]);
+  const [loading, setLoading] = useState(false);
   
+  // Fetch daftar pemilik dari backend
+  useEffect(() => {
+    if (isOpen) {
+      fetchPemilik();
+    }
+  }, [isOpen]);
+  
+  const fetchPemilik = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get('/api/patients');
+      console.log('📦 Pemilik list:', response.data);
+      
+      // Cek struktur data yang diterima
+      if (Array.isArray(response.data)) {
+        setPemilikList(response.data);
+      } else if (response.data.data && Array.isArray(response.data.data)) {
+        // Jika backend wrap data dalam object { data: [...] }
+        setPemilikList(response.data.data);
+      } else {
+        console.error('Unexpected data structure:', response.data);
+        setPemilikList([]);
+      }
+    } catch (err) {
+      console.error('Error fetching pemilik:', err);
+      setPemilikList([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Update formData saat jenisHewan berubah
   useEffect(() => {
     if (jenisHewan) {
+      console.log('Editing jenis hewan:', jenisHewan);
       setFormData({
-        species: jenisHewan.species,
-        ownerName: jenisHewan.name,
+        species: jenisHewan.species || '',
+        patient_id: jenisHewan.patient_id || '',
       });
     }
   }, [jenisHewan]);
   
-  if(!isOpen || !jenisHewan) return null;
+  if (!isOpen || !jenisHewan) return null;
   
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave(jenisHewan.id, formData);
-    onClose();
+    
+    console.log('Submitting edit:', {
+      id: jenisHewan.id,
+      formData
+    });
+    
+    try {
+      await onSave(jenisHewan.id, {
+        species: formData.species,
+        patient_id: parseInt(formData.patient_id) 
+      });
+      
+      console.log('Edit jenis hewan berhasil');
+      onClose();
+    } catch (err) {
+      console.error('Error saving jenis hewan:', err);
+      alert('Gagal menyimpan perubahan: ' + (err.response?.data?.message || err.message));
+    }
   };
   
   return (
@@ -48,20 +92,29 @@ const EditJenisHewanModal = ({ isOpen, onClose, jenisHewan, onSave }) => {
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Nama Pemilik
           </label>
+          {/* Value sekarang menggunakan patient_id */}
           <select
-            value={formData.ownerName}
-            onChange={(e) => setFormData({...formData, ownerName: e.target.value})}
+            value={formData.patient_id}
+            onChange={(e) => {
+              console.log('selected patient_id:', e.target.value);
+              setFormData({...formData, patient_id: e.target.value});
+            }}
             className="text-body-2 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
             required 
+            disabled={loading}
           >
-            <option value="">Pilih nama pemilik</option>
-            {DUMMY_JENIS.map((pemilik) => (
-              <option key={pemilik.id} value={pemilik.name}>
-                {pemilik.name}
+            <option value="">
+              {loading ? 'Memuat data...' : 'Pilih nama pemilik'}
+            </option>
+            {/* Option value sekarang menggunakan patient.id */}
+            {pemilikList.map((pemilik) => (
+              <option key={pemilik.id} value={pemilik.id}>
+                {pemilik.username}
               </option>
             ))}
           </select>
         </div>
+        
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Jenis Hewan
@@ -75,6 +128,7 @@ const EditJenisHewanModal = ({ isOpen, onClose, jenisHewan, onSave }) => {
             required
           />
         </div>
+        
         <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
           <button
             type="button"
@@ -84,7 +138,7 @@ const EditJenisHewanModal = ({ isOpen, onClose, jenisHewan, onSave }) => {
             Batal
           </button>
           <Button
-          type="submit"
+            type="submit"
             color="bg-accent-blue-400" 
             hoverColor="hover:bg-accent-blue-500"
             focusColor="focus:bg-accent-blue-300"
@@ -95,7 +149,7 @@ const EditJenisHewanModal = ({ isOpen, onClose, jenisHewan, onSave }) => {
         </div>
       </form>
     </BaseModal>
-  )
-
+  );
 };
+
 export default EditJenisHewanModal;
