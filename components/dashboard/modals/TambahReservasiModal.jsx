@@ -25,17 +25,12 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
 
   useEffect(() => {
     if (formData.ownerId) {
-      console.log('Filtering pets for owner:', formData.ownerId);
-      console.log('All Pets:', allPets);
+            
+      const filtered = allPets.filter(pet => 
+        String(pet.id_pasien) === String(formData.ownerId)
+      );
       
-      const filtered = allPets.filter(pet => {
-        console.log(`   - Pet ${pet.nama_hewan}: id_pasien=${pet.id_pasien}, match=${pet.id_pasien === parseInt(formData.ownerId)}`);
-        return pet.id_pasien === parseInt(formData.ownerId);
-      });
-      
-      console.log('Filtered Pets:', filtered);
       setPetOptions(filtered);
-      
       // Reset petId jika pemilik berubah
       setFormData(prev => ({ ...prev, petId: '' }));
     } else {
@@ -72,22 +67,12 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
   const fetchAllPets = async () => {
     try {
       const data = await hewanService.getAll();
-      const flatPets = [];
-      data.forEach(owner => {
-        if (owner.pets && owner.pets.length > 0) {
-          owner.pets.forEach(pet => {
-            flatPets.push({
-              id_hewan: pet.id,
-              nama_hewan: pet.petName,
-              id_pasien: owner.id,
-              id_jenisHewan: pet.speciesId,
-              jenis_hewan: {
-                nama_jenis: pet.speciesName
-              }
-            });
-          });
-        }
-      });
+      const flatPets = data.map(hewan => ({
+        id_hewan: hewan.id_hewan,
+        nama_hewan: hewan.nama_hewan,
+        id_pasien: hewan.id_pasien,
+        jenis_hewan: hewan.jenis_hewan,
+      }));
       setAllPets(flatPets);
     } catch (err) {
       console.error('Error fetching pets:', err);

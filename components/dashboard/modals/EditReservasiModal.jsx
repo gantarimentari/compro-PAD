@@ -34,34 +34,20 @@ const EditReservasiModal = ({ isOpen, onClose, onSave, reservasi }) => {
     }
   }, [reservasi, isOpen]);
 
-  // fetch pets by owner ID - Filter dari semua hewan
+  // fetch pets by owner ID - filter dari flat array
   const fetchOwnerPets = async (ownerId) => {
     try {
       setIsLoadingPets(true);
       const data = await hewanService.getAll();
-      const ownerData = data.find(owner => owner.id === parseInt(ownerId));
-      
-      if (ownerData && ownerData.pets) {
-        console.log('Found owner pets:', ownerData.pets);
-        
-        const formattedPets = ownerData.pets.map(pet => ({
-          id_hewan: pet.id,
-          nama_hewan: pet.petName,
-          jenis_hewan: {
-            nama_jenis: pet.speciesName
-          }
-        }));
-        
-        setPetOptions(formattedPets);
-        console.log('Formatted pets:', formattedPets);
-      } else {
-        console.log('No pets found for owner:', ownerId);
-        setPetOptions([]);
-      }
-      
+      const filtered = data.filter(hewan => String(hewan.id_pasien) === String(ownerId));
+      const formattedPets = filtered.map(hewan => ({
+        id_hewan: hewan.id_hewan,
+        nama_hewan: hewan.nama_hewan,
+        jenis_hewan: hewan.jenis_hewan,
+      }));
+      setPetOptions(formattedPets);
     } catch (err) {
       console.error('Error fetching pets:', err);
-      console.error('Error details:', err.response?.data);
       setPetOptions([]);
       alert('Gagal memuat data hewan');
     } finally {

@@ -108,6 +108,8 @@ const { data: jenisHewanOptions = [] } = useQuery({
         name: formData.name,
         phoneNumber: formData.phoneNumber,
         email: formData.email,
+          password: formData.password,
+        pets: []
       };
 
       if (formData.password){

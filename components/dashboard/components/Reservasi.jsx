@@ -1,5 +1,6 @@
 'use client';
-import React, { useState, useRef, useEffect } from 'react';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import reservasiService from '@/lib/services/reservasiService';
 import { TrashIcon, PenIcon, ChevronDownIcon } from '@ds/icons';
@@ -9,7 +10,7 @@ import SearchBar from '@ds/dashboard/layouts/ManagementSearch';
 import PageHeader from '@ds/dashboard/layouts/PageHeader';
 import { TambahReservasiModal, DeleteConfirmModal, EditReservasiModal } from '@ds/dashboard/modals';
 
-// Status Dropdown Component with Portal
+// --- KOMPONEN DROPDOWN STATUS ---
 const StatusDropdown = ({ currentStatus, onStatusChange, itemId }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
@@ -29,73 +30,19 @@ const StatusDropdown = ({ currentStatus, onStatusChange, itemId }) => {
     const updatePosition = () => {
       if (buttonRef.current && isOpen) {
         const rect = buttonRef.current.getBoundingClientRect();
-        setDropdownPosition({
-          top: rect.bottom + 4,
-          left: rect.left
-        });
+        setDropdownPosition({ top: rect.bottom + 4, left: rect.left });
       }
     };
-
-    const handleClickOutside = (event) => {
-      if (
-        buttonRef.current && 
-        !buttonRef.current.contains(event.target) &&
-        dropdownRef.current && 
-        !dropdownRef.current.contains(event.target)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
     if (isOpen) {
       updatePosition();
-      document.addEventListener('mousedown', handleClickOutside);
       window.addEventListener('scroll', updatePosition, true);
       window.addEventListener('resize', updatePosition);
     }
-
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
       window.removeEventListener('scroll', updatePosition, true);
       window.removeEventListener('resize', updatePosition);
     };
   }, [isOpen]);
-
-  const handleStatusSelect = (status) => {
-    onStatusChange(itemId, status);
-    setIsOpen(false);
-  };
-  
-  const dropdownContent = isOpen && (
-    <div 
-      ref={dropdownRef}
-      className="fixed z-[9999] w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-1"
-      style={{
-        top: `${dropdownPosition.top}px`,
-        left: `${dropdownPosition.left}px`
-      }}
-    >
-      {statusOptions.map((option) => {
-        const isSelected = option.value === currentStatus;
-        return (
-          <button
-            key={option.value}
-            type="button"
-            onClick={() => handleStatusSelect(option.value)}
-            className={`
-              w-full text-left px-3 py-2 text-sm transition-colors text-gray-800
-              ${isSelected 
-                ? 'bg-gray-100 font-medium' 
-                : 'hover:bg-gray-50'
-              }
-            `}
-          >
-            {option.label}
-          </button>
-        );
-      })}
-    </div>
-  );
 
   return (
     <>
@@ -103,17 +50,30 @@ const StatusDropdown = ({ currentStatus, onStatusChange, itemId }) => {
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-150 hover:shadow-md whitespace-nowrap bg-gray-100 text-gray-800"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium bg-gray-100 text-gray-800 hover:shadow-md"
         >
           <span>{currentStatusOption.label}</span>
-          <ChevronDownIcon 
-            className={`w-4 h-4 transition-transform duration-150 ${isOpen ? 'rotate-180' : ''}`}
-            color="currentColor"
-          />
+          <ChevronDownIcon className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} color="currentColor" />
         </button>
       </div>
-      {/* Portal to document.body to escape table overflow */}
-      {typeof document !== 'undefined' && dropdownContent && createPortal(dropdownContent, document.body)}
+      {isOpen && typeof document !== 'undefined' && createPortal(
+        <div 
+          ref={dropdownRef}
+          className="fixed z-[9999] w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-1"
+          style={{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px` }}
+        >
+          {statusOptions.map((option) => (
+            <button
+              key={option.value}
+              onClick={() => { onStatusChange(itemId, option.value); setIsOpen(false); }}
+              className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 ${option.value === currentStatus ? 'bg-gray-100 font-medium' : ''}`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>,
+        document.body
+      )}
     </>
   );
 };
@@ -129,110 +89,73 @@ const RESERVASI_COLUMNS = [
 ];
 
 export default function Reservasi() {
-  const [reservasiData, setReservasiData] = useState([]);
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [reservasiToDelete, setReservasiToDelete] = useState(null);
-  const [selectedReservasi, setSelectedReservasi] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedReservasi, setSelectedReservasi] = useState(null);
+  const [reservasiToDelete, setReservasiToDelete] = useState(null);
 
-  //  Fetch reservasi dari database
-  const fetchReservasi = async () => {
-    try {
-      setIsLoading(true);
-      const data = await reservasiService.getAll();
-      setReservasiData(data);
-    } catch (err) {
-      console.error('Error fetching reservations:', err);
-      alert('Gagal memuat data reservasi');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // --- 1. FETCH DATA (THE REACT QUERY WAY) ---
+  const { data: reservasiData = [], isLoading } = useQuery({
+    queryKey: ['reservasi'],
+    queryFn: () => reservasiService.getAll(),
+    staleTime: 5 * 60 * 1000,
+  });
 
-  useEffect(() => {
-    fetchReservasi();
-  }, []);
+  // --- 2. MUTATIONS (FOR CATCHING UPDATES) ---
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ id, status }) => reservasiService.updateStatus(id, status),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['reservasi'] }),
+  });
 
-  //  Filter data
-  const filteredData = reservasiData.filter(item =>
-    (item.petName?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
-    (item.ownerName?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
-    (item.species?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
-    (item.date?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
-    (item.keluhan?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
-    (item.status?.toLowerCase() || '').includes(searchQuery.toLowerCase())
-  );
+  const deleteMutation = useMutation({
+    mutationFn: (id) => reservasiService.remove(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['reservasi'] }),
+  });
 
-  //  Tambah Reservasi
+  // --- 3. FILTER LOGIC ---
+  const filteredData = useMemo(() => {
+    return reservasiData.filter(item =>
+      Object.values(item).some(val => 
+        String(val).toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    );
+  }, [reservasiData, searchQuery]);
+
+  // --- 4. HANDLERS ---
   const handleSaveReservasi = async (formData) => {
     try {
-      await reservasiService.create(payload);
-      await fetchReservasi();
+      await reservasiService.create({
+        id_pasien: formData.ownerId,
+        id_hewan: formData.petId,
+        tanggal_reservasi: formData.date,
+        keluhan: formData.keluhan,
+      });
+      queryClient.invalidateQueries({ queryKey: ['reservasi'] });
       setIsModalOpen(false);
-      alert('Reservasi berhasil ditambahkan!');
-    } catch (err) {
-      console.error('Error saving reservation:', err);
-      alert(`Gagal menyimpan: ${err.response?.data?.message || err.message}`);
-    }
-  };
-
-  //  Update Status
-  const handleStatusChange = async (reservasiId, newStatus) => {
-    try {
-      await reservasiService.updateStatus(reservasiId, newStatus);
-
-      // Update local state
-      setReservasiData(reservasiData.map(item =>
-        item.id === reservasiId ? { ...item, status: newStatus } : item
-      ));
-
-      console.log(`Status updated: ${reservasiId} → ${newStatus}`);
-    } catch (err) {
-      console.error('Error updating status:', err);
-      alert('Gagal mengupdate status');
-    }
-  };
-
-  //  Edit Reservasi
-  const handleEdit = (item) => {
-    setSelectedReservasi(item);
-    setIsEditModalOpen(true);
+      alert('Berhasil!');
+    } catch (err) { alert('Gagal!'); }
   };
 
   const handleEditReservasi = async (id, formData) => {
     try {
-      await reservasiService.update(id, payload);
-      await fetchReservasi();
+      await reservasiService.update(id, {
+        id_hewan: formData.petId,
+        tanggal_reservasi: formData.date,
+        keluhan: formData.keluhan,
+      });
+      queryClient.invalidateQueries({ queryKey: ['reservasi'] });
       setIsEditModalOpen(false);
-      setSelectedReservasi(null);
-      alert('Reservasi berhasil diupdate!');
-    } catch (err) {
-      console.error('Error updating reservation:', err);
-      alert(`Gagal mengupdate: ${err.response?.data?.message || err.message}`);
-    }
-  };
-
-  //  Delete Reservasi
-  const handleDelete = (item) => {
-    setReservasiToDelete(item);
-    setIsDeleteModalOpen(true);
+      alert('Berhasil update!');
+    } catch (err) { alert('Gagal update!'); }
   };
 
   const confirmDelete = async () => {
-    if (reservasiToDelete) {
-      try {
-        await reservasiService.remove(reservasiToDelete.id);        await fetchReservasi();
-        setIsDeleteModalOpen(false);
-        setReservasiToDelete(null);
-        alert('Reservasi berhasil dihapus!');
-      } catch (err) {
-        console.error('Error deleting reservation:', err);
-        alert('Gagal menghapus reservasi');
-      }
-    }
+    deleteMutation.mutate(reservasiToDelete.id, {
+      onSuccess: () => { setIsDeleteModalOpen(false); setReservasiToDelete(null); }
+    });
   };
 
   const renderCell = (item, key) => {
@@ -241,30 +164,20 @@ export default function Reservasi() {
         return (
           <StatusDropdown
             currentStatus={item.status || 'pending'}
-            onStatusChange={handleStatusChange}
+            onStatusChange={(id, status) => updateStatusMutation.mutate({ id, status })}
             itemId={item.id}
           />
         );
       case 'actions':
         return (
           <div className="flex justify-center space-x-2">
-            <Button
-              icon={<PenIcon className="h-4 w-4" />}
-              roundedClass="rounded-lg"
-              color="bg-accent-yellow-300"
+            <Button icon={<PenIcon className="h-4 w-4" />} roundedClass="rounded-lg"
+              color="bg-accent-yellow-300" 
               hoverColor="hover:bg-accent-yellow-500"
-              focusColor="focus:bg-accent-yellow-400"
-              onClick={() => handleEdit(item)}
-              label={`Edit ${item.petName}`}
-            />
-            <Button
-              icon={<TrashIcon className="h-4 w-4" />}
-              roundedClass="rounded-lg"
-              color="bg-accent-red-300"
-              hoverColor="hover:bg-accent-red-400"
-              onClick={() => handleDelete(item)}
-              label={`Hapus ${item.petName}`}
-            />
+              focusColor="focus:bg-accent-yellow-400" onClick={() => { setSelectedReservasi(item); setIsEditModalOpen(true); }} />
+            <Button icon={<TrashIcon className="h-4 w-4" />} roundedClass="rounded-lg"
+              color="bg-accent-red-300" 
+              hoverColor="hover:bg-accent-red-400" onClick={() => { setReservasiToDelete(item); setIsDeleteModalOpen(true); }} />
           </div>
         );
       default:
@@ -274,62 +187,23 @@ export default function Reservasi() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Reservasi"
-        description="Kelola data reservasi"
-        addButtonText="Tambah Reservasi"
-        onAddClick={() => setIsModalOpen(true)}
-      />
-
-      {/* Add pb-32 from 6297f7a for better spacing */}
+      <PageHeader title="Reservasi" description="Kelola data reservasi" addButtonText="Tambah Reservasi" onAddClick={() => setIsModalOpen(true)} />
+      
       <div className="space-y-4 pb-32">
-        <SearchBar
-          placeholderText="Cari nama hewan, jenis, atau pemilik..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-
+        <SearchBar placeholderText="Cari data reservasi..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+        
         {isLoading ? (
           <div className="bg-white rounded-lg shadow-xl p-6 space-y-3">
-            {[1,2,3,4,5].map(i => (
-              <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />
-            ))}
+            {[1,2,3,4,5].map(i => <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />)}
           </div>
         ) : (
-          <Table
-            columns={RESERVASI_COLUMNS}
-            data={filteredData}
-            renderCell={renderCell}
-          />
+          <Table columns={RESERVASI_COLUMNS} data={filteredData} renderCell={renderCell} />
         )}
       </div>
 
-      <TambahReservasiModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleSaveReservasi}
-      />
-
-      <EditReservasiModal
-        isOpen={isEditModalOpen}
-        onClose={() => {
-          setIsEditModalOpen(false);
-          setSelectedReservasi(null);
-        }}
-        reservasi={selectedReservasi}
-        onSave={handleEditReservasi}
-      />
-
-      <DeleteConfirmModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => {
-          setIsDeleteModalOpen(false);
-          setReservasiToDelete(null);
-        }}
-        onConfirm={confirmDelete}
-        itemName={reservasiToDelete?.petName}
-        itemType="reservasi"
-      />
+      <TambahReservasiModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={handleSaveReservasi} />
+      <EditReservasiModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} reservasi={selectedReservasi} onSave={handleEditReservasi} />
+      <DeleteConfirmModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} onConfirm={confirmDelete} itemName={reservasiToDelete?.petName} itemType="reservasi" />
     </div>
   );
 }
