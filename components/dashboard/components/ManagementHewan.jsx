@@ -138,8 +138,14 @@ export default function ManagementHewan() {
     if (key === 'actions') {
       return (
         <div className="flex justify-center space-x-2">
-          <Button icon={<PenIcon className="h-4 w-4" />} color="bg-accent-yellow-300" onClick={() => handleEdit(item)} />
-          <Button icon={<TrashIcon className="h-4 w-4" />} color="bg-accent-red-300" onClick={() => handleDelete(item.id)} />
+          <Button icon={<PenIcon className="h-4 w-4" />} roundedClass="rounded-lg"
+              color="bg-accent-yellow-300" 
+              hoverColor="hover:bg-accent-yellow-500"
+              focusColor="focus:bg-accent-yellow-400" onClick={() => handleEdit(item)} />
+          <Button icon={<TrashIcon className="h-4 w-4" />} roundedClass="rounded-lg"
+             
+              color="bg-accent-red-300" 
+              hoverColor="hover:bg-accent-red-400" onClick={() => handleDelete(item.id)} />
         </div>
       );
     }

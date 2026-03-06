@@ -1,36 +1,35 @@
 "use client";
 import React from "react";
-import { GaleryIcon, FileIcon, PromoIcon, PeopleIcon,DogIcon, PawIcon, CalendarIcon, SettingsIcon, DBHomeIcon,
+import { GaleryIcon, FileIcon, PromoIcon, PeopleIcon, DogIcon, PawIcon, CalendarIcon, SettingsIcon, DBHomeIcon,
   JarumSuntikIcon
- } from "@ds/icons"; 
+} from "@ds/icons"; 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-export default function Sidebar({ activeMenu, setActiveMenu }){
+export default function Sidebar() {
+  const pathname = usePathname();
+
   const menu = [
-    {id: 'home', icon: DBHomeIcon, label: 'Home'},
-    {id: 'users', icon: PeopleIcon, label: 'Manajemen Pasien'},
-    {id: 'hewan', icon: DogIcon, label: 'Manajemen Hewan'},
-    {id: 'jenisHewan', icon: PawIcon, label: 'Jenis Hewan'},
-    {id: 'reservasi', icon: CalendarIcon, label: 'Reservasi'},
-    {id: 'reminderVaksinasi', icon: JarumSuntikIcon, label: 'Reminder Vaksinasi'},
-    {id: 'artikel', icon: FileIcon, label: 'Manajemen Artikel'},
-    {id: 'media', icon: GaleryIcon, label: 'Manajemen Media'},
-    {id: 'admin', icon: PeopleIcon, label: 'Manajemen Admin'},
-    {id: 'promo', icon: PromoIcon, label: 'Managemen Promo'},
-    {id: 'system', icon: SettingsIcon, label: 'System Info'},
-    
-    
-    
-    
+    { href: '/dashboard',                  icon: DBHomeIcon,     label: 'Home' },
+    { href: '/dashboard/users',            icon: PeopleIcon,     label: 'Manajemen Pasien' },
+    { href: '/dashboard/hewan',            icon: DogIcon,        label: 'Manajemen Hewan' },
+    { href: '/dashboard/jenis-hewan',      icon: PawIcon,        label: 'Jenis Hewan' },
+    { href: '/dashboard/reservasi',        icon: CalendarIcon,   label: 'Reservasi' },
+    { href: '/dashboard/reminder-vaksinasi', icon: JarumSuntikIcon, label: 'Reminder Vaksinasi' },
+    { href: '/dashboard/artikel',          icon: FileIcon,       label: 'Manajemen Artikel' },
+    { href: '/dashboard/media',            icon: GaleryIcon,     label: 'Manajemen Media' },
+    { href: '/dashboard/admin',            icon: PeopleIcon,     label: 'Manajemen Admin' },
+    { href: '/dashboard/promo',            icon: PromoIcon,      label: 'Managemen Promo' },
+    { href: '/dashboard/system',           icon: SettingsIcon,   label: 'System Info' },
   ];
 
-  const handleMenuClick = (e, menuId) => {
-    e.preventDefault();
-    setActiveMenu(menuId);
+  const isActive = (href) => {
+    if (href === '/dashboard') return pathname === '/dashboard';
+    return pathname.startsWith(href);
   };
 
   return(
-    <aside className="sticky top-0 h-screen w-76 bg-white shadow-md p-6 flex-shrink-0 overflow-y-auto">
+    <aside className="sticky top-0 z-10 h-screen w-76 bg-white shadow-md p-6 flex-shrink-0 overflow-y-auto">
       <div className="mb-8">
         <div className="flex items-center gap-3">
           <div className="h-14 w-14 ">
@@ -49,16 +48,15 @@ export default function Sidebar({ activeMenu, setActiveMenu }){
       <nav className="flex flex-col space-y-2">
         {menu.map((item) => {
           const IconComponent = item.icon;
-          const isActive = activeMenu === item.id;
+          const active = isActive(item.href);
           
           return (
-            <button
-              key={item.id}
-              // href={item.href}
-              onClick={(e) => handleMenuClick(e, item.id)}
+            <Link
+              key={item.href}
+              href={item.href}
               className={`
                 flex items-center gap-3 px-4 py-3 rounded-[20px] transition-colors 
-                ${isActive 
+                ${active 
                   ? 'bg-accent-blue-300 text-white' 
                   : 'text-accent-neutral-1000 hover:bg-accent-neutral-225 bg-white'
                 }
@@ -66,10 +64,10 @@ export default function Sidebar({ activeMenu, setActiveMenu }){
             >
               <IconComponent 
                 className="w-5 h-5 flex-shrink-0" 
-                color={isActive ? "white" : "currentColor"}
+                color={active ? "white" : "currentColor"}
               />
               <span className="text-body-1 font-medium">{item.label}</span>
-            </button>
+            </Link>
           );
         })}
       </nav>
