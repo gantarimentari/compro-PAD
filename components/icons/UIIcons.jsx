@@ -551,6 +551,24 @@ export const CalendarIcon =({ className = "w-6 h-6", color = "currentColor" }) =
 </svg>
 
 );
+export const JarumSuntikIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+{/* <g clip-path="url(#clip0_2541_6753)"> */}
+<path d="M15 1.66699L18.3333 5.00033" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M14.167 5.83301L16.667 3.33301" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M15.8337 7.50033L7.25033 16.0837C6.41699 16.917 5.16699 16.917 4.41699 16.0837L3.91699 15.5837C3.08366 14.7503 3.08366 13.5003 3.91699 12.7503L12.5003 4.16699" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M7.5 9.16699L10.8333 12.5003" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M4.16699 15.833L1.66699 18.333" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M11.667 3.33301L16.667 8.33301" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+{/* </g> */}
+{/* <defs>
+<clipPath id="clip0_2541_6753">
+<rect width="20" height="20" fill="white"/>
+</clipPath>
+</defs> */}
+</svg>
+
+);
 
 export const FileIcon= ({ className = "w-6 h-6", color = "currentColor" })=> (
   <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -629,7 +647,7 @@ export const WaveHandIcon = ({ className = "w-6 h-6", color = "currentColor" }) 
 export const RightArrowIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
   <svg className={className} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M5.27142 14.6784L14.6282 5.32161M14.6282 5.32161C14.8545 5.54789 14.9941 5.86078 14.9941 6.20491L14.9941 12.9106M14.6282 5.32161C14.4019 5.09534 14.089 4.95568 13.7449 4.95568L7.03919 4.95569" 
-stroke="#333333" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>
 
 )

@@ -131,6 +131,7 @@ const RESERVASI_COLUMNS = [
 export default function Reservasi() {
   const [reservasiData, setReservasiData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [reservasiToDelete, setReservasiToDelete] = useState(null);
@@ -140,6 +141,7 @@ export default function Reservasi() {
   //  Fetch reservasi dari database
   const fetchReservasi = async () => {
     try {
+      setIsLoading(true);
       await api.get('/sanctum/csrf-cookie');
       const res = await api.get('/api/reservations');
 
@@ -148,6 +150,8 @@ export default function Reservasi() {
     } catch (err) {
       console.error('Error fetching reservations:', err);
       alert('Gagal memuat data reservasi');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -315,11 +319,19 @@ export default function Reservasi() {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
 
-        <Table
-          columns={RESERVASI_COLUMNS}
-          data={filteredData}
-          renderCell={renderCell}
-        />
+        {isLoading ? (
+          <div className="bg-white rounded-lg shadow-xl p-6 space-y-3">
+            {[1,2,3,4,5].map(i => (
+              <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />
+            ))}
+          </div>
+        ) : (
+          <Table
+            columns={RESERVASI_COLUMNS}
+            data={filteredData}
+            renderCell={renderCell}
+          />
+        )}
       </div>
 
       <TambahReservasiModal

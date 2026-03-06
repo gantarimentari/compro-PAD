@@ -1,5 +1,5 @@
 'use client';
-
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { useState, useEffect } from 'react';
 import api from '@lib/api';
 import { TrashIcon, WarningIcon, PenIcon} from '@ds/icons';
@@ -9,25 +9,7 @@ import SearchBar from '@ds/dashboard/layouts/ManagementSearch';
 import PageHeader from '@ds/dashboard/layouts/PageHeader';
 import {TambahPasienModal,EditPasienModal,PreviewPasienModal,DeleteConfirmModal,} from '@ds/dashboard/modals';
 
-// const MOCK_DATA =[
-//   {id: 1, name: "andi", phoneNumber: "02123456789", email: "andi@gmail.com", date:  '01/01/2025', 
-//     pets: [
-//       { petName: "Luna", species: "Kucing" },
-//       { petName: "Rocky", species: "Anjing"},
-//       { petName: "Nemo", species: "Ikan" } ],
-//     },
-//     {id: 2, name: "budi", phoneNumber: "02123456789", email: "budi@gmail.com", date:  '01/01/2025', 
-//     pets: [
-//       { petName: "Luna", species: "Kucing" },
-//       { petName: "Rocky", species: "Anjing"},
-//       { petName: "Nemo", species: "Ikan" } ],
-//     },
-//     {id: 3, name: "cinta", phoneNumber: "02123456789", email: "cinta@gmail.com", date:  '01/01/2025', 
-//     pets: [
-//       { petName: "Luna", species: "Kucing" },
-//       { petName: "Rocky", species: "Anjing"},
-//       { petName: "Nemo", species: "Ikan" } ],
-// }];
+
 
 // buat kolom table
 const PATIENT_COLUMNS = [
@@ -39,7 +21,7 @@ const PATIENT_COLUMNS = [
 ];
 
 export default function ManagementPasien(){
-  const [pasienData, setPasienData] = useState([]);
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -47,66 +29,48 @@ export default function ManagementPasien(){
   const [pasienToDelete, setPasienToDelete] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
-  const [jenisHewanOptions, setJenisHewanOptions] = useState([]);
+
+const { data: pasienData = [], isLoading } = useQuery({
+  queryKey: ['patients'], // Ini "kunci" agar data disimpan di memori
+  queryFn: async () => {
+    // TIPS: Hapus baris csrf-cookie agar fetch jauh lebih cepat
+    const res = await api.get("/api/patients");
+    
+    // Logika mapping data kamu tetap sama seperti sebelumnya
+    return res.data.map(item => ({
+      id: item.id,
+      name: item.username,
+      phoneNumber: item.phone_number,
+      email: item.email,
+      date: new Date(item.created_at).toLocaleDateString('id-ID'),
+      pets: item.hewans?.map(hewan => ({
+        id: hewan.id_hewan,
+        petName: hewan.nama_hewan,
+        species: hewan.jenis_hewan?.nama_jenis || '-',
+      })) || []
+    }));
+  },
+  staleTime: 5 * 60 * 1000, // Data dianggap "segar" selama 5 menit
+});
+ 
+// Ambil data Jenis Hewan dengan Cache
+const { data: jenisHewanOptions = [] } = useQuery({
+  queryKey: ['jenis-hewan'],
+  queryFn: async () => {
+    const res = await api.get("/api/jenis-hewan");
+    return res.data;
+  },
+  staleTime: 5 * 60 * 1000,
+});
 
 
-  useEffect(() => {
-    fetchJenisHewan();
-    fetchPatients();
-  }, []);
-
-
-  //filter 
+  //filter
   const filteredData = pasienData.filter(item =>
     item.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     item.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     item.phoneNumber?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  
-
-   const fetchJenisHewan = async () => {
-    try {
-      await api.get('/sanctum/csrf-cookie');
-      const res = await api.get("/api/jenis-hewan");
-      setJenisHewanOptions(res.data);
-    } catch (err) {
-      console.error('Error fetching jenis hewan:', err);
-    }
-  };
-  
-
-  const fetchPatients = async () => {
-    try {
-      await api.get("/sanctum/csrf-cookie");
-      const res = await api.get("/api/patients");
-      
-      const formatted = res.data.map(item => ({
-        id: item.id,
-        name: item.username,
-        phoneNumber: item.phone_number,
-        email: item.email,
-        date: new Date(item.created_at).toLocaleDateString('id-ID', { 
-          day: '2-digit', 
-          month: '2-digit', 
-          year: 'numeric' 
-        }),
-        pets: item.hewans?.map(hewan => ({
-          id: hewan.id_hewan,
-          petName: hewan.nama_hewan,
-          species: hewan.jenis_hewan?.nama_jenis || '-',
-          speciesId: hewan.id_jenisHewan,
-          birthDate: hewan.tanggal_lahir_hewan,
-          age: hewan.umur
-        })) || []
-      }));
-
-      setPasienData(formatted);
-    } catch (err) {
-      console.error('Error fetching patients:', err);
-      alert('Gagal memuat data pasien');
-    }
-  };
   const handleSavePasien = async (formData) => {
     try{
       await api.get('/sanctum/csrf-cookie');
@@ -135,12 +99,14 @@ export default function ManagementPasien(){
           });
         }
       }
-      await fetchPatients();
+      queryClient.invalidateQueries({ queryKey: ['patients'] });
+      // await fetchPatients();
       setIsModalOpen(false);
     }catch(err){
       console.error('error saving patieng:', err);
       console.error('Error response:', err.response?.data);
-      alert(`gagal menyimpan pasien: ${err.response?.data?.message || err.message}`);
+      // Throw error agar bisa ditangkap di modal
+      throw new Error(err.response?.data?.message || err.message);
     }
     // setPasienData([...pasienData, newPasien]);
   };
@@ -176,19 +142,14 @@ export default function ManagementPasien(){
         }
       }
 
-      await fetchPatients();
+      queryClient.invalidateQueries({ queryKey: ['patients'] });
       setIsEditModalOpen(false);
       setSelectedPasien(null);
     } catch(err){
       console.error('eror updating patinet:', err);
       alert(`gagal mengupdate pasien: ${err.response?.data?.message || err.message}`);
     }
-    // setPasienData(pasienData.map(item =>
-    //   item.id === id ? { 
-    //     ...item, 
-    //     ...formData 
-    //   } : item
-    // ));
+
     setIsEditModalOpen(false);
     setSelectedPasien(null);
   };
@@ -203,8 +164,8 @@ export default function ManagementPasien(){
     try {
       await api.delete(`/api/patients/${pasienToDelete.id}`);
       
-      // Refresh data setelah berhasil delete
-      await fetchPatients();
+
+      queryClient.invalidateQueries({ queryKey: ['patients'] });
       setIsDeleteModalOpen(false);
       setPasienToDelete(null);
     } catch (err) {
@@ -276,15 +237,23 @@ export default function ManagementPasien(){
  
       <div className="space-y-4">
         <SearchBar
-          placeholderText="Cari nama, email, atau nomor HP..." 
+          placeholderText="Cari nama, email, atau nomor HP..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <Table 
-          columns={PATIENT_COLUMNS}
-          data={filteredData}
-          renderCell={renderCell}
-        />
+        {isLoading ? (
+          <div className="bg-white rounded-lg shadow-xl p-6 space-y-3">
+            {[1,2,3,4,5].map(i => (
+              <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />
+            ))}
+          </div>
+        ) : (
+          <Table
+            columns={PATIENT_COLUMNS}
+            data={filteredData}
+            renderCell={renderCell}
+          />
+        )}
       </div>
 
       <TambahPasienModal

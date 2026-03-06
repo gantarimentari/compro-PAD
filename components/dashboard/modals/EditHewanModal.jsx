@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import BaseModal from './BaseModal';
 import Button from '@ds/Button';
 import api from '@lib/api';
+import SuccessToast from '@ds/ui/SuccessToast';
 
 const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerOptions = [] }) => {
   const [formData, setFormData] = useState({
@@ -15,6 +16,7 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerOptions = [] }) =
   // fetch api
   const [jenisHewanOptions, setJenisHewanOptions] = useState([]);
   const [isLoadingSpecies, setIsLoadingSpecies] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   // update kalo isinya berubah
   useEffect(() => {
@@ -85,8 +87,9 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerOptions = [] }) =
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setShowSuccess(true);
     onSave(hewan.id, formData);
-    onClose();
+    setTimeout(() => { setShowSuccess(false); onClose(); }, 1500);
   };
 
   return (
@@ -189,6 +192,7 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerOptions = [] }) =
           </Button>
         </div>
       </form>
+      <SuccessToast show={showSuccess} />
     </BaseModal>
   );
 };

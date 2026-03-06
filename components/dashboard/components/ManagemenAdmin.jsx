@@ -171,11 +171,19 @@ export default function ManagemenAdmin(){
           onChange={(e) => setSearchQuery(e.target.value)}
         />
 
-        <Table 
-          columns={ADMIN_COLUMNS}
-          data={filteredData}
-          renderCell={(item, key) => renderCell(item, key, handleEdit, handleDelete)}
-        />
+        {loading ? (
+          <div className="bg-white rounded-lg shadow-xl p-6 space-y-3">
+            {[1,2,3,4,5].map(i => (
+              <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />
+            ))}
+          </div>
+        ) : (
+          <Table
+            columns={ADMIN_COLUMNS}
+            data={filteredData}
+            renderCell={(item, key) => renderCell(item, key, handleEdit, handleDelete)}
+          />
+        )}
       </div>
       <TambahAdminModal
         isOpen={isModalOpen}

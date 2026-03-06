@@ -18,6 +18,7 @@ const Species_COLUMNS = [
 export default function JenisHewan() {
   const [jenisHewanData, setJenisHewanData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedJenis, setSelectedJenis] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -27,11 +28,12 @@ export default function JenisHewan() {
   //  Fetch jenis hewan dengan relasi pasien
   const fetchJenisHewan = async () => {
     try {
+      setIsLoading(true);
       await api.get('/sanctum/csrf-cookie');
       const res = await api.get('/api/jenis-hewan');
-      
+
       console.log('📦 Jenis Hewan Data:', res.data);
-      
+
       //  Transform data untuk table
       const formatted = res.data.map(jenis => ({
         id: jenis.id_jenisHewan,
@@ -40,12 +42,14 @@ export default function JenisHewan() {
         ownerName: jenis.pasien?.username || jenis.pasien?.name || '-',
         ownerEmail: jenis.pasien?.email || '',
       }));
-      
+
       console.log(' Formatted Data:', formatted);
       setJenisHewanData(formatted);
     } catch (err) {
       console.error('Error fetching jenis hewan:', err);
       alert('Gagal memuat data jenis hewan');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -190,11 +194,19 @@ export default function JenisHewan() {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
         
-        <Table
-          columns={Species_COLUMNS}
-          data={filteredData}
-          renderCell={renderCell}
-        />  
+        {isLoading ? (
+          <div className="bg-white rounded-lg shadow-xl p-6 space-y-3">
+            {[1,2,3,4,5].map(i => (
+              <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />
+            ))}
+          </div>
+        ) : (
+          <Table
+            columns={Species_COLUMNS}
+            data={filteredData}
+            renderCell={renderCell}
+          />
+        )}
       </div>
 
       <TambahJenisHewanModal

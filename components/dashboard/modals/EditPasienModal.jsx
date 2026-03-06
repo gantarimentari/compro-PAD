@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import BaseModal from './BaseModal';
 import Button from '@ds/Button';
+import SuccessToast from '@ds/ui/SuccessToast';
 
 const EditPasienModal = ({ isOpen, onClose, pasien, onSave }) => {
   const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ const EditPasienModal = ({ isOpen, onClose, pasien, onSave }) => {
     phoneNumber: pasien?.phoneNumber || '',
     email: pasien?.email || '',
   });
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     if (pasien) {
@@ -25,8 +27,9 @@ const EditPasienModal = ({ isOpen, onClose, pasien, onSave }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setShowSuccess(true);
     onSave(pasien.id, formData);
-    onClose();
+    setTimeout(() => { setShowSuccess(false); onClose(); }, 1500);
   };
 
   return (
@@ -99,6 +102,7 @@ const EditPasienModal = ({ isOpen, onClose, pasien, onSave }) => {
           </Button>
         </div>
       </form>
+      <SuccessToast show={showSuccess} />
     </BaseModal>
   );
 };

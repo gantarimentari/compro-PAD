@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import BaseModal from './BaseModal';
 import { UploadIcon } from '@ds/icons';
 import QuillEditor from '@ds/shared/QuillEditor';
+import SuccessToast from '@ds/ui/SuccessToast';
 
 const EditArtikelModal = ({ isOpen, onClose, onSave, article }) => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ const EditArtikelModal = ({ isOpen, onClose, onSave, article }) => {
     existingImage: null,
     status: 'Draft'
   });
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     if (article) {
@@ -32,8 +34,9 @@ const EditArtikelModal = ({ isOpen, onClose, onSave, article }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setShowSuccess(true);
     onSave(article.id, formData);
-    onClose();
+    setTimeout(() => { setShowSuccess(false); onClose(); }, 1500);
   };
 
   const handleFileChange = (e) => {
@@ -154,6 +157,7 @@ const EditArtikelModal = ({ isOpen, onClose, onSave, article }) => {
           </button>
         </div>
       </form>
+      <SuccessToast show={showSuccess} />
     </BaseModal>
   );
 };

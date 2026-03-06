@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import BaseModal from './BaseModal';
+import SuccessToast from '@ds/ui/SuccessToast';
 
 const EditAdminModal = ({ isOpen, onClose, onSave, admin }) => {
   const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ const EditAdminModal = ({ isOpen, onClose, onSave, admin }) => {
     email: '',
     password: '',
   });
+  const [showSuccess, setShowSuccess] = useState(false);
   
   useEffect(() => {
     if (admin) {
@@ -33,8 +35,9 @@ const EditAdminModal = ({ isOpen, onClose, onSave, admin }) => {
   if (!isOpen || !admin) return null;
   const handleSubmit = (e) => {
     e.preventDefault();
+    setShowSuccess(true);
     onSave(admin.id, formData);
-    onClose();
+    setTimeout(() => { setShowSuccess(false); onClose(); }, 1500);
   };
   return (
     <BaseModal
@@ -112,6 +115,7 @@ const EditAdminModal = ({ isOpen, onClose, onSave, admin }) => {
           </button>
         </div>
       </form>
+      <SuccessToast show={showSuccess} />
     </BaseModal>
   )
 };

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '@lib/api';
 import BaseModal from './BaseModal';
+import SuccessToast from '@ds/ui/SuccessToast';
 
 const EditReservasiModal = ({ isOpen, onClose, onSave, reservasi }) => {
   const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ const EditReservasiModal = ({ isOpen, onClose, onSave, reservasi }) => {
   
   const [petOptions, setPetOptions] = useState([]);
   const [isLoadingPets, setIsLoadingPets] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   // Load data saat modal dibuka
   useEffect(() => {
@@ -86,7 +88,9 @@ const EditReservasiModal = ({ isOpen, onClose, onSave, reservasi }) => {
       formData
     });
     
+    setShowSuccess(true);
     onSave(reservasi.id, formData);
+    setTimeout(() => { setShowSuccess(false); onClose(); }, 1500);
   };
 
   const handleClose = () => {
@@ -196,6 +200,7 @@ const EditReservasiModal = ({ isOpen, onClose, onSave, reservasi }) => {
           </button>
         </div>
       </form>
+      <SuccessToast show={showSuccess} />
     </BaseModal>
   );
 };

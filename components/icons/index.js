@@ -49,7 +49,8 @@ export {
   HomeIcon, PeopleIcon, DogIcon, PawIcon, 
   FileIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, PromoIcon, SettingsIcon, DiskSaveIcon, DBHomeIcon,
   TotalHewanIcon, TotalKunjunganIcon, KunjunganBaruIcon, RekamMedisIcon, WaveHandIcon,
-  RightArrowIcon
+  RightArrowIcon,
+  JarumSuntikIcon
   
 } from './UIIcons';
 

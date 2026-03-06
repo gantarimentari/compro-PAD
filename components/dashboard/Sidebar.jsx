@@ -1,6 +1,8 @@
 "use client";
 import React from "react";
-import { GaleryIcon, FileIcon, PromoIcon, PeopleIcon,DogIcon, PawIcon, CalendarIcon, SettingsIcon, DBHomeIcon } from "@ds/icons"; 
+import { GaleryIcon, FileIcon, PromoIcon, PeopleIcon,DogIcon, PawIcon, CalendarIcon, SettingsIcon, DBHomeIcon,
+  JarumSuntikIcon
+ } from "@ds/icons"; 
 import Link from "next/link";
 
 export default function Sidebar({ activeMenu, setActiveMenu }){
@@ -10,6 +12,7 @@ export default function Sidebar({ activeMenu, setActiveMenu }){
     {id: 'hewan', icon: DogIcon, label: 'Manajemen Hewan'},
     {id: 'jenisHewan', icon: PawIcon, label: 'Jenis Hewan'},
     {id: 'reservasi', icon: CalendarIcon, label: 'Reservasi'},
+    {id: 'reminderVaksinasi', icon: JarumSuntikIcon, label: 'Reminder Vaksinasi'},
     {id: 'artikel', icon: FileIcon, label: 'Manajemen Artikel'},
     {id: 'media', icon: GaleryIcon, label: 'Manajemen Media'},
     {id: 'admin', icon: PeopleIcon, label: 'Manajemen Admin'},
@@ -27,7 +30,7 @@ export default function Sidebar({ activeMenu, setActiveMenu }){
   };
 
   return(
-    <aside className="sticky top-0 h-screen w-72 bg-white shadow-md p-6 flex-shrink-0 overflow-y-auto">
+    <aside className="sticky top-0 h-screen w-76 bg-white shadow-md p-6 flex-shrink-0 overflow-y-auto">
       <div className="mb-8">
         <div className="flex items-center gap-3">
           <div className="h-14 w-14 ">

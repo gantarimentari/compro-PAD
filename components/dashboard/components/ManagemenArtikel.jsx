@@ -73,9 +73,11 @@ export default function ManagemenArtikel() {
   const [articleToDelete, setArticleToDelete] = useState(null);
   const [articleData, setArticleData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchCsrfAndArticles = async() => {
     try {
+      setIsLoading(true);
       await api.get("/sanctum/csrf-cookie");
       const res = await api.get("/api/articles");
 
@@ -94,6 +96,8 @@ export default function ManagemenArtikel() {
       setArticleData(formatted);
     } catch (err) {
       console.error('Error fetching articles:', err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -241,11 +245,19 @@ export default function ManagemenArtikel() {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
 
-        <Table 
-          columns={ARTICLE_COLUMNS}
-          data={filteredData}
-          renderCell={(item, key) => renderCell(item, key, handleEdit, handleDelete)}
-        />
+        {isLoading ? (
+          <div className="bg-white rounded-lg shadow-xl p-6 space-y-3">
+            {[1,2,3,4,5].map(i => (
+              <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />
+            ))}
+          </div>
+        ) : (
+          <Table
+            columns={ARTICLE_COLUMNS}
+            data={filteredData}
+            renderCell={(item, key) => renderCell(item, key, handleEdit, handleDelete)}
+          />
+        )}
       </div>
 
       {/* Modals */}

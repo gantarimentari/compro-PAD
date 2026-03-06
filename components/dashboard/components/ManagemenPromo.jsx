@@ -32,6 +32,7 @@ const StatusTag = ({ status }) => {
 export default function ManagemenPromo() {
   const [promoData, setPromoData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
@@ -42,6 +43,7 @@ export default function ManagemenPromo() {
   //  Fetch promos dari database
   const fetchPromos = async () => {
     try {
+      setIsLoading(true);
       await api.get('/sanctum/csrf-cookie');
       const res = await api.get('/api/promos');
 
@@ -50,6 +52,8 @@ export default function ManagemenPromo() {
     } catch (err) {
       console.error('Error fetching promos:', err);
       alert('Gagal memuat data promo');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -199,11 +203,19 @@ export default function ManagemenPromo() {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
 
-        <Table
-          columns={PROMO_COLUMNS}
-          data={filteredData}
-          renderCell={renderCell}
-        />
+        {isLoading ? (
+          <div className="bg-white rounded-lg shadow-xl p-6 space-y-3">
+            {[1,2,3,4,5].map(i => (
+              <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />
+            ))}
+          </div>
+        ) : (
+          <Table
+            columns={PROMO_COLUMNS}
+            data={filteredData}
+            renderCell={renderCell}
+          />
+        )}
       </div>
 
       <TambahPromoModal

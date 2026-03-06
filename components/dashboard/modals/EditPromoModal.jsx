@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import BaseModal from './BaseModal';
 import { ChevronDownIcon } from '@ds/icons';
+import SuccessToast from '@ds/ui/SuccessToast';
 
 const EditPromoModal = ({ isOpen, onClose, onSave, promo }) => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ const EditPromoModal = ({ isOpen, onClose, onSave, promo }) => {
     endDate: '',
     status: 'available',
   });
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     if (promo && isOpen) {
@@ -27,7 +29,9 @@ const EditPromoModal = ({ isOpen, onClose, onSave, promo }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setShowSuccess(true);
     onSave(promo.id, formData);
+    setTimeout(() => { setShowSuccess(false); onClose(); }, 1500);
   };
 
   if (!promo) return null;
@@ -132,6 +136,7 @@ const EditPromoModal = ({ isOpen, onClose, onSave, promo }) => {
           </button>
         </div>
       </form>
+      <SuccessToast show={showSuccess} />
     </BaseModal>
   );
 };

@@ -1,7 +1,7 @@
 import { Plus_Jakarta_Sans, Lora } from "next/font/google";
 import "./globals.css";
 import 'quill/dist/quill.snow.css';
-
+import Providers from "@/app/components/Providers";
 
 const geistPrimary = Plus_Jakarta_Sans({
   variable: "--font-primary",
@@ -23,11 +23,14 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
+    
     <html lang="en">
       <body
         className={`${geistPrimary.variable} ${geistSecondary.variable} antialiased`}
       >
-        {children}
+       <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import BaseModal from './BaseModal';
 import Button from '@ds/Button';
 import api from '@lib/api';
+import SuccessToast from '@ds/ui/SuccessToast';
 
 const EditJenisHewanModal = ({ isOpen, onClose, jenisHewan, onSave }) => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ const EditJenisHewanModal = ({ isOpen, onClose, jenisHewan, onSave }) => {
   });
   const [pemilikList, setPemilikList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   
   // Fetch daftar pemilik dari backend
   useEffect(() => {
@@ -72,7 +74,8 @@ const EditJenisHewanModal = ({ isOpen, onClose, jenisHewan, onSave }) => {
       });
       
       console.log('Edit jenis hewan berhasil');
-      onClose();
+      setShowSuccess(true);
+      setTimeout(() => { setShowSuccess(false); onClose(); }, 1500);
     } catch (err) {
       console.error('Error saving jenis hewan:', err);
       alert('Gagal menyimpan perubahan: ' + (err.response?.data?.message || err.message));
@@ -148,6 +151,7 @@ const EditJenisHewanModal = ({ isOpen, onClose, jenisHewan, onSave }) => {
           </Button>
         </div>
       </form>
+      <SuccessToast show={showSuccess} />
     </BaseModal>
   );
 };

@@ -10,17 +10,51 @@ const TambahPasienModal = ({ isOpen, onClose, onSave }) => {
     email: '',
     password: ''
   });
+  const [passwordError, setPasswordError] = useState('');
+  const [emailError, setEmailError] = useState('');
 
-  const handleSubmit = (e) => {
+  const validatePassword = (password) => {
+    if (password.length < 8) {
+      return 'Password minimal 8 karakter';
+    }
+    
+    return '';
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave(formData);
-    setFormData({
-      name: '',
-      phoneNumber: '',
-      email: '',
-      password: ''
-    });
-    onClose();
+    
+    // Validasi password
+    const passwordValidationError = validatePassword(formData.password);
+    if (passwordValidationError) {
+      setPasswordError(passwordValidationError);
+      return; // Jangan tutup modal dan jangan simpan data
+    }
+
+    // Jika validasi berhasil, lanjutkan simpan
+    setPasswordError('');
+    setEmailError('');
+    
+    try {
+      await onSave(formData);
+      // Kalau berhasil, reset form dan tutup modal
+      setFormData({
+        name: '',
+        phoneNumber: '',
+        email: '',
+        password: ''
+      });
+      onClose();
+    } catch (error) {
+      // Tangkap error dan tampilkan di field yang sesuai
+      const errorMessage = error.message || 'Terjadi kesalahan';
+      if (errorMessage.toLowerCase().includes('email')) {
+        setEmailError('Email sudah terdaftar, gunakan email lain');
+      } else {
+        setEmailError(errorMessage);
+      }
+      // Modal tidak ditutup, user bisa perbaiki data
+    }
   };
 
   return (
@@ -67,11 +101,21 @@ const TambahPasienModal = ({ isOpen, onClose, onSave }) => {
           <input  
             type="email"
             value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            onChange={(e) => {
+              setFormData({ ...formData, email: e.target.value });
+              if (emailError) setEmailError(''); // Clear error saat user mengetik
+            }}
             placeholder="email@example.com"
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 text-body-2 placeholder:text-accent-neutral-800"
+            className={`w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 transition duration-150 text-body-2 placeholder:text-accent-neutral-800 ${
+              emailError ? 'border-2 border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
+            }`}
             required 
           />
+          {emailError && (
+            <p className="mt-1 text-sm text-red-600 font-medium">
+              {emailError}
+            </p>
+          )}
         </div>
 
         <div>
@@ -81,11 +125,23 @@ const TambahPasienModal = ({ isOpen, onClose, onSave }) => {
           <input  
             type="password"
             value={formData.password}
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            onChange={(e) => {
+              setFormData({ ...formData, password: e.target.value });
+              if (passwordError) setPasswordError(''); // Clear error saat user mengetik
+            }}
+            
             placeholder="Masukkan password"
-            className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 text-body-2 placeholder:text-accent-neutral-800"
+            className={`w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 transition duration-150 text-body-2 placeholder:text-accent-neutral-800 ${
+              passwordError ? 'border-2 border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
+            }`}
             required 
           />
+          {passwordError && (
+            <p className="mt-1 text-sm text-red-600 font-medium">
+              {passwordError}
+            </p>
+          )}
+          
         </div>
 
         <div className="flex justify-end space-x-3 pt-3">

@@ -75,18 +75,19 @@ export default function ManagemenMedia() {
   const [mediaToDelete, setMediaToDelete] = useState(null);
   const [mediaData, setMediaData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   //  Fetch media dari database (SEMUA media, termasuk video)
   const fetchMedia = async () => {
     try {
+      setIsLoading(true);
       console.log('Fetching media from API...');
       await api.get('/sanctum/csrf-cookie');
-      
-      // Fetch tanpa parameter exclude_video
+
       const res = await api.get('/api/media');
-      
+
       console.log('📦 Raw API Response:', res.data);
-      
+
       const formatted = res.data.map((item, index) => {
         return {
           id: item.id,
@@ -97,11 +98,13 @@ export default function ManagemenMedia() {
           videoUrl: item.videoUrl || null
         };
       });
-      
+
       console.log('Formatted Data:', formatted);
       setMediaData(formatted);
     } catch (err) {
       console.error('Error fetching media:', err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -198,11 +201,19 @@ export default function ManagemenMedia() {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
         
-        <Table 
-          columns={MEDIA_COLUMNS}
-          data={filteredData}
-          renderCell={(item, key) => renderCell(item, key, handleDelete, handlePreview)}
-        />
+        {isLoading ? (
+          <div className="bg-white rounded-lg shadow-xl p-6 space-y-3">
+            {[1,2,3,4,5].map(i => (
+              <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />
+            ))}
+          </div>
+        ) : (
+          <Table
+            columns={MEDIA_COLUMNS}
+            data={filteredData}
+            renderCell={(item, key) => renderCell(item, key, handleDelete, handlePreview)}
+          />
+        )}
       </div>
 
       <TambahMediaModal 
