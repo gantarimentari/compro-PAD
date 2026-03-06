@@ -3,56 +3,17 @@
 import React, { useState, useEffect } from 'react';
 import BaseModal from './BaseModal';
 import Button from '@ds/Button';
-import api from '@lib/api';
-import SuccessToast from '@ds/ui/SuccessToast';
 
 const EditJenisHewanModal = ({ isOpen, onClose, jenisHewan, onSave }) => {
   const [formData, setFormData] = useState({
     species: jenisHewan?.species || '',
-    patient_id: jenisHewan?.patient_id || '',
   });
-  const [pemilikList, setPemilikList] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  
-  // Fetch daftar pemilik dari backend
-  useEffect(() => {
-    if (isOpen) {
-      fetchPemilik();
-    }
-  }, [isOpen]);
-  
-  const fetchPemilik = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get('/api/patients');
-      console.log('📦 Pemilik list:', response.data);
-      
-      // Cek struktur data yang diterima
-      if (Array.isArray(response.data)) {
-        setPemilikList(response.data);
-      } else if (response.data.data && Array.isArray(response.data.data)) {
-        // Jika backend wrap data dalam object { data: [...] }
-        setPemilikList(response.data.data);
-      } else {
-        console.error('Unexpected data structure:', response.data);
-        setPemilikList([]);
-      }
-    } catch (err) {
-      console.error('Error fetching pemilik:', err);
-      setPemilikList([]);
-    } finally {
-      setLoading(false);
-    }
-  };
   
   // Update formData saat jenisHewan berubah
   useEffect(() => {
     if (jenisHewan) {
-      console.log('Editing jenis hewan:', jenisHewan);
       setFormData({
         species: jenisHewan.species || '',
-        patient_id: jenisHewan.patient_id || '',
       });
     }
   }, [jenisHewan]);
@@ -62,20 +23,11 @@ const EditJenisHewanModal = ({ isOpen, onClose, jenisHewan, onSave }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    console.log('Submitting edit:', {
-      id: jenisHewan.id,
-      formData
-    });
-    
     try {
       await onSave(jenisHewan.id, {
         species: formData.species,
-        patient_id: parseInt(formData.patient_id) 
       });
-      
-      console.log('Edit jenis hewan berhasil');
-      setShowSuccess(true);
-      setTimeout(() => { setShowSuccess(false); onClose(); }, 1500);
+      onClose();
     } catch (err) {
       console.error('Error saving jenis hewan:', err);
       alert('Gagal menyimpan perubahan: ' + (err.response?.data?.message || err.message));
@@ -91,32 +43,6 @@ const EditJenisHewanModal = ({ isOpen, onClose, jenisHewan, onSave }) => {
       maxWidth="max-w-lg"
     >
       <form onSubmit={handleSubmit} className="px-6 pb-6 pt-2 space-y-2">
-        <div>
-          <label className="block text-h-8 font-bold text-accent-neutral-1000">
-            Nama Pemilik
-          </label>
-          {/* Value sekarang menggunakan patient_id */}
-          <select
-            value={formData.patient_id}
-            onChange={(e) => {
-              console.log('selected patient_id:', e.target.value);
-              setFormData({...formData, patient_id: e.target.value});
-            }}
-            className="text-body-2 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none"
-            required 
-            disabled={loading}
-          >
-            <option value="">
-              {loading ? 'Memuat data...' : 'Pilih nama pemilik'}
-            </option>
-            {/* Option value sekarang menggunakan patient.id */}
-            {pemilikList.map((pemilik) => (
-              <option key={pemilik.id} value={pemilik.id}>
-                {pemilik.username}
-              </option>
-            ))}
-          </select>
-        </div>
         
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
@@ -126,10 +52,13 @@ const EditJenisHewanModal = ({ isOpen, onClose, jenisHewan, onSave }) => {
             type="text"
             value={formData.species}
             onChange={(e) => setFormData({...formData, species: e.target.value})}
-            placeholder="Masukkan jenis hewan"
+            placeholder="Contoh: Kucing, Anjing, Burung"
             className="text-body-2 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
             required
           />
+          <p className="text-xs text-gray-500 mt-1">
+            Jenis hewan adalah kategori umum
+          </p>
         </div>
         
         <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
@@ -151,7 +80,6 @@ const EditJenisHewanModal = ({ isOpen, onClose, jenisHewan, onSave }) => {
           </Button>
         </div>
       </form>
-      <SuccessToast show={showSuccess} />
     </BaseModal>
   );
 };

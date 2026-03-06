@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Cookies from 'js-cookie';
-import api from '@lib/api.js';
+import authService from '@/lib/services/authService';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AuthLayout from '@ds/auth/AuthLayout';
@@ -58,16 +57,7 @@ const handleSubmit = async (e) => {
     }
 
     try{
-      await api.get('/sanctum/csrf-cookie', { withCredentials: true });
-
-      const res = await api.post('/api/register', formData, {
-        headers: {
-          Accept: 'application/json', 
-          'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN'),
-        },
-        withCredentials: true,
-      });
-      console.log('Register data:', formData);
+      await authService.register(formData);
     router.push('/');
     } catch(err){
       if(err.response?.data?.errors){

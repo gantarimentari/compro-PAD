@@ -1,42 +1,31 @@
 'use client';
-
+import { useQuery } from '@tanstack/react-query';
 import React, { useState, useEffect } from 'react';
 import BaseModal from './BaseModal';
-import api from '@lib/api';
+import patientService from '@/lib/services/patientService';
 
 const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState({
     ownerId: '',
     species: '',
   });
-  const [pemilikOptions, setPemilikOptions] = useState([]);
 
-  useEffect(() => {
-    if (isOpen) {
-      fetchPemilik();
-    }
-  }, [isOpen]);
-
-  const fetchPemilik = async () => {
-    try {
-      await api.get('/sanctum/csrf-cookie');
-      const res = await api.get('/api/patients');
-      
-      // Format data untuk dropdown
-      const formatted = res.data.map(patient => ({
-        id: patient.id,
-        name: patient.username || patient.name,
-        email: patient.email,
+  // Fetch data pemilik dengan React Query
+  const { data: pemilikOptions = [] } = useQuery({
+    queryKey: ['patients'],
+    queryFn: async () => {
+      const res = await patientService.getAll();
+      return res.map(p => ({
+        id: p.id,
+        name: p.username || p.name,
+        email: p.email,
       }));
-      
-      setPemilikOptions(formatted);
-      console.log('Pemilik Options:', formatted);
-    } catch (err) {
-      console.error('Error fetching pemilik:', err);
-      setPemilikOptions([]);
-    }
-  };
+    },
+    enabled: isOpen,
+    staleTime: 5 * 60 * 1000,
+  });
 
+  // Reset form saat modal ditutup
   useEffect(() => {
     if (!isOpen) {
       setFormData({ ownerId: '', species: '' });
@@ -46,12 +35,9 @@ const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    console.log('Form Data:', formData);
+    console.log('Form Data yang akan dikirim:', formData);
     
-    onSave(formData); // Kirim ke parent (JenisHewan.jsx)
-    
-    // Reset form
-    setFormData({ ownerId: '', species: '' });
+    onSave(formData);
   };
 
   return (
@@ -65,14 +51,18 @@ const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
       {/* UI Baru: px-6 pb-6 pt-2 space-y-2 */}
       <form onSubmit={handleSubmit} className="px-6 pb-6 pt-2 space-y-2">
         
-        {/* Dropdown Nama Pemilik - Logic HEAD + UI Baru */}
+        {/* Dropdown Nama Pemilik */}
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
             Nama Pemilik
           </label>
           <select
             value={formData.ownerId}
-            onChange={(e) => setFormData({ ...formData, ownerId: e.target.value })}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              console.log('Selected ownerId:', value);
+              setFormData({ ...formData, ownerId: value });
+            }}
             className={`text-body-2 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 appearance-none ${!formData.ownerId ? 'text-accent-neutral-800' : 'text-accent-neutral-1000'}`}
             required 
           >
@@ -88,7 +78,7 @@ const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
             )}
           </select>
           <p className="text-xs text-gray-500 mt-1">
-            Total pemilik: {pemilikOptions?.length || 0}
+            Pilih pemilik yang terkait
           </p>
         </div>
 
@@ -101,12 +91,12 @@ const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
             type="text"
             value={formData.species}
             onChange={(e) => setFormData({ ...formData, species: e.target.value })}
-            placeholder="Masukkan jenis hewan"
+            placeholder="Contoh: Kucing, Anjing, Burung"
             className="text-body-2 placeholder:text-accent-neutral-800 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
             required
           />
           <p className="text-xs text-gray-500 mt-1">
-            Jenis hewan ini akan menjadi milik pemilik yang dipilih
+            Masukkan nama jenis hewan
           </p>
         </div>
 

@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import TagLabel from '../../components/Button/TagLabel';
 import Button from '@ds/Button';
-import api from '@lib/api';
+import systemInfoService from '@/lib/services/systemInfoService';
+import articleService from '@/lib/services/articleService';
 import Link from 'next/link';
 import { RightArrowIcon } from '@ds/icons';
 import ArticleCard from './components/ArticleCard';
@@ -21,19 +22,19 @@ export default function Article() {
       try {
         setIsLoading(true);
 
-        const res = await api.get('/api/system-info');
-        console.log('System Info (Article):', res.data);
+        const res = await systemInfoService.get();
+        console.log('System Info (Article):', res);
 
         setArticleData({
-          deskripsi_artikel: res.data.systemInfo?.deskripsi_artikel || 
+          deskripsi_artikel: res.systemInfo?.deskripsi_artikel || 
             "Artikel adalah halaman yang memuat informasi, pengetahuan, dan edukasi seputar topik tertentu agar Pawrents mendapatkan wawasan baru terkait hewan kesayangannya."
         });
 
-        const articleRes = await api.get('/api/articles');
-        console.log('Articles Response:', articleRes.data);
+        const articleRes = await articleService.getAll();
+        console.log('Articles Response:', articleRes);
         
         //  FILTER: Hanya ambil artikel dengan status 'Publish'
-        const publishedArticles = articleRes.data.filter(article => article.status === 'Publish');
+        const publishedArticles = articleRes.filter(article => article.status === 'Publish');
         console.log(' Published articles only:', publishedArticles);
 
         const stripHtmlPreserveSpace = (html) => {

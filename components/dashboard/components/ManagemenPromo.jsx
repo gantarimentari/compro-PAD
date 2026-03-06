@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import api from '@lib/api';
+import promoService from '@/lib/services/promoService';
 import { TrashIcon, PenIcon, WarningIcon } from '@ds/icons';
 import Button from '@ds/Button';
 import Table from '@ds/dashboard/components/Table';
@@ -44,11 +44,8 @@ export default function ManagemenPromo() {
   const fetchPromos = async () => {
     try {
       setIsLoading(true);
-      await api.get('/sanctum/csrf-cookie');
-      const res = await api.get('/api/promos');
-
-      console.log('Promos Data:', res.data);
-      setPromoData(res.data);
+      const data = await promoService.getAll();
+      setPromoData(data);
     } catch (err) {
       console.error('Error fetching promos:', err);
       alert('Gagal memuat data promo');
@@ -68,19 +65,7 @@ export default function ManagemenPromo() {
   //  Tambah Promo
   const handleSavePromo = async (formData) => {
     try {
-      await api.get('/sanctum/csrf-cookie');
-
-      const payload = {
-        title: formData.title,
-        description: formData.description,
-        start_date: formData.startDate,
-        end_date: formData.endDate,
-        status: formData.status.toLowerCase(),
-      };
-
-      console.log('Sending promo:', payload);
-
-      await api.post('/api/promos', payload);
+      await promoService.create(payload);
       await fetchPromos();
       setIsModalOpen(false);
       alert(' Promo berhasil ditambahkan!');
@@ -98,17 +83,7 @@ export default function ManagemenPromo() {
 
   const handleEditPromo = async (id, formData) => {
     try {
-      await api.get('/sanctum/csrf-cookie');
-
-      const payload = {
-        title: formData.title,
-        description: formData.description,
-        start_date: formData.startDate,
-        end_date: formData.endDate,
-        status: formData.status.toLowerCase(),
-      };
-
-      await api.put(`/api/promos/${id}`, payload);
+      await promoService.update(id, payload);
       await fetchPromos();
       setIsEditModalOpen(false);
       setSelectedPromo(null);
@@ -128,8 +103,7 @@ export default function ManagemenPromo() {
   const handleConfirmDelete = async () => {
     if (promoToDelete) {
       try {
-        await api.get('/sanctum/csrf-cookie');
-        await api.delete(`/api/promos/${promoToDelete.id}`);
+        await promoService.remove(promoToDelete.id);
         await fetchPromos();
         setIsDeleteModalOpen(false);
         setPromoToDelete(null);

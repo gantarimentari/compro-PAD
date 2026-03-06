@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import api from '@lib/api.js';
+import authService from '@/lib/services/authService';
 import AuthLayout from '@ds/auth/AuthLayout';
 import Input from '@ds/auth/Input';
 import Button from '@ds/auth/Button';
@@ -74,18 +74,7 @@ function ResetPasswordForm() {
     try {
       console.log('🔐 Resetting password for:', formData.email);
 
-      // Get CSRF token
-      await api.get('/sanctum/csrf-cookie');
-
-      // Submit reset password
-      const res = await api.post('/api/reset-password', {
-        token: formData.token,
-        email: formData.email,
-        password: formData.password,
-        password_confirmation: formData.password_confirmation
-      });
-
-      console.log('✅ Password reset successful:', res.data);
+      await authService.resetPassword(formData);
       setSuccess(true);
 
       // Redirect ke login setelah 3 detik

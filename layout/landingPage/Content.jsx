@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useRef, useEffect } from 'react';
-import api from '@lib/api';
+import systemInfoService from '@/lib/services/systemInfoService';
+import mediaService from '@/lib/services/mediaService';
 import { CardDashedBorder } from '@ds/frame/garisputus';
 // import { CardDashedBorder } from '@ds/frame/garisputus';
 
@@ -47,19 +48,19 @@ export default function Content() {
       try {
         setIsLoading(true);
 
-        const sysRes = await api.get('/api/system-info');
-        console.log('system info(content):', sysRes.data);
+        const sysRes = await systemInfoService.get();
+        console.log('system info(content):', sysRes);
 
         setSystemData({
-          deksripsi_video_edukasi: sysRes.data.systemInfo.deskripsi_video_edukasi,
+          deksripsi_video_edukasi: sysRes.systemInfo.deskripsi_video_edukasi,
         });
 
         // Fetch tanpa exclude_video, jadi video tetap muncul
-        const mediaRes = await api.get('/api/media');
-        console.log('📹 Media response (with videos):', mediaRes.data);
+        const mediaRes = await mediaService.getAll();
+        console.log('📹 Media response (with videos):', mediaRes);
 
         // Filter hanya video
-        const videoList = mediaRes.data
+        const videoList = mediaRes
           .filter(item => item.category === 'Video' && item.videoUrl)
           .slice(0, 3);
         

@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import api from '@lib/api';
+import systemInfoService from '@/lib/services/systemInfoService';
 import { DashedBorder } from '@ds/frame/garisputus';
 import TagLabel from '../../components/Button/TagLabel';
 
@@ -17,12 +17,12 @@ export default function About() {
       try{
         setIsLoading(true);
 
-        const res = await api.get('/api/system-info');
+        const res = await systemInfoService.get();
 
-        console.log('system info(about us):', res.data);
+        console.log('system info(about us):', res);
 
         setAboutUs({
-          aboutUs: res.data.systemInfo.about_us,
+          aboutUs: res.systemInfo.about_us,
           image: "/images/dummy-aboutus.png",
         });
 

@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import { AdminUserIcon } from "@ds/icons"; 
-import api from "@lib/api";
+import authService from '@/lib/services/authService';
 import { useRouter } from "next/navigation";
 
 const MOCK_ADMIN_PROFILE={
@@ -35,7 +35,7 @@ export default function HeaderDashboard(){
 
     const handleLogout = async () => {
         try{
-          await api.post('/api/logout');
+          await authService.logout();
           localStorage.removeItem('admin');
           sessionStorage.clear();
           router.push('/');

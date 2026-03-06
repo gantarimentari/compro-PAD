@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import api from '@lib/api';
+import reservasiService from '@/lib/services/reservasiService';
 import { TrashIcon, PenIcon, ChevronDownIcon } from '@ds/icons';
 import Button from '@ds/Button';
 import Table from '@ds/dashboard/components/Table';
@@ -142,11 +142,8 @@ export default function Reservasi() {
   const fetchReservasi = async () => {
     try {
       setIsLoading(true);
-      await api.get('/sanctum/csrf-cookie');
-      const res = await api.get('/api/reservations');
-
-      console.log('Reservasi Data:', res.data);
-      setReservasiData(res.data);
+      const data = await reservasiService.getAll();
+      setReservasiData(data);
     } catch (err) {
       console.error('Error fetching reservations:', err);
       alert('Gagal memuat data reservasi');
@@ -172,19 +169,7 @@ export default function Reservasi() {
   //  Tambah Reservasi
   const handleSaveReservasi = async (formData) => {
     try {
-      await api.get('/sanctum/csrf-cookie');
-
-      const payload = {
-        id_pasien: formData.ownerId,
-        id_hewan: formData.petId,
-        tanggal_reservasi: formData.date,
-        keluhan: formData.keluhan,
-        status: 'pending',
-      };
-
-      console.log('Sending reservation:', payload);
-
-      await api.post('/api/reservations', payload);
+      await reservasiService.create(payload);
       await fetchReservasi();
       setIsModalOpen(false);
       alert('Reservasi berhasil ditambahkan!');
@@ -197,11 +182,7 @@ export default function Reservasi() {
   //  Update Status
   const handleStatusChange = async (reservasiId, newStatus) => {
     try {
-      await api.get('/sanctum/csrf-cookie');
-
-      await api.patch(`/api/reservations/${reservasiId}/status`, {
-        status: newStatus,
-      });
+      await reservasiService.updateStatus(reservasiId, newStatus);
 
       // Update local state
       setReservasiData(reservasiData.map(item =>
@@ -223,16 +204,7 @@ export default function Reservasi() {
 
   const handleEditReservasi = async (id, formData) => {
     try {
-      await api.get('/sanctum/csrf-cookie');
-
-      const payload = {
-        id_pasien: formData.ownerId,
-        id_hewan: formData.petId,
-        tanggal_reservasi: formData.date,
-        keluhan: formData.keluhan,
-      };
-
-      await api.put(`/api/reservations/${id}`, payload);
+      await reservasiService.update(id, payload);
       await fetchReservasi();
       setIsEditModalOpen(false);
       setSelectedReservasi(null);
@@ -252,9 +224,7 @@ export default function Reservasi() {
   const confirmDelete = async () => {
     if (reservasiToDelete) {
       try {
-        await api.get('/sanctum/csrf-cookie');
-        await api.delete(`/api/reservations/${reservasiToDelete.id}`);
-        await fetchReservasi();
+        await reservasiService.remove(reservasiToDelete.id);        await fetchReservasi();
         setIsDeleteModalOpen(false);
         setReservasiToDelete(null);
         alert('Reservasi berhasil dihapus!');

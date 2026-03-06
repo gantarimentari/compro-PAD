@@ -1,7 +1,9 @@
 'use client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { useState, useEffect } from 'react';
-import api from '@lib/api';
+import patientService from '@/lib/services/patientService';
+import hewanService from '@/lib/services/hewanService';
+import jenisHewanService from '@/lib/services/jenisHewanService';
 import { TrashIcon, WarningIcon, PenIcon} from '@ds/icons';
 import Button from '@ds/Button';
 import Table from '@ds/dashboard/components/Table';
@@ -33,22 +35,23 @@ export default function ManagementPasien(){
 const { data: pasienData = [], isLoading } = useQuery({
   queryKey: ['patients'], // Ini "kunci" agar data disimpan di memori
   queryFn: async () => {
-    // TIPS: Hapus baris csrf-cookie agar fetch jauh lebih cepat
-    const res = await api.get("/api/patients");
+    const data = await patientService.getAll();
     
     // Logika mapping data kamu tetap sama seperti sebelumnya
-    return res.data.map(item => ({
-      id: item.id,
-      name: item.username,
-      phoneNumber: item.phone_number,
-      email: item.email,
-      date: new Date(item.created_at).toLocaleDateString('id-ID'),
-      pets: item.hewans?.map(hewan => ({
-        id: hewan.id_hewan,
-        petName: hewan.nama_hewan,
-        species: hewan.jenis_hewan?.nama_jenis || '-',
-      })) || []
-    }));
+    return data.map(item => {
+      return {
+        id: item.id,
+        name: item.username,
+        phoneNumber: item.phone_number,
+        email: item.email,
+        date: new Date(item.created_at).toLocaleDateString('id-ID'),
+        pets: item.hewans?.map(hewan => ({
+          id: hewan.id_hewan,
+          petName: hewan.nama_hewan,
+          species: hewan.jenis_hewan?.nama_jenis || '-',
+        })) || []
+      };
+    });
   },
   staleTime: 5 * 60 * 1000, // Data dianggap "segar" selama 5 menit
 });
@@ -57,8 +60,8 @@ const { data: pasienData = [], isLoading } = useQuery({
 const { data: jenisHewanOptions = [] } = useQuery({
   queryKey: ['jenis-hewan'],
   queryFn: async () => {
-    const res = await api.get("/api/jenis-hewan");
-    return res.data;
+    const data = await jenisHewanService.getAll();
+    return data;
   },
   staleTime: 5 * 60 * 1000,
 });
@@ -73,24 +76,12 @@ const { data: jenisHewanOptions = [] } = useQuery({
 
   const handleSavePasien = async (formData) => {
     try{
-      await api.get('/sanctum/csrf-cookie');
-
-      const pasienPayload = {
-        name: formData.name,
-        phoneNumber: formData.phoneNumber,
-        email: formData.email,
-        password: formData.password,
-        pets: []
-      };
-
-      console.log('bismillah sending payload:', pasienPayload);
-
-      const pasienRes = await api.post('/api/patients', pasienPayload);
-      const newPasienId = pasienRes.data.id;
+      const created = await patientService.create(pasienPayload);
+      const newPasienId = created.id;
 
       if (formData.pets && formData.pets.length > 0) {
         for (const pet of formData.pets) {
-          await api.post("/api/hewan", {
+          await hewanService.create({
             id_pasien: newPasienId,
             id_jenisHewan: pet.speciesId,
             nama_hewan: pet.petName,
@@ -123,16 +114,16 @@ const { data: jenisHewanOptions = [] } = useQuery({
         pasienPayload.password = formData.password;
       }
 
-      await api.put(`/api/patients/${id}`,pasienPayload);
+      await patientService.update(id, pasienPayload);
 
       const oldPets = selectedPasien.pets || [];
       for (const pet of oldPets) {
-        await api.delete(`/api/hewan/${pet.id}`);
+        await hewanService.remove(pet.id);
       }
 
       if (formData.pets && formData.pets.length > 0) {
         for (const pet of formData.pets) {
-          await api.post("/api/hewan", {
+          await hewanService.create({
             id_pasien: id,
             id_jenisHewan: pet.speciesId,
             nama_hewan: pet.petName,
@@ -162,8 +153,7 @@ const { data: jenisHewanOptions = [] } = useQuery({
 
   const confirmDelete = async () => {
     try {
-      await api.delete(`/api/patients/${pasienToDelete.id}`);
-      
+      await patientService.remove(pasienToDelete.id);
 
       queryClient.invalidateQueries({ queryKey: ['patients'] });
       setIsDeleteModalOpen(false);

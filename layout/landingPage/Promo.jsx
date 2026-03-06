@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react';
 import TagLabel from "@ds/Button/TagLabel";
 import { DashedBorder } from '@ds/frame/garisputus';
 import PromoCard from './components/PromoCard';
-import api from '@lib/api';
+import systemInfoService from '@/lib/services/systemInfoService';
+import promoService from '@/lib/services/promoService';
 
 export default function Promo() {
   const svgBackground = "/Background/bg-bone-blue.svg";
@@ -28,9 +29,9 @@ export default function Promo() {
   // Fetch judul promo dari system info (Logic HEAD)
   const fetchSystemInfo = async () => {
     try {
-      const response = await api.get('/api/system-info');
+      const response = await systemInfoService.get();
       
-      const judul = response.data.systemInfo?.judul_promo_tersedia;
+      const judul = response.systemInfo?.judul_promo_tersedia;
       if (judul) {
         console.log('Judul Promo from DB:', judul);
       }
@@ -45,11 +46,11 @@ export default function Promo() {
       setIsLoading(true);
       console.log('Fetching promos from API...');
       
-      const response = await api.get('/api/public/promos');
-      console.log('Promos Response:', response.data);
+      const response = await promoService.getPublic();
+      console.log('Promos Response:', response);
       
       // Format data dari backend
-      const formattedPromos = response.data.map(promo => ({
+      const formattedPromos = response.map(promo => ({
         id: promo.id,
         title: promo.title,
         description: promo.description,

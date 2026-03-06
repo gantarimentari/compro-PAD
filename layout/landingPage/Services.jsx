@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import TagLabel from '../../components/Button/TagLabel';
-import api from '@lib/api';
+import systemInfoService from '@/lib/services/systemInfoService';
 import Link from "next/link";
 import Button from '@ds/Button';
 import { RightArrowIcon } from '@ds/icons';
@@ -26,19 +26,19 @@ export default function Services() {
   const fetchSystemInfo = async () => {
     try {
       setIsLoading(true);
-      const response = await api.get('/api/system-info');
+      const response = await systemInfoService.get();
       
-      console.log('System Info Response:', response.data);
+      console.log('System Info Response:', response);
       
-      const judul = response.data.systemInfo?.judul_layanan_tersedia;
+      const judul = response.systemInfo?.judul_layanan_tersedia;
       if (judul) {
         setJudulLayanan(judul);
         console.log('Judul Layanan from DB:', judul);
       }
 
       setWhatsappData({
-        phone: response.data.systemInfo?.phone || '',
-        template: response.data.systemInfo?.whatsapp_template || ''
+        phone: response.systemInfo?.phone || '',
+        template: response.systemInfo?.whatsapp_template || ''
       });
 
     } catch (error) {

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { NotificationIcon, UserIcon, CloseIcon } from "@ds/icons";
 import Link from "next/link";
-import api from "@lib/api.js";
+import authService from '@/lib/services/authService';
 
 export default function Header() {
   //  Start with false (assume guest)
@@ -17,10 +17,10 @@ export default function Header() {
     const checkAuth = async () => {
       try {
         setIsCheckingAuth(true);
-        const response = await api.get('/api/user');
+        const response = await authService.getUser();
         
-        if (response.data) {
-          console.log('User authenticated:', response.data);
+        if (response) {
+          console.log('User authenticated:', response);
           setIsLoggedIn(true);
         }
       } catch (err) {

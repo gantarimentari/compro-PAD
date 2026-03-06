@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import api from '@lib/api';
+import dashboardService from '@/lib/services/dashboardService';
 import PageHeader from '@ds/dashboard/layouts/PageHeader';
 import { 
   SearchIcon, 
@@ -52,16 +52,16 @@ export default function Home() {
       setUserName(userInfo.username || 'User');
 
       // fetch statistics
-      const statsRes = await api.get('/api/dashboard/statistics');
-      setMetrics(statsRes.data);
+      const stats = await dashboardService.getStatistics();
+      setMetrics(stats);
 
       // fetch ringkasan klinik
-      const summaryRes = await api.get('/api/dashboard/clinic-summary');
-      setClinicSummary(summaryRes.data);
+      const summary = await dashboardService.getClinicSummary();
+      setClinicSummary(summary);
 
       // Fet
-      const transactionsRes = await api.get('/api/dashboard/recent-transactions');
-      setTransactions(transactionsRes.data);
+      const transactions = await dashboardService.getRecentTransactions();
+      setTransactions(transactions);
 
     } catch (err) {
       console.error('Error fetching dashboard data:', err);

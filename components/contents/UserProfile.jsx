@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { UserIcon, LogOutDoor, PencilIcon, DocumentIcon } from '@ds/icons/UIIcons';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import api from '@lib/api.js'; //  Import API client
+import profileService from '@/lib/services/profileService';
+import authService from '@/lib/services/authService';
 
 // SVG Component untuk border putus-putus
 const ModalDashedBorder = ({ className, style = {} }) => (
@@ -124,12 +125,12 @@ export default function UserProfile() {
     const fetchUserProfile = async () => {
         try {
             setIsLoading(true);
-            const res = await api.get('/api/profile');
+            const res = await profileService.get();
             
-            setUserProfile(res.data.user);
+            setUserProfile(res.user);
             setFormData({
-                username: res.data.user.username,
-                phone_number: res.data.user.phone_number || '',
+                username: res.user.username,
+                phone_number: res.user.phone_number || '',
             });
         } catch (err) {
             console.error('❌ Error fetching profile:', err);
@@ -233,12 +234,12 @@ export default function UserProfile() {
             }
 
             // Update profile
-            const res = await api.put('/api/profile', {
+            const res = await profileService.update({
                 username: formData.username,
                 phone_number: formData.phone_number,
             });
 
-            setUserProfile(res.data.user);
+            setUserProfile(res.user);
             setSuccessMessage('Profile berhasil diperbarui!');
             setIsEditing(false);
 
@@ -260,7 +261,7 @@ export default function UserProfile() {
     //  Handle logout
     const handleLogout = async () => {
         try {
-            await api.post('/api/logout');
+            await authService.logout();
             localStorage.removeItem('user');
             sessionStorage.clear();
             router.push('/');

@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import api from '@lib/api';
+import hewanService from '@/lib/services/hewanService';
 import BaseModal from './BaseModal';
 import SuccessToast from '@ds/ui/SuccessToast';
 
@@ -38,14 +38,8 @@ const EditReservasiModal = ({ isOpen, onClose, onSave, reservasi }) => {
   const fetchOwnerPets = async (ownerId) => {
     try {
       setIsLoadingPets(true);
-      await api.get('/sanctum/csrf-cookie');
-      
-      console.log('🐾 Fetching all hewan to filter by owner ID:', ownerId);
-      
-      const res = await api.get('/api/hewan');
-      console.log('All Hewan Data:', res.data);
-      
-      const ownerData = res.data.find(owner => owner.id === parseInt(ownerId));
+      const data = await hewanService.getAll();
+      const ownerData = data.find(owner => owner.id === parseInt(ownerId));
       
       if (ownerData && ownerData.pets) {
         console.log('Found owner pets:', ownerData.pets);

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import api from "@lib/api.js";
 import { SearchIcon, CloseIcon, TrashIcon, AddIcon, PenIcon} from '@ds/icons';
 import Table from '@ds/dashboard/components/Table';
 import SearchBar from '@ds/dashboard/layouts/ManagementSearch';

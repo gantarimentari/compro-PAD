@@ -1,6 +1,6 @@
 'use client';
 
-import api from '@lib/api';
+import mediaService from '@/lib/services/mediaService';
 import { useEffect } from 'react';
 import React, { useState } from 'react';
 import { TrashIcon, WarningIcon } from '@ds/icons';
@@ -82,13 +82,12 @@ export default function ManagemenMedia() {
     try {
       setIsLoading(true);
       console.log('Fetching media from API...');
-      await api.get('/sanctum/csrf-cookie');
 
-      const res = await api.get('/api/media');
+      const res = await mediaService.getAll();
 
-      console.log('📦 Raw API Response:', res.data);
+      console.log('📦 Raw API Response:', res);
 
-      const formatted = res.data.map((item, index) => {
+      const formatted = res.map((item, index) => {
         return {
           id: item.id,
           name: item.name || 'Untitled',
@@ -119,8 +118,6 @@ export default function ManagemenMedia() {
 
   const handleSaveMedia = async (formData) => {
     try {
-      await api.get('/sanctum/csrf-cookie');
-      
       const uploadData = new FormData();
       uploadData.append('category', formData.kategori);
       
@@ -132,9 +129,7 @@ export default function ManagemenMedia() {
         uploadData.append('video_url', formData.linkYoutube);
       }
 
-      await api.post('/api/media', uploadData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      await mediaService.create(uploadData);
       
       await fetchMedia(); // Refresh data
       setIsModalOpen(false);
@@ -153,9 +148,7 @@ export default function ManagemenMedia() {
   const handleConfirmDelete = async () => {
     if (mediaToDelete) {
       try {
-        await api.get('/sanctum/csrf-cookie');
-        //  Fix: Pakai template literal yang benar
-        await api.delete(`/api/media/${mediaToDelete}`);
+        await mediaService.remove(mediaToDelete);
         
         await fetchMedia(); // Refresh data
         setIsDeleteModalOpen(false);

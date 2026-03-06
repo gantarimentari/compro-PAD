@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import api from '@lib/api';
+import articleService from '@/lib/services/articleService';
 import Button from '@ds/Button/Button';
 import { ModalDashedBorder } from '@ds/frame/garisputus';
 import { CloseCircleIcon, ChevronLeftIcon, ChevronRightIcon } from '@ds/icons/UIIcons';
@@ -283,12 +283,12 @@ const ArticleCMSApp = () => {
             setLoading(true);
             console.log('🔄 Fetching articles from API...');
             
-            const response = await api.get('/api/articles');
+            const response = await articleService.getAll();
             
-            console.log('📦 Articles API Response:', response.data);
+            console.log('📦 Articles API Response:', response);
             
             //  FILTER: Hanya ambil artikel dengan status 'Publish'
-            const publishedArticles = response.data.filter(article => article.status === 'Publish');
+            const publishedArticles = response.filter(article => article.status === 'Publish');
             
             console.log(' Published articles only:', publishedArticles);
             

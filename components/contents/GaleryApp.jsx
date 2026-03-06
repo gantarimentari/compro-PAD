@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import api from '@lib/api';
+import mediaService from '@/lib/services/mediaService';
 import { CloseCircleIcon, ChevronLeftIcon, ChevronRightIcon, ExternalLinkIcon }  from '@ds/icons/UIIcons';
 
 const IMAGES_PER_PAGE = 6;
@@ -291,11 +291,11 @@ const GaleryApp = ({ activeFilter }) => {
                 params.days = activeFilter;
             }
             
-            const response = await api.get('/api/media', { params });
+            const response = await mediaService.getAll({ excludeVideo: params.exclude_video, days: params.days });
             
-            console.log('📦 Gallery API Response (without videos):', response.data);
+            console.log('📦 Gallery API Response (without videos):', response);
             
-            setImages(response.data);
+            setImages(response);
         } catch (error) {
             console.error('Error fetching images:', error);
         } finally {
@@ -425,10 +425,8 @@ export const GaleryFilterButtons = ({ activeFilter, onFilterChange }) => {
     const fetchStatistics = async () => {
         try {
             // ✅ Tambahkan exclude_video=true untuk statistics
-            const response = await api.get('/api/media/statistics', {
-                params: { exclude_video: 'true' }
-            });
-            setStatistics(response.data);
+            const response = await mediaService.getStatistics();
+            setStatistics(response);
         } catch (error) {
             console.error('Error fetching statistics:', error);
         }

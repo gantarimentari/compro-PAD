@@ -2,8 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import api from "@lib/api.js";
-import Cookies from 'js-cookie';
+import authService from '@/lib/services/authService';
 import Link from 'next/link';
 import AuthLayout from '@ds/auth/AuthLayout';
 import Input from '@ds/auth/Input';
@@ -34,30 +33,11 @@ export default function LoginPage() {
     setError(''); // Clear previous errors
 
     try {
-      // Get CSRF token
-      await api.get('/sanctum/csrf-cookie');
-      
-      // Login request
-      const res = await api.post('/api/login', {
-        email: formData.email,
-        password: formData.password,
-      }, {
-        headers: {
-          'Accept': 'application/json',
-          'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN'),
-        },
-        withCredentials: true,
-      });
-
-      console.log('Login response:', res.data); // Debug log
-      console.log('Response status:', res.status);
-      console.log('Full response:', res);
-      console.log('Response has user?', res.data?.user);
-      console.log('Response keys:', Object.keys(res.data || {}));
+      const res = await authService.login(formData);
 
       // Cek apakah response punya property user
-      if (res.data && res.data.user) {
-        const { user } = res.data;
+      if (res && res.user) {
+        const { user } = res;
         
         // Simpan user info ke localStorage
         localStorage.setItem('user', JSON.stringify(user));
@@ -69,10 +49,7 @@ export default function LoginPage() {
           router.push('/');
         }
       } else {
-        // Log detail untuk debugging
-        console.error('Response tidak memiliki user object');
-        console.error('Response data:', res.data);
-        setError('Login berhasil tapi response tidak lengkap. Cek console untuk detail.');
+        setError('Login berhasil tapi response tidak lengkap.');
       }
     } catch (err) {
       console.error('Login error:', err);

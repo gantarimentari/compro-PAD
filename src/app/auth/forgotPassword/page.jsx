@@ -2,8 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import Cookies from 'js-cookie';
-import api from '@lib/api.js';
+import authService from '@/lib/services/authService';
 import AuthLayout from '@ds/auth/AuthLayout';
 import Input from '@ds/auth/Input';
 import Button from '@ds/auth/Button';
@@ -23,12 +22,7 @@ export default function ForgotPasswordPage() {
     try {
       console.log('🔐 Requesting password reset for:', email);
 
-      await api.get('/sanctum/csrf-cookie');
-
-      // ✅ Tambahkan /api prefix jika belum ada di base config
-      const res = await api.post('/api/forgot-password', { email });
-
-      console.log('✅ Response:', res.data);
+      await authService.forgotPassword({ email });
       setIsSubmitted(true);
 
     } catch (err) {

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import api from "@lib/api.js";
+import articleService from '@/lib/services/articleService';
 import { SearchIcon, CloseIcon, TrashIcon, AddIcon, PenIcon, UploadIcon} from '@ds/icons';
 import Button from '@ds/Button';
 import Table from '@ds/dashboard/components/Table';
@@ -78,12 +78,11 @@ export default function ManagemenArtikel() {
   const fetchCsrfAndArticles = async() => {
     try {
       setIsLoading(true);
-      await api.get("/sanctum/csrf-cookie");
-      const res = await api.get("/api/articles");
+      const data = await articleService.getAll();
 
       console.log('Fetched articles:', res.data);
 
-      const formatted = res.data.map(item => ({
+      const formatted = data.map(item => ({
         id: item.id,
         title: item.title,
         category: item.category,
@@ -113,40 +112,16 @@ export default function ManagemenArtikel() {
 
   const handleSaveArtikel = async (formData) => {
     try {
-      await api.get("/sanctum/csrf-cookie");
-
       const data = new FormData();
       data.append("title", formData.judul);
       data.append("category", formData.kategori);
       data.append("content", formData.isiArtikel);
       data.append("status", formData.status);
-      
-      // hanya append image jika ada dan valid
       if (formData.file && formData.file instanceof File) {
-        console.log('📎 Appending image file:', {
-          name: formData.file.name,
-          type: formData.file.type,
-          size: formData.file.size
-        });
         data.append("image", formData.file);
-      } else {
-        console.log('no image file to upload');
       }
 
-      console.log('posting article to API...', {
-        title: formData.judul,
-        category: formData.kategori,
-        status: formData.status,
-        hasFile: !!formData.file
-      });
-      
-      const response = await api.post("/api/articles", data, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        }
-      });
-
-      console.log('Article saved successfully:', response.data);
+      await articleService.create(data);
 
       await fetchCsrfAndArticles();
       setIsModalOpen(false);
@@ -165,17 +140,14 @@ export default function ManagemenArtikel() {
 
   const handleEditArtikel = async (id, formData) => {
     try {
-      await api.get('/sanctum/csrf-cookie');
-
       const data = new FormData();
       data.append("title", formData.judul);
       data.append("category", formData.kategori);
       data.append("content", formData.isiArtikel);
       data.append("status", formData.status);
       if (formData.file) data.append("image", formData.file);
-      data.append("_method", "PUT");
 
-      await api.post(`/api/articles/${id}`, data);
+      await articleService.update(id, data);
       await fetchCsrfAndArticles();
       setIsEditModalOpen(false);
       setSelectedArticle(null);
@@ -199,9 +171,7 @@ export default function ManagemenArtikel() {
   const handleConfirmDelete = async () => {
     if (articleToDelete) {
       try {
-        await api.get('/sanctum/csrf-cookie');
-        await api.delete(`/api/articles/${articleToDelete.id}`);
-        await fetchCsrfAndArticles();
+        await articleService.remove(articleToDelete.id);        await fetchCsrfAndArticles();
         setIsDeleteModalOpen(false);
         setArticleToDelete(null);
         alert('Artikel berhasil dihapus!');

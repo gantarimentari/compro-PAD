@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import * as Icons from "@ds/icons";
 import { socialIconsMap } from "@ds/icons";
-import api from '@lib/api'; // ✅ Import API
+import systemInfoService from '@/lib/services/systemInfoService';
 
 export default function Footer({
   footerClass = "bg-accent-blue-600 text-white",
@@ -51,12 +51,12 @@ export default function Footer({
         setIsLoading(true);
         console.log('🔄 Fetching footer data...');
         
-        const response = await api.get('/api/system-info');
-        console.log('✅ Footer data loaded:', response.data.systemInfo);
+        const response = await systemInfoService.get();
+        console.log('✅ Footer data loaded:', response.systemInfo);
         
         setFooterData({
           ...defaultData,
-          ...response.data.systemInfo,
+          ...response.systemInfo,
         });
       } catch (error) {
         console.error('❌ Error fetching footer data:', error);

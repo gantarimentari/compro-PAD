@@ -1,7 +1,9 @@
 'use client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { useState, useMemo } from 'react';
-import api from '@lib/api';
+import hewanService from '@/lib/services/hewanService';
+import patientService from '@/lib/services/patientService';
+import jenisHewanService from '@/lib/services/jenisHewanService';
 import { TrashIcon, PenIcon } from '@ds/icons';
 import Button from '@ds/Button';
 import Table from '@ds/dashboard/components/Table';
@@ -31,8 +33,8 @@ export default function ManagementHewan() {
   const { data: rawHewanData = [], isLoading } = useQuery({
     queryKey: ['hewan-raw'],
     queryFn: async () => {
-      const res = await api.get('/api/hewan');
-      return res.data;
+      const data = await hewanService.getAll();
+      return data;
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -41,8 +43,8 @@ export default function ManagementHewan() {
   const { data: ownerOptions = [] } = useQuery({
     queryKey: ['patients'],
     queryFn: async () => {
-      const res = await api.get('/api/patients');
-      return res.data.map(p => ({ 
+      const data = await patientService.getAll();
+      return data.map(p => ({ 
         id: p.id, 
         name: p.username || p.name 
       }));
@@ -54,8 +56,8 @@ export default function ManagementHewan() {
   const { data: jenisHewanOptions = [] } = useQuery({
     queryKey: ['jenis-hewan'],
     queryFn: async () => {
-      const res = await api.get('/api/jenis-hewan');
-      return res.data.map(j => ({ 
+      const data = await jenisHewanService.getAll();
+      return data.map(j => ({ 
         id_jenisHewan: j.id_jenisHewan || j.id, 
         nama_jenis: j.nama_jenis 
       }));
@@ -65,20 +67,14 @@ export default function ManagementHewan() {
 
   // --- 2. LOGIKA FLATTEN DATA ---
   const flattenedData = useMemo(() => {
-    const flattened = [];
-    rawHewanData.forEach(owner => {
-      owner.pets?.forEach(pet => {
-        flattened.push({
-          id: pet.id,
-          petName: pet.petName || `Hewan ${pet.id}`,
-          species: pet.speciesName,
-          ownerName: owner.name,
-          ownerId: owner.id,
-          speciesId: pet.speciesId,
-        });
-      });
-    });
-    return flattened;
+    return rawHewanData.map(hewan => ({
+      id: hewan.id_hewan,
+      petName: hewan.nama_hewan || `Hewan ${hewan.id_hewan}`,
+      species: hewan.jenis_hewan?.nama_jenis || '-',
+      ownerName: hewan.pasien?.username || hewan.pasien?.name || '-',
+      ownerId: hewan.id_pasien,
+      speciesId: hewan.id_jenisHewan,
+    }));
   }, [rawHewanData]);
 
   const filteredData = useMemo(() => {
@@ -93,7 +89,7 @@ export default function ManagementHewan() {
 
   const handleSaveHewan = async (formData) => {
     try {
-      await api.post('/api/hewan', {
+      await hewanService.create({
         id_pasien: formData.ownerId,
         id_jenisHewan: formData.speciesId,
         nama_hewan: formData.petName,
@@ -106,7 +102,7 @@ export default function ManagementHewan() {
 
   const handleEditHewan = async (id, formData) => {
     try {
-      await api.put(`/api/hewan/${id}`, {
+      await hewanService.update(id, {
         id_pasien: formData.ownerId,
         id_jenisHewan: formData.speciesId,
         nama_hewan: formData.petName,
@@ -120,7 +116,7 @@ export default function ManagementHewan() {
 
   const confirmDelete = async () => {
     try {
-      await api.delete(`/api/hewan/${hewanToDelete.id}`);
+      await hewanService.remove(hewanToDelete.id);
       queryClient.invalidateQueries({ queryKey: ['hewan-raw'] });
       setIsDeleteModalOpen(false);
       setHewanToDelete(null);

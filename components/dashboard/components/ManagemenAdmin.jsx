@@ -7,7 +7,7 @@ import Table from '@ds/dashboard/components/Table';
 import SearchBar from '@ds/dashboard/layouts/ManagementSearch';
 import PageHeader from '@ds/dashboard/layouts/PageHeader';
 import { TambahAdminModal, DeleteConfirmModal, EditAdminModal } from '@ds/dashboard/modals';
-import api from '@lib/api.js';
+import adminService from '@/lib/services/adminService';
 const ADMIN_COLUMNS =[
   {key: 'adminName', header:'Nama Admin'},
   {key:'userName', header:'Username'},
@@ -62,7 +62,7 @@ export default function ManagemenAdmin(){
   const fetchAdmins = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/api/admins');
+      const response = await adminService.getAll();
       
       // Transform data dari backend ke format yang dibutuhkan frontend
       const transformedData = response.data.map(admin => ({
@@ -94,7 +94,7 @@ export default function ManagemenAdmin(){
   );
   const handleSaveAdmin = async (formData) => {
     try {
-      const response = await api.post('/api/admins', {
+      await adminService.create({
         username: formData.userName,
         email: formData.email,
         password: formData.password,
@@ -122,7 +122,7 @@ export default function ManagemenAdmin(){
         updateData.password = formData.password;
       }
 
-      await api.put(`/api/admins/${id}`, updateData);
+      await adminService.update(id, updateData);
 
       // Refresh data setelah berhasil update
       await fetchAdmins();
@@ -140,7 +140,7 @@ export default function ManagemenAdmin(){
   };
   const handleConfirmDelete = async () => {
     try {
-      await api.delete(`/api/admins/${adminToDelete.id}`);
+      await adminService.remove(adminToDelete.id);
       
       // Refresh data setelah berhasil delete
       await fetchAdmins();

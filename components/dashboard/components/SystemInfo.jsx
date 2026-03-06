@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import api from '@lib/api.js';
+import systemInfoService from '@/lib/services/systemInfoService';
+import mediaService from '@/lib/services/mediaService';
 import PageHeader from '@ds/dashboard/layouts/PageHeader';
 import Button from '@ds/Button';
 import { UploadIcon, FacebookIcon, InstagramIcon, TwitterIcon, YoutubeDBIcon, AddIcon, DiskSaveIcon, TrashIcon } from '@ds/icons';
@@ -46,8 +47,7 @@ export default function SystemInfo() {
   const fetchSystemInfo = async () => {
     try {
       setIsLoading(true);
-      await api.get('/sanctum/csrf-cookie');
-      const res = await api.get('/api/system-info');
+      const res = await systemInfoService.get();
 
       console.log('System Info Response:', res.data);
       console.log('Social Media from systemInfo:', res.data.systemInfo?.socialMedia);
@@ -154,14 +154,7 @@ export default function SystemInfo() {
       formData.append('category', 'foto-cards'); //  Special category
       formData.append('name', 'Foto Card - Hero Section');
 
-      await api.get('/sanctum/csrf-cookie');
-      console.log('Uploading foto_card to foto-cards folder...');
-
-      const res = await api.post('/api/media', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const res = await mediaService.create(formData);
 
       console.log(' Upload response:', res.data);
 
@@ -184,11 +177,7 @@ export default function SystemInfo() {
 
   const handleDeleteSocialMedia = async (id, platform) => {
     try{
-      await api.get('/sanctum/csrf-cookie');
-
-      console.log('hapus sosmed', id, platform);
-
-      await api.delete(`/api/social-media/${id}`);
+      await systemInfoService.removeSocialMedia(id);
 
       console.log('sosmed berhasil dihapus');
 
@@ -242,13 +231,7 @@ export default function SystemInfo() {
       return; // Stop jangan submit
     }
     try {
-      await api.get('/sanctum/csrf-cookie');
-
-      console.log('Saving system info:', systemData);
-
-      const res = await api.put('/api/system-info', systemData);
-
-      console.log(' Save response:', res.data);
+      await systemInfoService.update(systemData);
 
       alert(' Data berhasil disimpan!');
       await fetchSystemInfo();
@@ -263,9 +246,7 @@ export default function SystemInfo() {
   const handleAddSocialMedia = async () => {
     if (newSocialMedia.platform && newSocialMedia.url) {
       try {
-        await api.get('/sanctum/csrf-cookie');
-
-        await api.post('/api/social-media', {
+        await systemInfoService.addSocialMedia({
           platform: newSocialMedia.platform,
           url: newSocialMedia.url,
         });
@@ -283,9 +264,7 @@ export default function SystemInfo() {
   //  Update social media
   const handleUpdateSocialMedia = async (id, newUrl) => {
     try {
-      await api.get('/sanctum/csrf-cookie');
-
-      await api.put(`/api/social-media/${id}`, { url: newUrl });
+      await systemInfoService.updateSocialMedia(id, { url: newUrl });
 
       alert(' Social media berhasil diupdate!');
     } catch (err) {

@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import api from '@lib/api.js';
+import systemInfoService from '@/lib/services/systemInfoService';
 import Button from '@ds/Button';
 import { RightArrowIcon } from '@ds/icons';
 
@@ -24,14 +24,14 @@ export default function Profile() {
       try {
         setIsLoading(true);
 
-        const sysRes = await api.get('/api/system-info');
-        console.log('System Info:', sysRes.data);
+        const sysRes = await systemInfoService.get();
+        console.log('System Info:', sysRes);
 
         setSystemData({
-          deskripsi_hero: sysRes.data.systemInfo?.deskripsi_hero || 'Buat pawrent...',
-          foto_card: sysRes.data.systemInfo?.foto_card || '/images/foto-dokter.png',
-          phone: sysRes.data.systemInfo?.phone || '',
-          whatsapp_template: sysRes.data.systemInfo?.whatsapp_template || '', //  Get template
+          deskripsi_hero: sysRes.systemInfo?.deskripsi_hero || 'Buat pawrent...',
+          foto_card: sysRes.systemInfo?.foto_card || '/images/foto-dokter.png',
+          phone: sysRes.systemInfo?.phone || '',
+          whatsapp_template: sysRes.systemInfo?.whatsapp_template || '',
         });
 
       } catch (err) {

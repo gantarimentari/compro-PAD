@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import BaseModal from './BaseModal';
-import api from '@lib/api';
+import jenisHewanService from '@/lib/services/jenisHewanService';
 
 const TambahHewanModal = ({ 
   isOpen, 
@@ -30,15 +30,15 @@ const TambahHewanModal = ({
     if (ownerId) {
       //  Fetch jenis hewan milik owner ini
       try {
-        await api.get('/sanctum/csrf-cookie');
-        const res = await api.get(`/api/jenis-hewan?id_pasien=${ownerId}`);
-        
-        const formatted = res.data.map(jenis => ({
-          id_jenisHewan: jenis.id_jenisHewan,
+        const data = await jenisHewanService.getAll();
+        // Filter jenis hewan yang dimiliki owner ini (dari array pemilik)
+        const filtered = data.filter(jenis =>
+          jenis.pemilik?.some(p => String(p.id_pemilik) === String(ownerId))
+        );
+        const formatted = filtered.map(jenis => ({
+          id_jenisHewan: jenis.id,
           nama_jenis: jenis.nama_jenis,
         }));
-        
-        console.log('Jenis Hewan for this owner:', formatted);
         setJenisHewanOptions(formatted);
       } catch (err) {
         console.error('Error fetching jenis hewan:', err);
@@ -90,7 +90,7 @@ const TambahHewanModal = ({
             {ownerOptions && ownerOptions.length > 0 ? (
               ownerOptions.map((owner) => (
                 <option key={`owner-${owner.id}`} value={owner.id} className='text-accent-neutral-1000'>
-                  {owner.name} - {owner.email}
+                  {owner.name}
                 </option>
               ))
             ) : (

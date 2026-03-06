@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import BaseModal from './BaseModal';
 import Button from '@ds/Button';
-import api from '@lib/api';
+import jenisHewanService from '@/lib/services/jenisHewanService';
 import SuccessToast from '@ds/ui/SuccessToast';
 
 const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerOptions = [] }) => {
@@ -43,15 +43,11 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerOptions = [] }) =
 
     try {
       setIsLoadingSpecies(true);
-      await api.get('/sanctum/csrf-cookie');
-      const res = await api.get(`/api/jenis-hewan?id_pasien=${ownerId}`);
-      
-      const formatted = res.data.map(jenis => ({
+      const data = await jenisHewanService.getAll(ownerId);
+      const formatted = data.map(jenis => ({
         id_jenisHewan: jenis.id_jenisHewan,
         nama_jenis: jenis.nama_jenis,
       }));
-      
-      console.log('Jenis Hewan for owner:', formatted);
       setJenisHewanOptions(formatted);
     } catch (err) {
       console.error('Error fetching jenis hewan:', err);

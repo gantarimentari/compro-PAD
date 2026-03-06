@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import api from '@lib/api';
+import patientService from '@/lib/services/patientService';
+import hewanService from '@/lib/services/hewanService';
 import BaseModal from './BaseModal';
 
 const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
@@ -56,17 +57,13 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
 
   const fetchOwners = async () => {
     try {
-      await api.get('/sanctum/csrf-cookie');
-      const res = await api.get('/api/patients');
-      
-      const formatted = res.data.map(patient => ({
+      const data = await patientService.getAll();
+      const formatted = data.map(patient => ({
         id: patient.id,
         name: patient.username,
         email: patient.email,
       }));
-      
       setOwnerOptions(formatted);
-      console.log('Owner Options:', formatted);
     } catch (err) {
       console.error('Error fetching owners:', err);
     }
@@ -74,13 +71,9 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
 
   const fetchAllPets = async () => {
     try {
-      await api.get('/sanctum/csrf-cookie');
-      const res = await api.get('/api/hewan');
-      
-      console.log('Raw Hewan Data (Grouped):', res.data);
-      
+      const data = await hewanService.getAll();
       const flatPets = [];
-      res.data.forEach(owner => {
+      data.forEach(owner => {
         if (owner.pets && owner.pets.length > 0) {
           owner.pets.forEach(pet => {
             flatPets.push({
@@ -95,8 +88,6 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
           });
         }
       });
-      
-      console.log('Flattened Pets:', flatPets);
       setAllPets(flatPets);
     } catch (err) {
       console.error('Error fetching pets:', err);
