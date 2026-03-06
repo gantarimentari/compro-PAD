@@ -76,6 +76,14 @@ const { data: jenisHewanOptions = [] } = useQuery({
 
   const handleSavePasien = async (formData) => {
     try{
+      const pasienPayload ={
+        name: formData.name,
+        phoneNumber: formData.phoneNumber,
+        email: formData.email,
+        password: formData.password,
+        pets: []
+      };
+
       const created = await patientService.create(pasienPayload);
       const newPasienId = created.id;
 
@@ -101,7 +109,6 @@ const { data: jenisHewanOptions = [] } = useQuery({
     }
     // setPasienData([...pasienData, newPasien]);
   };
-
   const handleEditPasien = async (id, formData) => {
     try{
       const pasienPayload = {
