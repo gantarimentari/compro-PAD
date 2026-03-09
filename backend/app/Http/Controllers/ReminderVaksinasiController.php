@@ -391,4 +391,57 @@ class ReminderVaksinasiController extends Controller
         }
     }
 
+    public function getUpcomingNotifications(){
+        try{
+            $now = Carbon::now('Asia/Jakarta');
+
+            $upcoming = ReminderVaksinasi::with(['hewan.pasien'])->whereBetween('tanggal_vaksin', [
+                $now->copy()->startOfDay(), $now->copy()->addDays(7)->endOfDay()
+            ])
+            ->orderBy('tanggal_vaksin', 'asc')
+            ->get();
+
+            $notifications = $upcoming->map(function ($vaksinasi) use($now) {
+                $daysUntil = (int) $now->copy()->startOfDay()->diffInDays($vaksinasi->tanggal_vaksin, false);
+
+                if ($daysUntil === 3) {
+                    $reminderType = '3_days_sebelum';
+                    $label        = '3 hari lagi';
+                } elseif ($daysUntil === 1) {
+                    $reminderType = '1_day_before';
+                    $label        = 'Besok';
+                } elseif ($daysUntil === 0) {
+                    $reminderType = 'same_day';
+                    $label        = 'Hari ini';
+                } else {
+                    $reminderType = null;
+                    $label        = "{$daysUntil} hari lagi";
+                }
+                return [
+                'id_vaksinasi'   => $vaksinasi->id_vaksinasi,
+                'jenis_vaksin'   => $vaksinasi->jenis_vaksin,
+                'tanggal_vaksin' => $vaksinasi->tanggal_vaksin->format('d/m/Y'),
+                'days_until'     => $daysUntil,
+                'reminder_type'  => $reminderType,
+                'label'          => $label,
+                'nama_hewan'     => $vaksinasi->hewan->nama_hewan ?? '-',
+                'nama_pemilik'   => $vaksinasi->hewan->pasien->username
+                                   ?? $vaksinasi->hewan->pasien->name
+                                   ?? '-',
+                ];
+            });
+
+            return response()->json([
+                'count'=>$notifications->count(),
+                'notifications'=>$notifications,
+            ]);
+        } catch(\Exception $e){
+            Log::error('error fetching vac notifications: '. $e->getMessage());
+            return response()->json([
+                'message'=> 'failed to fetch notifs',
+                'error'=> $e->getMessage()
+            ]);
+        }
+    }
+
 }

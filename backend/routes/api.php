@@ -89,6 +89,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/profile', [UserProfileController::class, 'update']);
     Route::put('/profile/password', [UserProfileController::class, 'updatePassword']);
 
+    Route::get('/notifications/vaksinasi', [ReminderVaksinasiController::class, 'getUpcomingNotifications']);
+
     // Route::get('/reminder-vaksinasi', [ReminderVaksinasiController::class, 'index']);
     // Route::post('/reminder-vaksinasi', [ReminderVaksinasiController::class, 'store']);
     // Route::put('/reminder-vaksinasi/{id}', [ReminderVaksinasiController::class, 'update']);
