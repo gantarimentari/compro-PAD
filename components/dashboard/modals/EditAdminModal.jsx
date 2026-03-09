@@ -12,6 +12,7 @@ const EditAdminModal = ({ isOpen, onClose, onSave, admin }) => {
     password: '',
   });
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   useEffect(() => {
     if (admin) {
@@ -33,11 +34,24 @@ const EditAdminModal = ({ isOpen, onClose, onSave, admin }) => {
   }, [admin, isOpen]);
   
   if (!isOpen || !admin) return null;
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setShowSuccess(true);
-    onSave(admin.id, formData);
-    setTimeout(() => { setShowSuccess(false); onClose(); }, 1500);
+    setIsSubmitting(true);
+    setShowSuccess(false);
+    
+    try {
+      await onSave(admin.id, formData);
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        onClose();
+      }, 1500);
+    } catch (error) {
+      console.error('Error updating admin:', error);
+      alert('Gagal memperbarui admin: ' + (error.message || 'Unknown error'));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   return (
     <BaseModal
@@ -109,9 +123,10 @@ const EditAdminModal = ({ isOpen, onClose, onSave, admin }) => {
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150"
+            disabled={isSubmitting}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Simpan Perubahan
+            {isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'}
           </button>
         </div>
       </form>

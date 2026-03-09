@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import promoService from '@/lib/services/promoService';
 import { TrashIcon, PenIcon, WarningIcon } from '@ds/icons';
 import Button from '@ds/Button';
@@ -18,10 +19,9 @@ const PROMO_COLUMNS = [
 ];
 
 const StatusTag = ({ status }) => {
-  const color = status === 'Available' 
-    ? 'bg-accent-green-50 text-accent-green-450' 
+  const color = status === 'Available'
+    ? 'bg-accent-green-50 text-accent-green-450'
     : 'bg-accent-red-50 text-accent-red-450';
-  
   return (
     <span className={`px-4 py-2 text-body-2 rounded-lg w-24 ${color}`}>
       {status}
@@ -30,9 +30,8 @@ const StatusTag = ({ status }) => {
 };
 
 export default function ManagemenPromo() {
-  const [promoData, setPromoData] = useState([]);
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
@@ -40,82 +39,77 @@ export default function ManagemenPromo() {
   const [selectedPromo, setSelectedPromo] = useState(null);
   const [promoToDelete, setPromoToDelete] = useState(null);
 
-  //  Fetch promos dari database
-  const fetchPromos = async () => {
-    try {
-      setIsLoading(true);
-      const data = await promoService.getAll();
-      setPromoData(data);
-    } catch (err) {
-      console.error('Error fetching promos:', err);
-      alert('Gagal memuat data promo');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchPromos();
-  }, []);
+  const { data: promoData = [], isLoading } = useQuery({
+    queryKey: ['promos'],
+    queryFn: () => promoService.getAll(),
+    staleTime: 5 * 60 * 1000,
+  });
 
   const filteredData = promoData.filter(item =>
     item.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  //  Tambah Promo
   const handleSavePromo = async (formData) => {
     try {
+      const payload = {
+        title: formData.title,
+        description: formData.description,
+        start_date: formData.startDate,
+        end_date: formData.endDate,
+        status: formData.status.toLowerCase(),
+      };
       await promoService.create(payload);
-      await fetchPromos();
-      setIsModalOpen(false);
-      alert(' Promo berhasil ditambahkan!');
+      queryClient.invalidateQueries({ queryKey: ['promos'] });
+      // ❌ Commented: setIsModalOpen(false); - Let modal close after showing toast
+      // Modal will close itself after displaying SuccessToast for 1500ms
     } catch (err) {
       console.error('Error saving promo:', err);
-      alert(`Gagal menyimpan: ${err.response?.data?.message || err.message}`);
+      throw err; // Re-throw for modal error handling
     }
   };
 
-  //  Edit Promo
+  const handleEditPromo = async (id, formData) => {
+    try {
+      const payload = {
+        title: formData.title,
+        description: formData.description,
+        start_date: formData.startDate,
+        end_date: formData.endDate,
+        status: formData.status.toLowerCase(),
+      };
+      await promoService.update(id, payload);
+      queryClient.invalidateQueries({ queryKey: ['promos'] });
+      // ❌ Commented: setIsEditModalOpen(false); setSelectedPromo(null); - Let modal close after showing toast
+      // Modal will close itself after displaying SuccessToast for 1500ms
+    } catch (err) {
+      console.error('Error updating promo:', err);
+      throw err; // Re-throw for modal error handling
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await promoService.remove(promoToDelete.id);
+      queryClient.invalidateQueries({ queryKey: ['promos'] });
+      setIsDeleteModalOpen(false);
+      setPromoToDelete(null);
+      alert('Promo berhasil dihapus!');
+    } catch (err) {
+      console.error('Error deleting promo:', err);
+      alert('Gagal menghapus promo');
+    }
+  };
+
   const handleEdit = (item) => {
     setSelectedPromo(item);
     setIsEditModalOpen(true);
   };
 
-  const handleEditPromo = async (id, formData) => {
-    try {
-      await promoService.update(id, payload);
-      await fetchPromos();
-      setIsEditModalOpen(false);
-      setSelectedPromo(null);
-      alert(' Promo berhasil diupdate!');
-    } catch (err) {
-      console.error('Error updating promo:', err);
-      alert(`Gagal mengupdate: ${err.response?.data?.message || err.message}`);
-    }
-  };
-
-  //  Delete Promo
   const handleDelete = (promo) => {
     setPromoToDelete(promo);
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = async () => {
-    if (promoToDelete) {
-      try {
-        await promoService.remove(promoToDelete.id);
-        await fetchPromos();
-        setIsDeleteModalOpen(false);
-        setPromoToDelete(null);
-        alert(' Promo berhasil dihapus!');
-      } catch (err) {
-        console.error('Error deleting promo:', err);
-        alert('Gagal menghapus promo');
-      }
-    }
-  };
-
-  //  Preview Promo
   const handlePreview = (item) => {
     setSelectedPromo(item);
     setIsPreviewModalOpen(true);
@@ -169,17 +163,15 @@ export default function ManagemenPromo() {
         addButtonText="Tambah Promo"
         onAddClick={() => setIsModalOpen(true)}
       />
-
       <div className="space-y-4">
         <SearchBar
           placeholderText="Cari promo..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-
         {isLoading ? (
           <div className="bg-white rounded-lg shadow-xl p-6 space-y-3">
-            {[1,2,3,4,5].map(i => (
+            {[1, 2, 3, 4, 5].map(i => (
               <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />
             ))}
           </div>
@@ -197,32 +189,20 @@ export default function ManagemenPromo() {
         onClose={() => setIsModalOpen(false)}
         onSave={handleSavePromo}
       />
-
       <EditPromoModal
         isOpen={isEditModalOpen}
-        onClose={() => {
-          setIsEditModalOpen(false);
-          setSelectedPromo(null);
-        }}
+        onClose={() => { setIsEditModalOpen(false); setSelectedPromo(null); }}
         promo={selectedPromo}
         onSave={handleEditPromo}
       />
-
       <PreviewPromoModal
         isOpen={isPreviewModalOpen}
-        onClose={() => {
-          setIsPreviewModalOpen(false);
-          setSelectedPromo(null);
-        }}
+        onClose={() => { setIsPreviewModalOpen(false); setSelectedPromo(null); }}
         promo={selectedPromo}
       />
-
       <DeleteConfirmModal
         isOpen={isDeleteModalOpen}
-        onClose={() => {
-          setIsDeleteModalOpen(false);
-          setPromoToDelete(null);
-        }}
+        onClose={() => { setIsDeleteModalOpen(false); setPromoToDelete(null); }}
         onConfirm={handleConfirmDelete}
         itemName={promoToDelete?.title}
         itemType="promo"
@@ -230,4 +210,3 @@ export default function ManagemenPromo() {
     </div>
   );
 }
-

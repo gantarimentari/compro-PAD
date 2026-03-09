@@ -15,6 +15,7 @@ const EditReservasiModal = ({ isOpen, onClose, onSave, reservasi }) => {
   const [petOptions, setPetOptions] = useState([]);
   const [isLoadingPets, setIsLoadingPets] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Load data saat modal dibuka
   useEffect(() => {
@@ -34,18 +35,29 @@ const EditReservasiModal = ({ isOpen, onClose, onSave, reservasi }) => {
     }
   }, [reservasi, isOpen]);
 
-  // fetch pets by owner ID - filter dari flat array
+  // fetch pets by owner ID - flatten grouped data
   const fetchOwnerPets = async (ownerId) => {
     try {
       setIsLoadingPets(true);
       const data = await hewanService.getAll();
-      const filtered = data.filter(hewan => String(hewan.id_pasien) === String(ownerId));
-      const formattedPets = filtered.map(hewan => ({
-        id_hewan: hewan.id_hewan,
-        nama_hewan: hewan.nama_hewan,
-        jenis_hewan: hewan.jenis_hewan,
-      }));
-      setPetOptions(formattedPets);
+      console.log('🐾 Raw Pets Data:', data);
+      
+      // Backend mengirim data grouped by owner
+      const ownerData = data.find(owner => String(owner.id) === String(ownerId));
+      
+      if (ownerData && ownerData.pets && Array.isArray(ownerData.pets)) {
+        const formattedPets = ownerData.pets.map(pet => ({
+          id_hewan: pet.id,
+          nama_hewan: pet.petName,
+          jenis_hewan: pet.speciesName,
+          speciesId: pet.speciesId,
+        }));
+        console.log(`✅ Pets for owner ${ownerId}:`, formattedPets);
+        setPetOptions(formattedPets);
+      } else {
+        console.log(`⚠️ No pets found for owner ${ownerId}`);
+        setPetOptions([]);
+      }
     } catch (err) {
       console.error('Error fetching pets:', err);
       setPetOptions([]);
@@ -55,7 +67,7 @@ const EditReservasiModal = ({ isOpen, onClose, onSave, reservasi }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!formData.petId || !formData.date || !formData.keluhan) {
@@ -63,14 +75,27 @@ const EditReservasiModal = ({ isOpen, onClose, onSave, reservasi }) => {
       return;
     }
     
-    console.log('Updating Reservation:', {
-      id: reservasi.id,
-      formData
-    });
+    setIsSubmitting(true);
+    setShowSuccess(false);
     
-    setShowSuccess(true);
-    onSave(reservasi.id, formData);
-    setTimeout(() => { setShowSuccess(false); onClose(); }, 1500);
+    try {
+      console.log('Updating Reservation:', {
+        id: reservasi.id,
+        formData
+      });
+      
+      await onSave(reservasi.id, formData);
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        onClose();
+      }, 1500);
+    } catch (error) {
+      console.error('Error updating reservation:', error);
+      alert('Gagal memperbarui reservasi: ' + (error.message || 'Unknown error'));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleClose = () => {
@@ -127,7 +152,7 @@ const EditReservasiModal = ({ isOpen, onClose, onSave, reservasi }) => {
             </option>
             {petOptions.map((pet) => (
               <option key={pet.id_hewan} value={pet.id_hewan}>
-                {pet.nama_hewan} ({pet.jenis_hewan?.nama_jenis || 'Unknown'})
+                {pet.nama_hewan} ({pet.jenis_hewan || 'Unknown'})
               </option>
             ))}
           </select>
@@ -173,10 +198,10 @@ const EditReservasiModal = ({ isOpen, onClose, onSave, reservasi }) => {
           </button>
           <button
             type="submit"
-            disabled={isLoadingPets || petOptions.length === 0}
+            disabled={isLoadingPets || petOptions.length === 0 || isSubmitting}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Simpan Perubahan
+            {isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'}
           </button>
         </div>
       </form>

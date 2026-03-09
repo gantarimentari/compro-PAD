@@ -99,13 +99,12 @@ const { data: jenisHewanOptions = [] } = useQuery({
         }
       }
       queryClient.invalidateQueries({ queryKey: ['patients'] });
-      // await fetchPatients();
-      setIsModalOpen(false);
+      // Modal close is handled by TambahPasienModal after showing success toast.
     }catch(err){
       console.error('error saving patieng:', err);
       console.error('Error response:', err.response?.data);
-      // Throw error agar bisa ditangkap di modal
-      throw new Error(err.response?.data?.message || err.message);
+      // Keep original axios error so modal can read Laravel validation payload (errors.email, etc).
+      throw err;
     }
     // setPasienData([...pasienData, newPasien]);
   };
@@ -143,15 +142,11 @@ const { data: jenisHewanOptions = [] } = useQuery({
       }
 
       queryClient.invalidateQueries({ queryKey: ['patients'] });
-      setIsEditModalOpen(false);
-      setSelectedPasien(null);
     } catch(err){
       console.error('eror updating patinet:', err);
-      alert(`gagal mengupdate pasien: ${err.response?.data?.message || err.message}`);
+      // Keep original axios error so EditPasienModal can show field-level validation errors.
+      throw err;
     }
-
-    setIsEditModalOpen(false);
-    setSelectedPasien(null);
   };
 
   const handleDelete = (id) => {

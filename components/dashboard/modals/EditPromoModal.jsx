@@ -14,6 +14,7 @@ const EditPromoModal = ({ isOpen, onClose, onSave, promo }) => {
     status: 'available',
   });
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (promo && isOpen) {
@@ -27,11 +28,24 @@ const EditPromoModal = ({ isOpen, onClose, onSave, promo }) => {
     }
   }, [promo, isOpen]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setShowSuccess(true);
-    onSave(promo.id, formData);
-    setTimeout(() => { setShowSuccess(false); onClose(); }, 1500);
+    setIsSubmitting(true);
+    setShowSuccess(false);
+    
+    try {
+      await onSave(promo.id, formData);
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        onClose();
+      }, 1500);
+    } catch (error) {
+      console.error('Error updating promo:', error);
+      alert('Gagal memperbarui promo: ' + (error.message || 'Unknown error'));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!promo) return null;
@@ -130,9 +144,10 @@ const EditPromoModal = ({ isOpen, onClose, onSave, promo }) => {
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            disabled={isSubmitting}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Simpan Perubahan
+            {isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'}
           </button>
         </div>
       </form>

@@ -3,12 +3,15 @@ import { useQuery } from '@tanstack/react-query';
 import React, { useState, useEffect } from 'react';
 import BaseModal from './BaseModal';
 import patientService from '@/lib/services/patientService';
+import SuccessToast from '@ds/ui/SuccessToast';
 
 const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState({
     ownerId: '',
     species: '',
   });
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch data pemilik dengan React Query
   const { data: pemilikOptions = [] } = useQuery({
@@ -28,16 +31,31 @@ const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
   // Reset form saat modal ditutup
   useEffect(() => {
     if (!isOpen) {
+      setShowSuccess(false);
       setFormData({ ownerId: '', species: '' });
     }
   }, [isOpen]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setShowSuccess(false);
+    setIsSubmitting(true);
     
-    console.log('Form Data yang akan dikirim:', formData);
-    
-    onSave(formData);
+    try {
+      console.log('Form Data yang akan dikirim:', formData);
+      await onSave(formData);
+      
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        onClose();
+      }, 1500);
+    } catch (error) {
+      console.error('Error saving jenis hewan:', error);
+      alert('Gagal menyimpan jenis hewan: ' + (error.response?.data?.message || error.message));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -77,9 +95,7 @@ const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
               <option disabled>Tidak ada data pemilik</option>
             )}
           </select>
-          <p className="text-xs text-gray-500 mt-1">
-            Pilih pemilik yang terkait
-          </p>
+          
         </div>
 
         {/* Input Jenis Hewan */}
@@ -95,9 +111,7 @@ const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
             className="text-body-2 placeholder:text-accent-neutral-800 w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
             required
           />
-          <p className="text-xs text-gray-500 mt-1">
-            Masukkan nama jenis hewan
-          </p>
+        
         </div>
 
         {/* Buttons*/}
@@ -111,12 +125,14 @@ const TambahJenisHewanModal = ({ isOpen, onClose, onSave }) => {
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150"
+            disabled={isSubmitting}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Simpan
+            {isSubmitting ? 'Menyimpan...' : 'Simpan'}
           </button>
         </div>
       </form>
+      <SuccessToast show={showSuccess} />
     </BaseModal>
   );
 };

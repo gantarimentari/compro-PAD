@@ -34,6 +34,7 @@ export default function ManagementHewan() {
     queryKey: ['hewan-raw'],
     queryFn: async () => {
       const data = await hewanService.getAll();
+      console.log('🐾 Raw Hewan Data from Backend:', data);
       return data;
     },
     staleTime: 5 * 60 * 1000,
@@ -65,16 +66,29 @@ export default function ManagementHewan() {
     staleTime: 60 * 60 * 1000,
   });
 
-  // --- 2. LOGIKA FLATTEN DATA ---
+  // --- 2. LOGIKA FLATTEN DATA (Backend mengirim data grouped by owner) ---
   const flattenedData = useMemo(() => {
-    return rawHewanData.map(hewan => ({
-      id: hewan.id_hewan,
-      petName: hewan.nama_hewan || `Hewan ${hewan.id_hewan}`,
-      species: hewan.jenis_hewan?.nama_jenis || '-',
-      ownerName: hewan.pasien?.username || hewan.pasien?.name || '-',
-      ownerId: hewan.id_pasien,
-      speciesId: hewan.id_jenisHewan,
-    }));
+    const flattened = [];
+    
+    // Iterasi setiap owner
+    rawHewanData.forEach(owner => {
+      // Iterasi setiap pet milik owner
+      if (owner.pets && Array.isArray(owner.pets)) {
+        owner.pets.forEach(pet => {
+          flattened.push({
+            id: pet.id,
+            petName: pet.petName || `Hewan ${pet.id}`,
+            species: pet.speciesName || '-',
+            ownerName: owner.name || '-',
+            ownerId: owner.id,
+            speciesId: pet.speciesId,
+          });
+        });
+      }
+    });
+    
+    console.log('📋 Flattened Hewan Data:', flattened);
+    return flattened;
   }, [rawHewanData]);
 
   const filteredData = useMemo(() => {
@@ -89,29 +103,52 @@ export default function ManagementHewan() {
 
   const handleSaveHewan = async (formData) => {
     try {
+      console.log('📤 Creating hewan:', {
+        payload: {
+          id_pasien: formData.ownerId,
+          id_jenisHewan: formData.speciesId,
+          nama_hewan: formData.petName,
+        }
+      });
+      
       await hewanService.create({
         id_pasien: formData.ownerId,
         id_jenisHewan: formData.speciesId,
         nama_hewan: formData.petName,
       });
       queryClient.invalidateQueries({ queryKey: ['hewan-raw'] });
-      setIsModalOpen(false);
-      alert('Berhasil simpan!');
-    } catch (err) { alert('Gagal simpan!'); }
+      // ❌ JANGAN close modal! Biarkan modal close sendiri setelah toast
+      // setIsModalOpen(false);
+    } catch (err) {
+      console.error('❌ Error creating hewan:', err);
+      throw err; // Re-throw untuk ditangkap modal
+    }
   };
 
   const handleEditHewan = async (id, formData) => {
     try {
+      console.log('📤 Updating hewan:', {
+        id,
+        payload: {
+          id_pasien: formData.ownerId,
+          id_jenisHewan: formData.speciesId,
+          nama_hewan: formData.petName,
+        }
+      });
+      
       await hewanService.update(id, {
         id_pasien: formData.ownerId,
         id_jenisHewan: formData.speciesId,
         nama_hewan: formData.petName,
       });
       queryClient.invalidateQueries({ queryKey: ['hewan-raw'] });
-      setIsEditModalOpen(false);
-      setSelectedHewan(null);
-      alert('Hewan berhasil diupdate!');
-    } catch (err) { alert('Gagal update!'); }
+      // ❌ JANGAN close modal! Biarkan modal close sendiri setelah toast
+      // setIsEditModalOpen(false);
+      // setSelectedHewan(null);
+    } catch (err) {
+      console.error('❌ Error updating hewan:', err);
+      throw err; // Re-throw untuk ditangkap modal
+    }
   };
 
   const confirmDelete = async () => {

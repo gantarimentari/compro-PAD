@@ -36,18 +36,33 @@ export default function JenisHewan() {
         // Backend mengirim field 'pemilik' yang berisi array pemilik
         const owners = jenis.pemilik || [];
         
-        // Format nama pemilik
+        // Format nama pemilik dan ambil ownerId
         let ownerDisplay = '-';
-        if (owners.length === 1) {
-          ownerDisplay = owners[0].nama_pemilik;
-        } else if (owners.length > 1) {
-          ownerDisplay = `${owners[0].nama_pemilik} (+${owners.length - 1} lainnya)`;
+        let ownerId = null;
+        
+        if (owners.length > 0) {
+          const firstOwner = owners[0];
+          ownerDisplay = firstOwner.nama_pemilik || firstOwner.name || '-';
+          // Backend mengirim 'id_pemilik' di response
+          ownerId = firstOwner.id_pemilik || firstOwner.id_pasien || firstOwner.id || null;
+          
+          if (owners.length > 1) {
+            ownerDisplay = `${ownerDisplay} (+${owners.length - 1} lainnya)`;
+          }
         }
+        
+        console.log('Mapping jenis hewan:', {
+          id: jenis.id,
+          species: jenis.nama_jenis,
+          ownerId,
+          rawOwner: owners[0]
+        });
         
         return {
           id: jenis.id,
           species: jenis.nama_jenis,
           ownerName: ownerDisplay,
+          ownerId: ownerId,
         };
       });
     },
@@ -80,25 +95,32 @@ export default function JenisHewan() {
       
       await jenisHewanService.create(payload);
       queryClient.invalidateQueries({ queryKey: ['jenis-hewan-full'] });
-      setIsModalOpen(false);
-      alert('Berhasil simpan!');
+      // ❌ JANGAN close modal di sini! Biarkan modal close sendiri setelah toast
+      // setIsModalOpen(false); 
     } catch (err) {
       console.error('Error detail:', err);
-      alert(`Gagal: ${err.response?.data?.message || err.message}`);
+      throw err; // Re-throw untuk ditangkap modal
     }
   };
 
   const handleUpdateSpecies = async (id, formData) => {
     try {
+      // Validasi ownerId harus ada
+      if (!formData.ownerId) {
+        throw new Error('Owner ID tidak ditemukan. Data jenis hewan tidak lengkap.');
+      }
+      
       await jenisHewanService.update(id, {
         nama_jenis: formData.species,
+        id_pasien: Number(formData.ownerId), // Backend memerlukan id_pasien
       });
       queryClient.invalidateQueries({ queryKey: ['jenis-hewan-full'] });
-      setIsEditModalOpen(false);
-      setSelectedJenis(null);
-      alert('Berhasil update!');
+      // ❌ JANGAN close modal di sini! Biarkan modal close sendiri setelah toast
+      // setIsEditModalOpen(false);
+      // setSelectedJenis(null);
     } catch (err) {
-      alert(`Gagal update: ${err.response?.data?.message || err.message}`);
+      console.error('Error updating jenis hewan:', err);
+      throw err; // Re-throw untuk ditangkap modal
     }
   };
 

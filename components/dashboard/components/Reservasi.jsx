@@ -134,9 +134,12 @@ export default function Reservasi() {
         keluhan: formData.keluhan,
       });
       queryClient.invalidateQueries({ queryKey: ['reservasi'] });
-      setIsModalOpen(false);
-      alert('Berhasil!');
-    } catch (err) { alert('Gagal!'); }
+      // ❌ Commented: setIsModalOpen(false); - Let modal close after showing toast
+      // Modal will close itself after displaying SuccessToast for 1500ms
+    } catch (err) {
+      console.error('Error saving reservasi:', err);
+      throw err; // Re-throw for modal error handling
+    }
   };
 
   const handleEditReservasi = async (id, formData) => {
@@ -147,9 +150,12 @@ export default function Reservasi() {
         keluhan: formData.keluhan,
       });
       queryClient.invalidateQueries({ queryKey: ['reservasi'] });
-      setIsEditModalOpen(false);
-      alert('Berhasil update!');
-    } catch (err) { alert('Gagal update!'); }
+      // ❌ Commented: setIsEditModalOpen(false); - Let modal close after showing toast
+      // Modal will close itself after displaying SuccessToast for 1500ms
+    } catch (err) {
+      console.error('Error updating reservasi:', err);
+      throw err; // Re-throw for modal error handling
+    }
   };
 
   const confirmDelete = async () => {

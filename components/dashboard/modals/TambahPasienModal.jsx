@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import BaseModal from './BaseModal';
+import SuccessToast from '@ds/ui/SuccessToast';
 
 const TambahPasienModal = ({ isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,14 @@ const TambahPasienModal = ({ isOpen, onClose, onSave }) => {
   });
   const [passwordError, setPasswordError] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setShowSuccess(false);
+    }
+  }, [isOpen]);
 
   const validatePassword = (password) => {
     if (password.length < 8) {
@@ -23,37 +32,59 @@ const TambahPasienModal = ({ isOpen, onClose, onSave }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setEmailError('');
+    setShowSuccess(false);
     
     // Validasi password
     const passwordValidationError = validatePassword(formData.password);
     if (passwordValidationError) {
       setPasswordError(passwordValidationError);
+      setIsSubmitting(false);
       return; // Jangan tutup modal dan jangan simpan data
     }
 
     // Jika validasi berhasil, lanjutkan simpan
     setPasswordError('');
     setEmailError('');
+    setIsSubmitting(true);
     
     try {
       await onSave(formData);
-      // Kalau berhasil, reset form dan tutup modal
+
+      // Kalau berhasil, tampilkan toast dulu baru tutup modal.
+      setShowSuccess(true);
       setFormData({
         name: '',
         phoneNumber: '',
         email: '',
         password: ''
       });
-      onClose();
+
+      setTimeout(() => {
+        setShowSuccess(false);
+        onClose();
+      }, 1500);
     } catch (error) {
-      // Tangkap error dan tampilkan di field yang sesuai
-      const errorMessage = error.message || 'Terjadi kesalahan';
-      if (errorMessage.toLowerCase().includes('email')) {
+      const backendErrors = error?.response?.data?.errors;
+      const emailValidationMessage = backendErrors?.email?.[0];
+      const backendMessage = error?.response?.data?.message;
+      const fallbackMessage = error?.message;
+
+      // Prioritize field-level Laravel validation error for duplicate email.
+      const resolvedMessage =
+        emailValidationMessage ||
+        backendMessage ||
+        fallbackMessage ||
+        'Terjadi kesalahan saat menyimpan data pasien';
+ 
+      if (resolvedMessage.toLowerCase().includes('email')) {
         setEmailError('Email sudah terdaftar, gunakan email lain');
       } else {
-        setEmailError(errorMessage);
+        setEmailError(resolvedMessage);
       }
       // Modal tidak ditutup, user bisa perbaiki data
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -154,12 +185,14 @@ const TambahPasienModal = ({ isOpen, onClose, onSave }) => {
           </button>
           <button
             type="submit"
+            disabled={isSubmitting}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150"
           >
-            Simpan
+            {isSubmitting ? 'Menyimpan...' : 'Simpan'}
           </button>
         </div>
       </form>
+      <SuccessToast show={showSuccess} />
     </BaseModal>
   );
 };

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import BaseModal from './BaseModal';
 import jenisHewanService from '@/lib/services/jenisHewanService';
+import SuccessToast from '@ds/ui/SuccessToast';
 
 const TambahHewanModal = ({ 
   isOpen, 
@@ -17,6 +18,8 @@ const TambahHewanModal = ({
   });
   
   const [jenisHewanOptions, setJenisHewanOptions] = useState([]);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   //  Fetch jenis hewan saat owner dipilih
   const handleOwnerChange = async (ownerId) => {
@@ -31,14 +34,19 @@ const TambahHewanModal = ({
       //  Fetch jenis hewan milik owner ini
       try {
         const data = await jenisHewanService.getAll();
+        console.log('📋 All Jenis Hewan:', data);
+        
         // Filter jenis hewan yang dimiliki owner ini (dari array pemilik)
         const filtered = data.filter(jenis =>
           jenis.pemilik?.some(p => String(p.id_pemilik) === String(ownerId))
         );
+        
         const formatted = filtered.map(jenis => ({
           id_jenisHewan: jenis.id,
           nama_jenis: jenis.nama_jenis,
         }));
+        
+        console.log(`✅ Jenis Hewan untuk owner ${ownerId}:`, formatted);
         setJenisHewanOptions(formatted);
       } catch (err) {
         console.error('Error fetching jenis hewan:', err);
@@ -49,20 +57,40 @@ const TambahHewanModal = ({
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setShowSuccess(false);
     
-    console.log('Submitting Form Data:', formData);
-    
-    onSave(formData);
-    
-    // Reset form
-    setFormData({
-      petName: '',
-      speciesId: '',
-      ownerId: '',
-    });
-    setJenisHewanOptions([]);
+    try {
+      console.log('Submitting Form Data:', formData);
+      await onSave(formData);
+      
+      // Reset form
+      setFormData({
+        petName: '',
+        speciesId: '',
+        ownerId: '',
+      });
+      setJenisHewanOptions([]);
+      
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        onClose();
+      }, 1500);
+    } catch (error) {
+      console.error('❌ Error saving hewan:', {
+        status: error?.response?.status,
+        data: error?.response?.data,
+        message: error?.message
+      });
+      
+      const errorMessage = error?.response?.data?.message || error?.message || 'Unknown error';
+      alert('Gagal menyimpan hewan: ' + errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -160,13 +188,14 @@ const TambahHewanModal = ({
           </button>
           <button
             type="submit"
-            disabled={!formData.ownerId || jenisHewanOptions.length === 0}
+            disabled={!formData.ownerId || jenisHewanOptions.length === 0 || isSubmitting}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Simpan
+            {isSubmitting ? 'Menyimpan...' : 'Simpan'}
           </button>
         </div>
       </form>
+      <SuccessToast show={showSuccess} />
     </BaseModal>
   );
 };

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import BaseModal from './BaseModal';
 import { ChevronDownIcon } from '@ds/icons';
+import SuccessToast from '@ds/ui/SuccessToast';
 
 const TambahPromoModal = ({ isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,8 @@ const TambahPromoModal = ({ isOpen, onClose, onSave }) => {
     endDate: '',
     status: 'available',
   });
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!isOpen) {
@@ -22,12 +25,28 @@ const TambahPromoModal = ({ isOpen, onClose, onSave }) => {
         endDate: '',
         status: 'available',
       });
+      setShowSuccess(false);
     }
   }, [isOpen]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave(formData);
+    setIsSubmitting(true);
+    setShowSuccess(false);
+    
+    try {
+      await onSave(formData);
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        onClose();
+      }, 1500);
+    } catch (error) {
+      console.error('Error saving promo:', error);
+      alert('Gagal menyimpan promo: ' + (error.response?.data?.message || error.message));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -130,12 +149,14 @@ const TambahPromoModal = ({ isOpen, onClose, onSave }) => {
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150"
+            disabled={isSubmitting}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Simpan
+            {isSubmitting ? 'Menyimpan...' : 'Simpan'}
           </button>
         </div>
       </form>
+      <SuccessToast show={showSuccess} />
     </BaseModal>
   );
 };

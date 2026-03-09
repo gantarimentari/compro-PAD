@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import BaseModal from './BaseModal';
 import { UploadIcon } from '@ds/icons';
+import SuccessToast from '@ds/ui/SuccessToast';
 
 const TambahMediaModal = ({ isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState({
@@ -10,8 +11,10 @@ const TambahMediaModal = ({ isOpen, onClose, onSave }) => {
     linkYoutube: '',
     file: null
   });
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.file && !formData.linkYoutube) {
       alert('Harap upload file atau masukkan link YouTube!');
@@ -23,13 +26,30 @@ const TambahMediaModal = ({ isOpen, onClose, onSave }) => {
       alert('Harap masukkan link YouTube untuk kategori Video!');
       return;
     }
-    onSave(formData);
-    setFormData({
-      kategori: 'Video',
-      linkYoutube: '',
-      file: null
-    });
-    onClose();
+    
+    setIsSubmitting(true);
+    setShowSuccess(false);
+    
+    try {
+      await onSave(formData);
+      
+      setFormData({
+        kategori: 'Video',
+        linkYoutube: '',
+        file: null
+      });
+      
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        onClose();
+      }, 1500);
+    } catch (error) {
+      console.error('Error saving media:', error);
+      alert('Gagal menyimpan media: ' + (error.response?.data?.message || error.message));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleFileChange = (e) => {
@@ -111,12 +131,14 @@ const TambahMediaModal = ({ isOpen, onClose, onSave }) => {
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 font-medium shadow-sm"
+            disabled={isSubmitting}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Simpan
+            {isSubmitting ? 'Menyimpan...' : 'Simpan'}
           </button>
         </div>
       </form>
+      <SuccessToast show={showSuccess} />
     </BaseModal>
   );
 };

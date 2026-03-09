@@ -17,6 +17,7 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerOptions = [] }) =
   const [jenisHewanOptions, setJenisHewanOptions] = useState([]);
   const [isLoadingSpecies, setIsLoadingSpecies] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // update kalo isinya berubah
   useEffect(() => {
@@ -44,10 +45,14 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerOptions = [] }) =
     try {
       setIsLoadingSpecies(true);
       const data = await jenisHewanService.getAll(ownerId);
+      console.log('📋 Jenis Hewan untuk owner', ownerId, ':', data);
+      
       const formatted = data.map(jenis => ({
-        id_jenisHewan: jenis.id_jenisHewan,
+        id_jenisHewan: jenis.id || jenis.id_jenisHewan, // Backend mengirim 'id'
         nama_jenis: jenis.nama_jenis,
       }));
+      
+      console.log('✅ Formatted jenis hewan options:', formatted);
       setJenisHewanOptions(formatted);
     } catch (err) {
       console.error('Error fetching jenis hewan:', err);
@@ -81,11 +86,35 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerOptions = [] }) =
 
   if (!isOpen || !hewan) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setShowSuccess(true);
-    onSave(hewan.id, formData);
-    setTimeout(() => { setShowSuccess(false); onClose(); }, 1500);
+    setIsSubmitting(true);
+    setShowSuccess(false);
+    
+    try {
+      console.log('📤 Submitting update for hewan:', {
+        id: hewan.id,
+        formData: formData
+      });
+      
+      await onSave(hewan.id, formData);
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        onClose();
+      }, 1500);
+    } catch (error) {
+      console.error('❌ Error updating hewan:', {
+        status: error?.response?.status,
+        data: error?.response?.data,
+        message: error?.message
+      });
+      
+      const errorMessage = error?.response?.data?.message || error?.message || 'Unknown error';
+      alert('Gagal memperbarui hewan: ' + errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -182,9 +211,9 @@ const EditHewanModal = ({ isOpen, onClose, hewan, onSave, ownerOptions = [] }) =
             hoverColor="hover:bg-accent-blue-500"
             focusColor="focus:bg-accent-blue-300"
             roundedClass="rounded-lg"
-            disabled={isLoadingSpecies} // Disable submit saat loading
+            disabled={isLoadingSpecies || isSubmitting}
           >
-            Simpan Perubahan
+            {isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'}
           </Button>
         </div>
       </form>

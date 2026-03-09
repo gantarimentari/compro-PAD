@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import patientService from '@/lib/services/patientService';
 import hewanService from '@/lib/services/hewanService';
 import BaseModal from './BaseModal';
+import SuccessToast from '@ds/ui/SuccessToast';
 
 const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState({
@@ -15,6 +16,8 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
   const [ownerOptions, setOwnerOptions] = useState([]);
   const [petOptions, setPetOptions] = useState([]);
   const [allPets, setAllPets] = useState([]);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -47,6 +50,7 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
         keluhan: '',
       });
       setPetOptions([]);
+      setShowSuccess(false);
     }
   }, [isOpen]);
 
@@ -67,12 +71,25 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
   const fetchAllPets = async () => {
     try {
       const data = await hewanService.getAll();
-      const flatPets = data.map(hewan => ({
-        id_hewan: hewan.id_hewan,
-        nama_hewan: hewan.nama_hewan,
-        id_pasien: hewan.id_pasien,
-        jenis_hewan: hewan.jenis_hewan,
-      }));
+      console.log('🐾 Raw Pets Data from Backend:', data);
+      
+      // Backend mengirim data grouped by owner, perlu di-flatten
+      const flatPets = [];
+      data.forEach(owner => {
+        if (owner.pets && Array.isArray(owner.pets)) {
+          owner.pets.forEach(pet => {
+            flatPets.push({
+              id_hewan: pet.id,
+              nama_hewan: pet.petName,
+              id_pasien: owner.id,
+              jenis_hewan: pet.speciesName,
+              speciesId: pet.speciesId,
+            });
+          });
+        }
+      });
+      
+      console.log('📋 Flattened Pets for Reservasi:', flatPets);
       setAllPets(flatPets);
     } catch (err) {
       console.error('Error fetching pets:', err);
@@ -80,12 +97,26 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setShowSuccess(false);
     
-    console.log('Submitting Reservation:', formData);
-    
-    onSave(formData);
+    try {
+      console.log('Submitting Reservation:', formData);
+      await onSave(formData);
+      
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        onClose();
+      }, 1500);
+    } catch (error) {
+      console.error('Error saving reservation:', error);
+      alert('Gagal menyimpan reservasi: ' + (error.response?.data?.message || error.message));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -143,7 +174,7 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
             </option>
             {petOptions.map((pet) => (
               <option key={pet.id_hewan} value={pet.id_hewan} className='text-accent-neutral-1000'>
-                {pet.nama_hewan} ({pet.jenis_hewan?.nama_jenis || 'Unknown'})
+                {pet.nama_hewan} ({pet.jenis_hewan || 'Unknown'})
               </option>
             ))}
           </select>
@@ -192,13 +223,14 @@ const TambahReservasiModal = ({ isOpen, onClose, onSave }) => {
           </button>
           <button
             type="submit"
-            disabled={!formData.ownerId || petOptions.length === 0}
+            disabled={!formData.ownerId || petOptions.length === 0 || isSubmitting}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Simpan
+            {isSubmitting ? 'Menyimpan...' : 'Simpan'}
           </button>
         </div>
       </form>
+      <SuccessToast show={showSuccess} />
     </BaseModal>
   );
 };

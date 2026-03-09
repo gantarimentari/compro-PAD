@@ -16,6 +16,7 @@ const EditArtikelModal = ({ isOpen, onClose, onSave, article }) => {
     status: 'Draft'
   });
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (article) {
@@ -32,11 +33,24 @@ const EditArtikelModal = ({ isOpen, onClose, onSave, article }) => {
 
   if (!isOpen || !article) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setShowSuccess(true);
-    onSave(article.id, formData);
-    setTimeout(() => { setShowSuccess(false); onClose(); }, 1500);
+    setIsSubmitting(true);
+    setShowSuccess(false);
+    
+    try {
+      await onSave(article.id, formData);
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        onClose();
+      }, 1500);
+    } catch (error) {
+      console.error('Error updating article:', error);
+      alert('Gagal memperbarui artikel: ' + (error.message || 'Unknown error'));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleFileChange = (e) => {
@@ -151,9 +165,10 @@ const EditArtikelModal = ({ isOpen, onClose, onSave, article }) => {
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 font-medium shadow-sm"
+            disabled={isSubmitting}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Simpan Perubahan
+            {isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'}
           </button>
         </div>
       </form>

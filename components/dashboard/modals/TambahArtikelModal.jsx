@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import BaseModal from './BaseModal';
 import { UploadIcon } from '@ds/icons';
 import QuillEditor from '@ds/shared/QuillEditor';
+import SuccessToast from '@ds/ui/SuccessToast';
 
 const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState({
@@ -13,8 +14,10 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
     file: null,
     status: 'Draft'
   });
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!formData.judul || !formData.kategori || !formData.isiArtikel) {
@@ -27,25 +30,40 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
       return;
     }
 
-    console.log('Submitting article:', {
-      judul: formData.judul,
-      kategori: formData.kategori,
-      status: formData.status,
-      hasFile: !!formData.file,
-      fileName: formData.file?.name
-    });
+    setIsSubmitting(true);
+    setShowSuccess(false);
 
-    onSave(formData);
-    
-    // Reset form
-    setFormData({
-      judul: '',
-      kategori: '',
-      isiArtikel: '',
-      file: null,
-      status: 'Draft'
-    });
-    onClose();
+    try {
+      console.log('Submitting article:', {
+        judul: formData.judul,
+        kategori: formData.kategori,
+        status: formData.status,
+        hasFile: !!formData.file,
+        fileName: formData.file?.name
+      });
+
+      await onSave(formData);
+      
+      // Reset form
+      setFormData({
+        judul: '',
+        kategori: '',
+        isiArtikel: '',
+        file: null,
+        status: 'Draft'
+      });
+      
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        onClose();
+      }, 1500);
+    } catch (error) {
+      console.error('Error saving article:', error);
+      alert('Gagal menyimpan artikel: ' + (error.response?.data?.message || error.message));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleFileChange = (e) => {
@@ -183,12 +201,14 @@ const TambahArtikelModal = ({ isOpen, onClose, onSave }) => {
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 font-medium shadow-sm"
+            disabled={isSubmitting}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Simpan
+            {isSubmitting ? 'Menyimpan...' : 'Simpan'}
           </button>
         </div>
       </form>
+      <SuccessToast show={showSuccess} />
     </BaseModal>
   );
 };
