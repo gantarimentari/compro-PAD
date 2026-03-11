@@ -13,7 +13,7 @@ class ReminderVaksinasi extends Model
     protected $fillable = [
         'id_pasien',
         'id_hewan',
-        'jenis_vaksin',
+        'id_jenis_vaksin',
         'tanggal_vaksin',
 
     ];
@@ -33,5 +33,10 @@ class ReminderVaksinasi extends Model
     public function reminderLogs()
     {
         return $this->hasMany(ReminderLog::class, 'id_vaksinasi');
+    }
+
+    public function jenisVaksin()
+    {
+        return $this->belongsTo(JenisVaksin::class, 'id_jenis_vaksin', 'id_vaksinasi');
     }
 }

@@ -17,7 +17,7 @@ class ReminderVaksinasiController extends Controller
             $now = Carbon::now();
             $reminders = [];
 
-            $upcomingVaksinasi = ReminderVaksinasi::with('hewan.pasien')
+            $upcomingVaksinasi = ReminderVaksinasi::with(['hewan.pasien', 'jenisVaksin'])
                 ->whereBetween('tanggal_vaksin', [
                     $now->copy()->startOfDay(),
                     $now->copy()->addDays(3)->endOfDay()
@@ -66,9 +66,22 @@ class ReminderVaksinasiController extends Controller
                         'phone_number'=> $vaksinasi->hewan->pasien->phone_number ?? null,
                     ]);
 
+                    if($reminderType === 'same_day'){
+                        $interval = $vaksinasi->jenisVaksin->interval ?? null;
+                        if($interval){
+                            ReminderVaksinasi::create([
+                                'id_hewan'        => $vaksinasi->id_hewan,
+                                'id_pasien'       => $vaksinasi->id_pasien,
+                                'id_jenis_vaksin' => $vaksinasi->id_jenis_vaksin,
+                                'tanggal_vaksin'  => Carbon::parse($vaksinasi->tanggal_vaksin)
+                                                        ->addMonths($interval)->toDateString(),
+                            ]);
+                        }
+                    }
+
                     $reminders[] = [
                         'id_vaksinasi' => $vaksinasi->id_vaksinasi,
-                        'jenis_vaksin' => $vaksinasi->jenis_vaksin,
+                        'nama_vaksin' => $vaksinasi->jenisVaksin->nama_vaksin ?? '-',
                         'type' => $reminderType,
                         'sent_to' => $vaksinasi->hewan->pasien->phone_number ?? 'N/A',
                     ];
@@ -146,7 +159,7 @@ class ReminderVaksinasiController extends Controller
     {
         $petName = $vaksinasi->hewan->nama_hewan ?? 'Hewan Anda';
         $ownerName = $vaksinasi->hewan->pasien->name ?? $vaksinasi->hewan->pasien->username ?? 'Pemilik';
-        $jenisVaksin = $vaksinasi->jenis_vaksin;
+        $jenisVaksin = $vaksinasi->jenisVaksin->nama_vaksin ?? '-';
         $date = Carbon::parse($vaksinasi->tanggal_vaksin)->format('d/m/Y');
 
         $messages = [
@@ -206,7 +219,7 @@ class ReminderVaksinasiController extends Controller
         ]);
 
         try {
-            $vaksinasi = ReminderVaksinasi::with(['hewan.pasien'])
+            $vaksinasi = ReminderVaksinasi::with(['hewan.pasien', 'jenisVaksin'])
                 ->findOrFail($validated['id_vaksinasi']);
 
             $sent = $this->sendWhatsAppReminder($vaksinasi, $validated['reminder_type']);
@@ -312,13 +325,15 @@ class ReminderVaksinasiController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'id_pasien'=> 'required|exists:users,id',
             'id_hewan' => 'required|exists:hewan,id_hewan',
-            'jenis_vaksin' => 'required|string|max:200',
+            'id_jenis_vaksin' => 'required|integer|exists:jenis_vaksin,id_vaksinasi',
             'tanggal_vaksin' => 'required|date|after_or_equal:today',
         ]);
 
         try {
+            $hewan = \App\Models\Hewan::findOrFail($validated['id_hewan']);
+            $validated['id_pasien'] = $hewan->id_pasien;
+
             $vaksinasi = ReminderVaksinasi::create($validated);
 
             Log::info('✅ Vaksinasi reminder created', [
@@ -345,7 +360,7 @@ class ReminderVaksinasiController extends Controller
     {
         $validated = $request->validate([
             'id_hewan' => 'sometimes|exists:hewan,id_hewan',
-            'jenis_vaksin' => 'sometimes|string|max:200',
+            'id_jenis_vaksin' => 'sometimes|integer|exists:jenis_vaksin,id_vaksinasi',
             'tanggal_vaksin' => 'sometimes|date|after_or_equal:today',
         ]);
 
@@ -419,7 +434,7 @@ class ReminderVaksinasiController extends Controller
                 }
                 return [
                 'id_vaksinasi'   => $vaksinasi->id_vaksinasi,
-                'jenis_vaksin'   => $vaksinasi->jenis_vaksin,
+                'id_jenis_vaksin' => $vaksinasi->id_jenis_vaksin,
                 'tanggal_vaksin' => $vaksinasi->tanggal_vaksin->format('d/m/Y'),
                 'days_until'     => $daysUntil,
                 'reminder_type'  => $reminderType,

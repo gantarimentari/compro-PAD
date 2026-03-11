@@ -49,10 +49,10 @@ export default function SystemInfo() {
       setIsLoading(true);
       const res = await systemInfoService.get();
 
-      console.log('System Info Response:', res.data);
-      console.log('Social Media from systemInfo:', res.data.systemInfo?.socialMedia);
+      console.log('System Info Response:', res);
+      console.log('Social Media from systemInfo:', res.systemInfo?.socialMedia);
 
-      const fetchedData = res.data.systemInfo || {};
+      const fetchedData = res.systemInfo || {};
       
       //  Map snake_case from backend
       setSystemData({
