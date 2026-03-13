@@ -1,0 +1,14 @@
+[90m= [39m[34;4mApp\Models\User[39;24m {#6602
+    [34mid[39m: [35m1[39m,
+    [34musername[39m: "[32mRakai Ahmad Maulana[39m",
+    [34mphone_number[39m: "[32m081313131313[39m",
+    [34memail[39m: "[32mrakaiahmadmaulana@gmail.com[39m",
+    [34memail_verified_at[39m: [36mnull[39m,
+    #[33mpassword[39m: "[32m$2y$12$bHcDfID8ou3SqCa7IXVPo.R0vgDcBL51wWImQ80ZpvF7AxMrflkCq[39m",
+    #[33mremember_token[39m: [36mnull[39m,
+    [34mcreated_at[39m: "[32m2025-11-20 11:21:31[39m",
+    [34mupdated_at[39m: "[32m2025-11-26 15:14:27[39m",
+    [34mgoogle_id[39m: "[32m109349791450800805999[39m",
+    [34mrole[39m: "[32muser[39m",
+  }
+
