@@ -9,11 +9,13 @@ import PageHeader from '@ds/dashboard/layouts/PageHeader';
 import { TambahReservasiModal, DeleteConfirmModal, EditReservasiModal } from '@ds/dashboard/modals';
 
 const Vaccination_COLUMNS = [
-  { key: 'name', header: 'Nama Pasien' },
+  
   { key: 'petName', header: 'Hewan' },
-  { key: 'vaccinationDate', header: 'Tanggal Vaksin' },
+  { key: 'ownerName', header: 'Pemilik ' },
   { key: 'vaccinationType', header: 'Jenis Vaksin' },
-  { key: 'status', header: 'Status Kirim' },
+  { key: 'latestVaccinationDate', header: 'Vaksinasi Terakhir' },
+  { key: 'nextVaccinationDate', header: 'Jadwal Berikutnya' },
+  { key: 'status', header: 'Status' },
   { key: 'actions', header: 'Aksi', isAction: true },
 ];
 
