@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { GaleryIcon, FileIcon, PromoIcon, PeopleIcon, DogIcon, PawIcon, CalendarIcon, SettingsIcon, DBHomeIcon,
-  JarumSuntikIcon
+  JarumSuntikIcon, NoteIcon
 } from "@ds/icons"; 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -16,6 +16,7 @@ export default function Sidebar() {
     { href: '/dashboard/jenis-hewan',      icon: PawIcon,        label: 'Jenis Hewan' },
     { href: '/dashboard/reservasi',        icon: CalendarIcon,   label: 'Reservasi' },
     { href: '/dashboard/reminder-vaksinasi', icon: JarumSuntikIcon, label: 'Reminder Vaksinasi' },
+    { href: '/dashboard/jenis-vaksin',       icon: NoteIcon,       label: 'Jenis Vaksin' },
     { href: '/dashboard/artikel',          icon: FileIcon,       label: 'Manajemen Artikel' },
     { href: '/dashboard/media',            icon: GaleryIcon,     label: 'Manajemen Media' },
     { href: '/dashboard/admin',            icon: PeopleIcon,     label: 'Manajemen Admin' },

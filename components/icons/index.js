@@ -50,7 +50,7 @@ export {
   FileIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, PromoIcon, SettingsIcon, DiskSaveIcon, DBHomeIcon,
   TotalHewanIcon, TotalKunjunganIcon, KunjunganBaruIcon, RekamMedisIcon, WaveHandIcon,
   RightArrowIcon,
-  JarumSuntikIcon
+  JarumSuntikIcon, NoteIcon
   
 } from './UIIcons';
 

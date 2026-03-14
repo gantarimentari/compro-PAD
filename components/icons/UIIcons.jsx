@@ -551,6 +551,7 @@ export const CalendarIcon =({ className = "w-6 h-6", color = "currentColor" }) =
 </svg>
 
 );
+
 export const JarumSuntikIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
   <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 {/* <g clip-path="url(#clip0_2541_6753)"> */}
@@ -566,6 +567,17 @@ export const JarumSuntikIcon = ({ className = "w-6 h-6", color = "currentColor" 
 <rect width="20" height="20" fill="white"/>
 </clipPath>
 </defs> */}
+</svg>
+
+);
+export const NoteIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12.5003 1.66699H7.50033C7.04009 1.66699 6.66699 2.04009 6.66699 2.50033V4.16699C6.66699 4.62723 7.04009 5.00033 7.50033 5.00033H12.5003C12.9606 5.00033 13.3337 4.62723 13.3337 4.16699V2.50033C13.3337 2.04009 12.9606 1.66699 12.5003 1.66699Z" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M13.333 3.33301H14.9997C15.4417 3.33301 15.8656 3.5086 16.1782 3.82116C16.4907 4.13372 16.6663 4.55765 16.6663 4.99967V16.6663C16.6663 17.1084 16.4907 17.5323 16.1782 17.8449C15.8656 18.1574 15.4417 18.333 14.9997 18.333H4.99967C4.55765 18.333 4.13372 18.1574 3.82116 17.8449C3.5086 17.5323 3.33301 17.1084 3.33301 16.6663V4.99967C3.33301 4.55765 3.5086 4.13372 3.82116 3.82116C4.13372 3.5086 4.55765 3.33301 4.99967 3.33301H6.66634" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M10 9.16699H13.3333" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M10 13.333H13.3333" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M6.66699 9.16699H6.67533" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M6.66699 13.333H6.67533" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>
 
 );
