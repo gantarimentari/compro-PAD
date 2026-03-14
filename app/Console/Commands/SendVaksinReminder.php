@@ -51,7 +51,7 @@ class SendVaksinReminder extends Command
                     foreach ($data->details as $detail) {
                         $rows[] = [
                             $detail->id_vaksinasi ?? $detail->vaksinasi_id,
-                            $detail->jenis_vaksin,
+                            $detail->nama_vaksin ?? '-',
                             $detail->type,
                             $detail->sent_to
                         ];
