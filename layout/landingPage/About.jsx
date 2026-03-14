@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import systemInfoService from '@/lib/services/systemInfoService';
-import { DashedBorder } from '@ds/frame/garisputus';
-import TagLabel from '../../components/Button/TagLabel';
+import { DashedBorder } from '@ds/ui/frame/garisputus';
+import TagLabel from '../../components/ui/Button/TagLabel';
 
 export default function About() {
   const [aboutUs, setAboutUs] = useState({

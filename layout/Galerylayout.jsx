@@ -1,5 +1,5 @@
 import React from 'react';
-import { DashedBorder } from '@ds/frame/garisputus';
+import { DashedBorder } from '@ds/ui/frame/garisputus';
 
 /**
  * GaleryLayout - Layout untuk halaman galeri dengan background dan garis putus-putus

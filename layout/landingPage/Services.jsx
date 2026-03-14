@@ -1,9 +1,9 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import TagLabel from '../../components/Button/TagLabel';
+import TagLabel from '../../components/ui/Button/TagLabel';
 import systemInfoService from '@/lib/services/systemInfoService';
 import Link from "next/link";
-import Button from '@ds/Button';
+import Button from '@ds/ui/Button';
 import { RightArrowIcon } from '@ds/icons';
 import ServicesCard from './components/ServicesCard';
 

@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import { AddIcon } from '@ds/icons';
-import Button from '@ds/Button';
+import Button from '@ds/ui/Button';
 
 export default function PageHeader({ title, description, onAddClick, addButtonText }) {
   return (

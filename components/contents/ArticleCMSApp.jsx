@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import articleService from '@/lib/services/articleService';
-import Button from '@ds/Button/Button';
-import { ModalDashedBorder } from '@ds/frame/garisputus';
+import Button from '@ds/ui/Button/Button';
+import { ModalDashedBorder } from '@ds/ui/frame/garisputus';
 import { CloseCircleIcon, ChevronLeftIcon, ChevronRightIcon } from '@ds/icons/UIIcons';
 
 const ARTICLES_PER_PAGE = 6;

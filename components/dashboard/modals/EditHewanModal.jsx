@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import BaseModal from './BaseModal';
-import Button from '@ds/Button';
+import Button from '@ds/ui/Button';
 import jenisHewanService from '@/lib/services/jenisHewanService';
 import SuccessToast from '@ds/ui/SuccessToast';
 

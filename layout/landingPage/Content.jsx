@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import systemInfoService from '@/lib/services/systemInfoService';
 import mediaService from '@/lib/services/mediaService';
-import { CardDashedBorder } from '@ds/frame/garisputus';
+import { CardDashedBorder } from '@ds/ui/frame/garisputus';
 // import { CardDashedBorder } from '@ds/frame/garisputus';
 
 // Fungsi helper untuk convert YouTube link jadi embed URL

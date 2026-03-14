@@ -2,7 +2,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import jenisHewanService from '@/lib/services/jenisHewanService';
-import Button from '@ds/Button';
+import Button from '@ds/ui/Button';
 import { TrashIcon, PenIcon } from '@ds/icons';
 import Table from '@ds/dashboard/components/Table';
 import SearchBar from '@ds/dashboard/layouts/ManagementSearch';

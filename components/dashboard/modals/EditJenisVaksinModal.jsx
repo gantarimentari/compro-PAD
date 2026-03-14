@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import BaseModal from './BaseModal';
-import Button from '@ds/Button';
+import Button from '@ds/ui/Button';
 import SuccessToast from '@ds/ui/SuccessToast';
 
 const EditJenisVaksinModal = ({ isOpen, onClose, vaksin, onSave }) => {

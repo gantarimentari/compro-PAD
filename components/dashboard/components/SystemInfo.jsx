@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import systemInfoService from '@/lib/services/systemInfoService';
 import mediaService from '@/lib/services/mediaService';
 import PageHeader from '@ds/dashboard/layouts/PageHeader';
-import Button from '@ds/Button';
+import Button from '@ds/ui/Button';
 import { UploadIcon, FacebookIcon, InstagramIcon, TwitterIcon, YoutubeDBIcon, AddIcon, DiskSaveIcon, TrashIcon } from '@ds/icons';
 
 export default function SystemInfo() {

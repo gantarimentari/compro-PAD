@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import TagLabel from '../../components/Button/TagLabel';
-import Button from '@ds/Button';
+import TagLabel from '../../components/ui/Button/TagLabel';
+import Button from '@ds/ui/Button';
 import systemInfoService from '@/lib/services/systemInfoService';
 import articleService from '@/lib/services/articleService';
 import Link from 'next/link';

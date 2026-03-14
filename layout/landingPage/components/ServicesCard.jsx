@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { ModalDashedBorder } from '@ds/frame/garisputus';
+import { ModalDashedBorder } from '@ds/ui/frame/garisputus';
 import { CloseCircleIcon, ChevronLeftIcon, ChevronRightIcon } from '@ds/icons';
 
 const ServicesCard = ({ 

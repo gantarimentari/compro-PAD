@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import { TrashIcon, PenIcon, WarningIcon } from '@ds/icons';
 import Table from '@ds/dashboard/components/Table';
-import Button from '@ds/Button';
+import Button from '@ds/ui/Button';
 import SearchBar from '@ds/dashboard/layouts/ManagementSearch';
 import PageHeader from '@ds/dashboard/layouts/PageHeader';
 import { TambahJenisVaksinModal, DeleteConfirmModal, EditJenisVaksinModal, PreviewJenisVaksinModal } from '@ds/dashboard/modals';

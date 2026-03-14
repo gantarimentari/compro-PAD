@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import systemInfoService from '@/lib/services/systemInfoService';
-import Button from '@ds/Button';
+import Button from '@ds/ui/Button';
 import { RightArrowIcon } from '@ds/icons';
 
 export default function Profile() {

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import BaseModal from './BaseModal';
-import Button from '@ds/Button';
+import Button from '@ds/ui/Button';
 
 const DeleteConfirmModal = ({ 
   isOpen, onClose, onConfirm, itemName,

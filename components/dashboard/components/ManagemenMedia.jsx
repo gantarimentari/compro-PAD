@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import mediaService from '@/lib/services/mediaService';
 import { TrashIcon, WarningIcon } from '@ds/icons';
-import Button from '@ds/Button';
+import Button from '@ds/ui/Button';
 import Table from '@ds/dashboard/components/Table';
 import SearchBar from '@ds/dashboard/layouts/ManagementSearch';
 import PageHeader from '@ds/dashboard/layouts/PageHeader';

@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { ModalDashedBorder } from '@ds/frame/garisputus';
+import { ModalDashedBorder } from '@ds/ui/frame/garisputus';
 
 const ArticleCard = ({ 
   judul, 

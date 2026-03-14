@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import reservasiService from '@/lib/services/reservasiService';
 import { TrashIcon, PenIcon, ChevronDownIcon } from '@ds/icons';
-import Button from '@ds/Button';
+import Button from '@ds/ui/Button';
 import Table from '@ds/dashboard/components/Table';
 import SearchBar from '@ds/dashboard/layouts/ManagementSearch';
 import PageHeader from '@ds/dashboard/layouts/PageHeader';

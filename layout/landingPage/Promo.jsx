@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import TagLabel from "@ds/Button/TagLabel";
-import { DashedBorder } from '@ds/frame/garisputus';
+import TagLabel from "@ds/ui/Button/TagLabel";
+import { DashedBorder } from '@ds/ui/frame/garisputus';
 import PromoCard from './components/PromoCard';
 import systemInfoService from '@/lib/services/systemInfoService';
 import promoService from '@/lib/services/promoService';

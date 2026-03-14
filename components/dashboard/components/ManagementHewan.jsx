@@ -5,7 +5,7 @@ import hewanService from '@/lib/services/hewanService';
 import patientService from '@/lib/services/patientService';
 import jenisHewanService from '@/lib/services/jenisHewanService';
 import { TrashIcon, PenIcon } from '@ds/icons';
-import Button from '@ds/Button';
+import Button from '@ds/ui/Button';
 import Table from '@ds/dashboard/components/Table';
 import SearchBar from '@ds/dashboard/layouts/ManagementSearch';
 import PageHeader from '@ds/dashboard/layouts/PageHeader';
