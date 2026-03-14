@@ -4,11 +4,11 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import authService from '@/lib/services/authService';
 import Link from 'next/link';
-import AuthLayout from '@ds/auth/AuthLayout';
-import Input from '@ds/auth/Input';
-import Button from '@ds/auth/Button';
-import Separator from '@ds/auth/Separator';
-import GoogleIcon from '@ds/auth/GoogleIcon';
+import AuthLayout from '@/components/auth/AuthLayout';
+import Input from '@/components/auth/Input';
+import Button from '@/components/auth/Button';
+import Separator from '@/components/auth/Separator';
+import GoogleIcon from '@/components/auth/GoogleIcon';
 
 
 export default function LoginPage() {

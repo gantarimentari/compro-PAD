@@ -1,6 +1,6 @@
-import Header from "@ds/shared/Header";
-import Footer from "@ds/shared/Footer";
-import  UserProfile  from "@ds/contents/UserProfile";
+import Header from "@/components/layouts/Header";
+import Footer from "@/components/layouts/Footer";
+import  UserProfile  from "@/components/profile/UserProfile";
 // import ArticleLayout from "@ds/layout/ArticleLayout";
 
 

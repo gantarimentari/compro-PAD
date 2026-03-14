@@ -1,4 +1,4 @@
-import JenisHewan from "@ds/dashboard/components/JenisHewan";
+import JenisHewan from "@/components/dashboard/jenis-hewan/JenisHewan";
 
 export default function JenisHewanPage() {
   return <JenisHewan />;

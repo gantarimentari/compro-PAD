@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import Header from "@ds/shared/Header";
-import Footer from "@ds/shared/Footer";
-import GaleryLayout from "layout/Galerylayout";
-import { GaleryFilterButtons } from "@ds/contents/GaleryApp";
-import GaleryApp from '@ds/contents/GaleryApp';
+import Header from "@/components/layouts/Header";
+import Footer from "@/components/layouts/Footer";
+import GaleryLayout from "@/components/layouts/Galerylayout";
+import { GaleryFilterButtons } from "@/components/gallery/GaleryApp";
+import GaleryApp from '@/components/gallery/GaleryApp';
 
 export default function GaleryPage() {
     const [activeFilter, setActiveFilter] = useState('all');

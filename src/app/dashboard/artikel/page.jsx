@@ -1,4 +1,4 @@
-import ManagemenArtikel from "@ds/dashboard/components/ManagemenArtikel";
+import ManagemenArtikel from "@/components/dashboard/artikel/ManagemenArtikel";
 
 export default function ArtikelPage() {
   return <ManagemenArtikel />;

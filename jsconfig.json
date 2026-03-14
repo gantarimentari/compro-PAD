@@ -6,7 +6,7 @@
       "@/*": ["src/*"], // Alias untuk folder src
       "@ds/*": ["components/*"], // Alias untuk folder komponen di root utama
       "@lib/*": ["lib/*"], // Alias untuk folder lib
-      "@/lib/*": ["lib/*"], // Alias agar @/lib/* juga resolve ke lib/*
+      "@/lib/*": ["src/lib/*"], // Alias agar @/lib/* resolve ke src/lib/*
       "@layout/*": ["layout/*"] // Alias untuk folder layout
     }
   }

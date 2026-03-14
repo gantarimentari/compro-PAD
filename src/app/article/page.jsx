@@ -1,7 +1,7 @@
-import Header from "@ds/shared/Header";
-import Footer from "@ds/shared/Footer";
-import ArticleLayout from "layout/ArticleLayout";
-import ArticleCMSApp from "@ds/contents/ArticleCMSApp";
+import Header from "@/components/layouts/Header";
+import Footer from "@/components/layouts/Footer";
+import ArticleLayout from "@/components/layouts/ArticleLayout";
+import ArticleCMSApp from "@/components/article/ArticleCMSApp";
 
 export default function ArticlePage() {
   const svgBackground = "/Background/bg-blue-paw.svg"

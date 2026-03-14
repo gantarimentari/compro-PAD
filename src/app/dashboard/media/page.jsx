@@ -1,4 +1,4 @@
-import ManagemenMedia from "@ds/dashboard/components/ManagemenMedia";
+import ManagemenMedia from "@/components/dashboard/media/ManagemenMedia";
 
 export default function MediaPage() {
   return <ManagemenMedia />;

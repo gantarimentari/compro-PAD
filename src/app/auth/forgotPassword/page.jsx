@@ -3,9 +3,9 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import authService from '@/lib/services/authService';
-import AuthLayout from '@ds/auth/AuthLayout';
-import Input from '@ds/auth/Input';
-import Button from '@ds/auth/Button';
+import AuthLayout from '@/components/auth/AuthLayout';
+import Input from '@/components/auth/Input';
+import Button from '@/components/auth/Button';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');

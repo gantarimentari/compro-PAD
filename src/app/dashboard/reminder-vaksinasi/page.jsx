@@ -1,4 +1,4 @@
-import ReminderVaksinasi from "@ds/dashboard/components/ReminderVaksinasi";
+import ReminderVaksinasi from "@/components/dashboard/reminder-vaksinasi/ReminderVaksinasi";
 
 export default function ReminderVaksinasiPage() {
   return <ReminderVaksinasi />;

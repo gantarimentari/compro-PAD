@@ -1,13 +1,13 @@
 'use client';
 
-import Header from "@ds/shared/Header";
-import Footer from "@ds/shared/Footer";
-import Profile from '@layout/landingPage/Profile';
-import About from '@layout/landingPage/About';
-import Content from '@layout/landingPage/Content';
-import Sevices from '@layout/landingPage/Services';
-import Promo from "@layout/landingPage/Promo";
-import Article from "@layout/landingPage/Article";
+import Header from "@/components/layouts/Header";
+import Footer from "@/components/layouts/Footer";
+import Profile from '@/components/landing-page/Profile';
+import About from '@/components/landing-page/About';
+import Content from '@/components/landing-page/Content';
+import Sevices from '@/components/landing-page/Services';
+import Promo from "@/components/landing-page/Promo";
+import Article from "@/components/landing-page/Article";
 // import ArticleLayout from "@ds/layout/ArticleLayout";
 
 
