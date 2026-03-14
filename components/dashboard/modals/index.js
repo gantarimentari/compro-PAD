@@ -23,6 +23,7 @@ export { default as EditHewanModal } from './EditHewanModal';
 export { default as TambahJenisHewanModal } from './TambahJenisHewanModal';
 export { default as EditJenisHewanModal } from './EditJenisHewanModal';
 export { default as TambahJenisVaksinModal } from './TambahJenisVaksinModal';
+
 export { default as TambahReservasiModal } from './TambahReservasiModal';
 // reservasi
 export { default as EditReservasiModal } from './EditReservasiModal';
@@ -33,3 +34,6 @@ export { default as PreviewPromoModal } from './PreviewPromoModal';
 
 export { default as TambahAdminModal } from './TambahAdminModal';
 export { default as EditAdminModal } from './EditAdminModal';
+// jenis hewan
+export { default as EditJenisVaksinModal } from './EditJenisVaksinModal';
+export { default as PreviewJenisVaksinModal } from './PreviewJenisVaksinModal';

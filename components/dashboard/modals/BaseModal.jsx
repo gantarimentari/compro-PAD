@@ -17,8 +17,9 @@ const BaseModal = ({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm "
       onClick={onClose}
+      style={{ marginTop: '0' }}
     >
       <div 
         className={`relative bg-white rounded-lg ${maxWidth} w-full max-h-[90vh] ${overflowHidden ? 'overflow-hidden' : 'overflow-y-auto'} shadow-xl`}

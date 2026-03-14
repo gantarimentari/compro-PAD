@@ -17,7 +17,7 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate(); // ✅ Sudah cek role di LoginRequest
 
-        $request->session()->regenerate();
+        // $request->session()->regenerate();
 
         $user = Auth::user();
 
