@@ -10,17 +10,19 @@ import SearchBar from '@/components/shared/ManagementSearch';
 import PageHeader from '@/components/shared/PageHeader';
 import { TambahReminderVaksinasiModal, DeleteConfirmModal  } from '@/components/dashboard';
 import Button from '@/components/ui/Button';
-
-const Vaccination_COLUMNS = [
-  
-  { key: 'petName', header: 'Hewan' },
-  { key: 'ownerName', header: 'Pemilik ' },
-  { key: 'vaccinationType', header: 'Jenis Vaksin' },
-  { key: 'latestVaccinationDate', header: 'Vaksinasi Terakhir' },
-  { key: 'nextVaccinationDate', header: 'Jadwal Berikutnya' },
-  { key: 'status', header: 'Status' },
-  { key: 'actions', header: 'Aksi', isAction: true },
-];
+import {
+  NEXT_DATE_URGENCY_CLASS,
+  REMINDER_QUERY_KEY,
+  STATUS_BADGE_CLASS,
+  STATUS_FILTER_OPTIONS,
+  VACCINATION_COLUMNS,
+} from './reminderVaksinasi.constants';
+import {
+  buildHewanMetaMap,
+  buildVaksinMap,
+  filterReminderRows,
+  mapReminderRows,
+} from './reminderVaksinasi.utils';
 
 export default function ReminderVaksinasi() {
   const queryClient = useQueryClient();
@@ -38,169 +40,33 @@ export default function ReminderVaksinasi() {
   const createMutation = useMutation({
     mutationFn: (payload) => reminderVaksinasiService.create(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['reminder-vaksinasi-list'] });
+      queryClient.invalidateQueries({ queryKey: REMINDER_QUERY_KEY });
     },
   });
 
   const { data: vaksinasiData = [], isLoading } = useQuery({
-    queryKey: ['reminder-vaksinasi-list'],
+    queryKey: REMINDER_QUERY_KEY,
     queryFn: async () => {
-      const formatDateID = (value) =>
-        value.toLocaleDateString('id-ID', {
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric',
-        });
-
-      const addMonthsToDate = (dateValue, monthInterval) => {
-        const parsedDate = new Date(dateValue);
-        if (Number.isNaN(parsedDate.getTime())) return null;
-
-        const result = new Date(parsedDate);
-        result.setMonth(result.getMonth() + monthInterval);
-        return result;
-      };
-
-      const getNextDateHint = (nextDate) => {
-        if (!nextDate) return '-';
-
-        const today = new Date();
-        const startToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-        const startNext = new Date(nextDate.getFullYear(), nextDate.getMonth(), nextDate.getDate());
-        const dayDiff = Math.ceil((startNext - startToday) / (1000 * 60 * 60 * 24));
-
-        if (dayDiff === 0) return 'Hari ini';
-        if (dayDiff > 0) return `${dayDiff} hari lagi`;
-        return `Terlewat ${Math.abs(dayDiff)} hari`;
-      };
-
-      const getDayDiff = (nextDate) => {
-        if (!nextDate) return null;
-
-        const today = new Date();
-        const startToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-        const startNext = new Date(nextDate.getFullYear(), nextDate.getMonth(), nextDate.getDate());
-        return Math.ceil((startNext - startToday) / (1000 * 60 * 60 * 24));
-      };
-
-      const getUrgencyLevel = (dayDiff) => {
-        if (dayDiff === null) return 'normal';
-        if (dayDiff < 0) return 'overdue';
-        if (dayDiff <= 1) return 'very-soon';
-        if (dayDiff < 14) return 'soon';
-        return 'normal';
-      };
-
       const [rawReminder, rawHewan, rawJenisVaksin] = await Promise.all([
         reminderVaksinasiService.getAll(),
         hewanService.getAll(),
         jenisVaksinService.getAll(),
       ]);
 
-      const reminderRows = Array.isArray(rawReminder)
-        ? rawReminder
-        : Array.isArray(rawReminder?.data)
-          ? rawReminder.data
-          : [];
-
-      const groupedHewan = Array.isArray(rawHewan) ? rawHewan : [];
-      const hewanMetaMap = new Map(
-        groupedHewan.flatMap((owner) => {
-          const ownerName = owner?.name ?? owner?.username ?? '-';
-          const ownerPhone = owner?.phone_number ?? owner?.phone ?? '-';
-          const pets = Array.isArray(owner?.pets) ? owner.pets : [];
-
-          return pets.map((pet) => [
-            String(pet?.id),
-            {
-              speciesName: pet?.speciesName ?? '-',
-              ownerName,
-              ownerPhone,
-            },
-          ]);
-        })
-      );
-
-      const vaksinRows = Array.isArray(rawJenisVaksin)
-        ? rawJenisVaksin
-        : Array.isArray(rawJenisVaksin?.data)
-          ? rawJenisVaksin.data
-          : [];
-
-      const vaksinMap = new Map(
-        vaksinRows.map((item) => [
-          String(item?.id_vaksinasi ?? item?.id ?? item?.id_vaksin ?? item?.vaksin_id),
-          {
-            namaVaksin: item?.nama_vaksin ?? '-',
-            interval: item?.interval ?? '-',
-          },
-        ])
-      );
-
-      return reminderRows.map((item, index) => {
-        const hewanId = String(item?.id_hewan ?? item?.hewan?.id_hewan ?? item?.hewan?.id ?? '');
-        const vaksinId = String(item?.id_jenis_vaksin ?? '');
-        const hewanMeta = hewanMetaMap.get(hewanId);
-        const vaksinMeta = vaksinMap.get(vaksinId);
-        const ownerFromReminder = item?.hewan?.pasien;
-        const intervalMonths = Number(vaksinMeta?.interval ?? 0);
-        const latestVaccinationRawDate = item?.tanggal_vaksin ? new Date(item.tanggal_vaksin) : null;
-        const hasValidLatestDate = latestVaccinationRawDate && !Number.isNaN(latestVaccinationRawDate.getTime());
-        const nextVaccinationRawDate = hasValidLatestDate && intervalMonths > 0
-          ? addMonthsToDate(latestVaccinationRawDate, intervalMonths)
-          : null;
-        const nextVaccinationDayDiff = getDayDiff(nextVaccinationRawDate);
-        const nextVaccinationUrgency = getUrgencyLevel(nextVaccinationDayDiff);
-
-        const uiStatusList = ['Selesai', 'Terkirim', 'Terlewat', 'Dijadwalkan'];
-        const uiStatus = uiStatusList[index % uiStatusList.length];
-
-        return {
-          id: item?.id_vaksinasi ?? item?.id ?? `${hewanId}-${index}`,
-          petName: item?.hewan?.nama_hewan ?? '-',
-          species: hewanMeta?.speciesName ?? '-',
-          ownerName: ownerFromReminder?.username ?? ownerFromReminder?.name ?? hewanMeta?.ownerName ?? '-',
-          ownerPhone: ownerFromReminder?.phone_number ?? ownerFromReminder?.phone ?? hewanMeta?.ownerPhone ?? '-',
-          vaccinationType: vaksinMeta?.namaVaksin ?? '-',
-          vaccineInterval: vaksinMeta?.interval,
-          latestVaccinationDate: hasValidLatestDate ? formatDateID(latestVaccinationRawDate) : '-',
-          nextVaccinationDate: nextVaccinationRawDate ? formatDateID(nextVaccinationRawDate) : '-',
-          nextVaccinationHint: getNextDateHint(nextVaccinationRawDate),
-          nextVaccinationUrgency,
-          status: uiStatus,
-        };
-      });
+      const hewanMetaMap = buildHewanMetaMap(rawHewan);
+      const vaksinMap = buildVaksinMap(rawJenisVaksin);
+      return mapReminderRows(rawReminder, hewanMetaMap, vaksinMap);
     },
     staleTime: 5 * 60 * 1000,
   });
 
   const filteredData = useMemo(() => {
-    const searchValue = searchQuery.toLowerCase();
-    return vaksinasiData
-      .filter((item) => {
-        const matchesSearch =
-          item.petName.toLowerCase().includes(searchValue) ||
-          item.ownerName.toLowerCase().includes(searchValue) ||
-          item.vaccinationType.toLowerCase().includes(searchValue);
-
-        const matchesStatus =
-          statusFilter === 'Semua Status' ||
-          item.status.toLowerCase() === statusFilter.toLowerCase();
-
-        return matchesSearch && matchesStatus;
-      });
+    return filterReminderRows(vaksinasiData, searchQuery, statusFilter);
   }, [vaksinasiData, searchQuery, statusFilter]);
 
   const renderStatusTag = (status) => {
-    const statusColor = {
-      Selesai: 'bg-accent-green-50 text-accent-green-450',
-      Terkirim: 'bg-accent-blue-50 text-accent-blue-400',
-      Terlewat: 'bg-accent-red-50 text-accent-red-450',
-      Dijadwalkan: 'bg-accent-yellow-50 text-[#B8860B]',
-    };
-
     return (
-      <span className={`inline-flex px-4 py-2 rounded-lg text-body-2 ${statusColor[status] || 'bg-gray-100 text-gray-700'}`}>
+      <span className={`inline-flex px-4 py-2 rounded-lg text-body-2 ${STATUS_BADGE_CLASS[status] || 'bg-gray-100 text-gray-700'}`}>
         {status}
       </span>
     );
@@ -245,26 +111,7 @@ export default function ReminderVaksinasi() {
         );
       }
       case 'nextVaccinationDate': {
-        const urgencyStyle = {
-          overdue: {
-            date: 'text-accent-red-450',
-            hint: 'text-accent-red-450',
-          },
-          'very-soon': {
-            date: 'text-[#F54900]',
-            hint: 'text-[#F54900]',
-          },
-          soon: {
-            date: 'text-[#B8860B]',
-            hint: 'text-[#B8860B]',
-          },
-          normal: {
-            date: 'text-accent-neutral-1000',
-            hint: 'text-accent-neutral-500',
-          },
-        };
-
-        const selectedStyle = urgencyStyle[item.nextVaccinationUrgency] || urgencyStyle.normal;
+        const selectedStyle = NEXT_DATE_URGENCY_CLASS[item.nextVaccinationUrgency] || NEXT_DATE_URGENCY_CLASS.normal;
 
         return (
           <div className="whitespace-normal max-w-xs">
@@ -295,7 +142,7 @@ export default function ReminderVaksinasi() {
               color="bg-accent-red-300"
               hoverColor="hover:bg-accent-red-400"
               onClick={() => handleDelete(item)}
-              label={`Hapus ${item.type}`}/>
+              label={`Hapus ${item.petName}`}/>
           </div>
         );
       }
@@ -312,13 +159,18 @@ export default function ReminderVaksinasi() {
     });
   };
   const handleConfirmDelete = async () => {
+    if (!reminderToDelete?.reminderId) {
+      alert('ID reminder tidak valid. Silakan refresh halaman lalu coba lagi.');
+      return;
+    }
+
     try {
-      await reminderVaksinasiService.remove(reminderToDelete.id);
-      queryClient.invalidateQueries({ queryKey: ['reminder-vaksinasi'] });
+      await reminderVaksinasiService.remove(reminderToDelete.reminderId);
+      queryClient.invalidateQueries({ queryKey: REMINDER_QUERY_KEY });
       setIsDeleteModalOpen(false);
       setReminderToDelete(null);
     } catch (err) {
-      alert('Gagal menghapus!');
+      alert(`Gagal menghapus! ${err?.response?.data?.message || err?.message || ''}`.trim());
     }
   };
   return (
@@ -345,11 +197,9 @@ export default function ReminderVaksinasi() {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="text-body-2 text-accent-neutral-800 min-w-[180px] bg-accent-neutral-200 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-body-2"
           >
-            <option>Semua Status</option>
-            <option>Selesai</option>
-            <option>Terkirim</option>
-            <option>Terlewat</option>
-            <option>Dijadwalkan</option>
+            {STATUS_FILTER_OPTIONS.map((option) => (
+              <option key={option} value={option}>{option}</option>
+            ))}
           </select>
         </div>
         
@@ -358,12 +208,12 @@ export default function ReminderVaksinasi() {
             {[1, 2, 3, 4, 5].map(i => <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />)}
           </div>
         ) : (
-          <Table columns={Vaccination_COLUMNS} data={filteredData} renderCell={renderCell} />
+          <Table columns={VACCINATION_COLUMNS} data={filteredData} renderCell={renderCell} />
         )}
       </div>
 
       <TambahReminderVaksinasiModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={handleSaveReminder}/>
-      <DeleteConfirmModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} onConfirm={handleConfirmDelete} itemName={reminderToDelete?.type} itemType="reminder vaksinasi" 
+      <DeleteConfirmModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} onConfirm={handleConfirmDelete} itemName={reminderToDelete?.petName} itemType="reminder vaksinasi" 
       description={"Apakah Anda yakin ingin menghapus reminder ini? Tindakan ini tidak dapat dibatalkan."}/>    
     </div>
   );

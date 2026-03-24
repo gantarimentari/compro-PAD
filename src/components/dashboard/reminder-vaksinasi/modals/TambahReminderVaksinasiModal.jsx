@@ -5,17 +5,58 @@ import SuccessToast from '@/components/ui/SuccessToast';
 import hewanService from '@/lib/services/hewanService';
 import jenisVaksinService from '@/lib/services/jenisVaksinService';
 
+const INITIAL_FORM_DATA = {
+  id_pasien: '',
+  id_hewan: '',
+  id_jenis_vaksin: '',
+  tanggal_vaksin: '',
+  notes: ''
+};
+
+const normalizeRows = (rawData) => {
+  if (Array.isArray(rawData)) return rawData;
+  if (Array.isArray(rawData?.data)) return rawData.data;
+  return [];
+};
+
+const mapHewanOptions = (hewanData) => {
+  return normalizeRows(hewanData).flatMap((owner) => {
+    const ownerId = owner.id ?? '';
+    const ownerName = owner.name ?? owner.username ?? owner.email ?? 'Unknown';
+    const pets = Array.isArray(owner.pets) ? owner.pets : [];
+
+    return pets.map((pet) => ({
+      id: pet.id,
+      nama_hewan: pet.petName ?? pet.nama_hewan ?? '-',
+      nama_pemilik: ownerName,
+      id_pasien: ownerId,
+    }));
+  });
+};
+
+const mapJenisVaksinOptions = (jenisVaksinData) => {
+  return normalizeRows(jenisVaksinData)
+    .map((item) => {
+      const itemId = item.id ?? item.id_vaksinasi ?? item.id_vaksin ?? item.vaksin_id ?? null;
+      const rawStatus = String(item.status ?? '').toLowerCase();
+      const isActive =
+        rawStatus === 'active' ||
+        rawStatus === 'available' ||
+        rawStatus === '1' ||
+        rawStatus === 'true';
+
+      return {
+        id: itemId,
+        nama_vaksin: item.nama_vaksin ?? '-',
+        isActive,
+      };
+    })
+    .filter((item) => item.id !== null && item.id !== undefined && item.isActive);
+};
+
 const TambahReminderVaksinasiModal = ({
   isOpen,onClose,onSave}) => {
-    const [formData, setFormData] = useState({
-      id_pasien: '',
-      id_hewan: '',
-      id_jenis_vaksin: '',
-      tanggal_vaksin: '',
-      notes: ''
-
-
-    });
+    const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [hewanOptions, setHewanOptions] = useState([]);
   const [jenisVaksinOptions, setJenisVaksinOptions] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,47 +75,8 @@ const TambahReminderVaksinasiModal = ({
           jenisVaksinService.getAll(),
         ]);
 
-        const flatHewan = Array.isArray(hewanData)
-          ? hewanData.flatMap((owner) => {
-              const ownerId = owner.id ?? '';
-              const ownerName = owner.name ?? owner.username ?? owner.email ?? 'Unknown';
-              const pets = Array.isArray(owner.pets) ? owner.pets : [];
-
-              return pets.map((pet) => ({
-                id: pet.id,
-                nama_hewan: pet.petName ?? pet.nama_hewan ?? '-',
-                nama_pemilik: ownerName,
-                id_pasien: ownerId,
-              }));
-            })
-          : [];
-
-        const vaksinRows = Array.isArray(jenisVaksinData)
-          ? jenisVaksinData
-          : Array.isArray(jenisVaksinData?.data)
-            ? jenisVaksinData.data
-            : [];
-
-        const vaksinOptions = vaksinRows
-          .map((item) => {
-            const itemId = item.id ?? item.id_vaksinasi ?? item.id_vaksin ?? item.vaksin_id ?? null;
-            const rawStatus = String(item.status ?? '').toLowerCase();
-            const isActive =
-              rawStatus === 'active' ||
-              rawStatus === 'available' ||
-              rawStatus === '1' ||
-              rawStatus === 'true';
-
-            return {
-              id: itemId,
-              nama_vaksin: item.nama_vaksin ?? '-',
-              isActive,
-            };
-          })
-          .filter((item) => item.id !== null && item.id !== undefined && item.isActive);
-
-        setHewanOptions(flatHewan);
-        setJenisVaksinOptions(vaksinOptions);
+        setHewanOptions(mapHewanOptions(hewanData));
+        setJenisVaksinOptions(mapJenisVaksinOptions(jenisVaksinData));
       } catch (error) {
         console.error('Error fetching reminder vaksinasi options:', error);
         setHewanOptions([]);
@@ -91,13 +93,7 @@ const TambahReminderVaksinasiModal = ({
     if (!isOpen) {
       setShowSuccess(false);
       setIsSubmitting(false);
-      setFormData({
-        id_pasien: '',
-        id_hewan: '',
-        id_jenis_vaksin: '',
-        tanggal_vaksin: '',
-        notes: ''
-      });
+      setFormData(INITIAL_FORM_DATA);
     }
   },[isOpen]);
 
@@ -194,7 +190,7 @@ const TambahReminderVaksinasiModal = ({
             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
             placeholder="Kondisi hewan, reaksi vaksin, dll..."
             className="w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 text-body-2 placeholder:text-accent-neutral-800 min-h-[80px] resize-none"
-            required
+            
           />
         </div>
         <div className="flex justify-end space-x-3 pt-3">
