@@ -37,3 +37,6 @@ export { default as EditAdminModal } from './admin/modals/EditAdminModal';
 // jenis hewan
 export { default as EditJenisVaksinModal } from './jenis-vaksin/modals/EditJenisVaksinModal';
 export { default as PreviewJenisVaksinModal } from './jenis-vaksin/modals/PreviewJenisVaksinModal';
+
+// reminder vaksinasi
+export { default as TambahReminderVaksinasiModal } from './reminder-vaksinasi/modals/TambahReminderVaksinasiModal';
