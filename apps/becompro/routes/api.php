@@ -20,6 +20,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\ReminderVaksinasiController;
 use App\Http\Controllers\JenisVaksinController;
+use App\Http\Controllers\FaqController;
 
 Route::get('/articles', [ArticleController::class, 'index']);
 Route::get('/media', [MediaController::class, 'index']);
@@ -37,6 +38,9 @@ Route::withoutMiddleware([
     Route::put('/reminder-vaksinasi/{id}', [ReminderVaksinasiController::class, 'update']);
     Route::delete('/reminder-vaksinasi/{id}', [ReminderVaksinasiController::class, 'destroy']);
 Route::apiResource('jenis-vaksin', JenisVaksinController::class);
+Route::get('/faq', [FaqController::class, 'index']);
+Route::get('/faq/{id}', [FaqController::class, 'show']);
+Route::apiResource('faq', FaqController::class)->except(['index', 'show']);
 
 
 require __DIR__. '/auth.php';
