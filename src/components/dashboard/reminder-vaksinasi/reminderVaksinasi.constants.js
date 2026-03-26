@@ -35,7 +35,7 @@ export const NEXT_DATE_URGENCY_CLASS = {
     hint: 'text-[#F54900]',
   },
   soon: {
-    date: 'text-[#B8860B]',
+    date: 'text-[#B8860B]',   
     hint: 'text-[#B8860B]',
   },
   normal: {

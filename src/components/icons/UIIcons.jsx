@@ -662,6 +662,13 @@ export const RightArrowIcon = ({ className = "w-6 h-6", color = "currentColor" }
 stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>
 
-)
+);
+export const CheckCircleIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
+  <svg className={className} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M9.99984 17.7087C14.257 17.7087 17.7082 14.2575 17.7082 10.0003C17.7082 5.74313 14.257 2.29199 9.99984 2.29199C5.74264 2.29199 2.2915 5.74313 2.2915 10.0003C2.2915 14.2575 5.74264 17.7087 9.99984 17.7087Z" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+<path d="M13.6457 7.66211L8.96984 12.3388L6.354 9.72711" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+
+);
 
 

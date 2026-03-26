@@ -1,4 +1,21 @@
-import { UI_STATUS_ROTATION } from './reminderVaksinasi.constants';
+import { STATUS_BADGE_CLASS } from './reminderVaksinasi.constants';
+
+/**
+ * @typedef {Object} ReminderTableRow
+ * @property {string|number} id
+ * @property {string|number|null} reminderId
+ * @property {string} petName
+ * @property {string} species
+ * @property {string} ownerName
+ * @property {string} ownerPhone
+ * @property {string} vaccinationType
+ * @property {number|string} vaccineInterval
+ * @property {string} latestVaccinationDate
+ * @property {string} nextVaccinationDate
+ * @property {string} nextVaccinationHint
+ * @property {'overdue'|'very-soon'|'soon'|'normal'} nextVaccinationUrgency
+ * @property {'Selesai'|'Terkirim'|'Terlewat'|'Dijadwalkan'} status
+ */
 
 export const normalizeRows = (rawData) => {
   if (Array.isArray(rawData)) return rawData;
@@ -94,13 +111,41 @@ export const mapReminderRows = (rawReminder, hewanMetaMap, vaksinMap) => {
     const vaksinMeta = vaksinMap.get(vaksinId);
     const ownerFromReminder = item?.hewan?.pasien;
     const intervalMonths = Number(vaksinMeta?.interval ?? 0);
-    const latestVaccinationRawDate = item?.tanggal_vaksin ? new Date(item.tanggal_vaksin) : null;
+    const latestVaccinationSource = item?.tanggal_vaksin_aktual ?? item?.tanggal_vaksin;
+    const latestVaccinationRawDate = latestVaccinationSource ? new Date(latestVaccinationSource) : null;
     const hasValidLatestDate = latestVaccinationRawDate && !Number.isNaN(latestVaccinationRawDate.getTime());
-    const nextVaccinationRawDate = hasValidLatestDate && intervalMonths > 0
-      ? addMonthsToDate(latestVaccinationRawDate, intervalMonths)
-      : null;
+    const persistedNextScheduleSource = item?.jadwal_vaksin_berikutnya ?? null;
+    const persistedNextScheduleDate = persistedNextScheduleSource ? new Date(persistedNextScheduleSource) : null;
+    const hasValidPersistedNextSchedule = persistedNextScheduleDate && !Number.isNaN(persistedNextScheduleDate.getTime());
+    const nextVaccinationRawDate = hasValidPersistedNextSchedule
+      ? persistedNextScheduleDate
+      : (hasValidLatestDate && intervalMonths > 0 ? addMonthsToDate(latestVaccinationRawDate, intervalMonths) : null);
     const nextVaccinationDayDiff = getDayDiff(nextVaccinationRawDate);
     const nextVaccinationUrgency = getUrgencyLevel(nextVaccinationDayDiff);
+    const backendStatusRaw = item?.status ?? item?.status_reminder ?? item?.status_vaksinasi;
+    const normalizedBackendStatus = typeof backendStatusRaw === 'string' ? backendStatusRaw.trim().toLowerCase() : '';
+    const scheduleTypeRaw = item?.tipe_jadwal ?? item?.schedule_type;
+    const normalizedScheduleType = typeof scheduleTypeRaw === 'string' ? scheduleTypeRaw.trim().toLowerCase() : '';
+    const hasActualDate = Boolean(item?.tanggal_vaksin_aktual);
+
+    let resolvedStatus = 'Dijadwalkan';
+    if (normalizedBackendStatus === 'selesai') {
+      resolvedStatus = 'Selesai';
+    } else if (normalizedBackendStatus === 'terkirim') {
+      resolvedStatus = 'Terkirim';
+    } else if (normalizedBackendStatus === 'terlewat') {
+      resolvedStatus = 'Terlewat';
+    } else if (normalizedBackendStatus === 'dijadwalkan') {
+      resolvedStatus = 'Dijadwalkan';
+    } else if (normalizedScheduleType === 'final') {
+      resolvedStatus = 'Selesai';
+    } else if (normalizedScheduleType === 'automatic' || normalizedScheduleType === 'manual') {
+      resolvedStatus = 'Dijadwalkan';
+    } else if (hasActualDate && !hasValidPersistedNextSchedule) {
+      resolvedStatus = 'Selesai';
+    } else if (typeof backendStatusRaw === 'string' && STATUS_BADGE_CLASS[backendStatusRaw]) {
+      resolvedStatus = backendStatusRaw;
+    }
 
     return {
       id: reminderId ?? `${hewanId}-${index}`,
@@ -115,9 +160,24 @@ export const mapReminderRows = (rawReminder, hewanMetaMap, vaksinMap) => {
       nextVaccinationDate: nextVaccinationRawDate ? formatDateID(nextVaccinationRawDate) : '-',
       nextVaccinationHint: getNextDateHint(nextVaccinationRawDate),
       nextVaccinationUrgency,
-      status: UI_STATUS_ROTATION[index % UI_STATUS_ROTATION.length],
+      status: resolvedStatus,
     };
   });
+};
+
+/**
+ * Single adapter for FE internal contract.
+ * Convert raw backend payloads into stable table rows consumed by UI.
+ *
+ * @param {unknown} rawReminder
+ * @param {unknown} rawHewan
+ * @param {unknown} rawJenisVaksin
+ * @returns {ReminderTableRow[]}
+ */
+export const mapReminderTableData = (rawReminder, rawHewan, rawJenisVaksin) => {
+  const hewanMetaMap = buildHewanMetaMap(rawHewan);
+  const vaksinMap = buildVaksinMap(rawJenisVaksin);
+  return mapReminderRows(rawReminder, hewanMetaMap, vaksinMap);
 };
 
 export const filterReminderRows = (rows, searchQuery, statusFilter) => {
