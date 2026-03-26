@@ -60,6 +60,7 @@ export const createReminderCellRenderer = ({ onDelete, onOpenAction }) => {
         return renderStatusTag(item.status);
       }
       case 'actions': {
+          return (
           <div className="flex items-center gap-2">
             <button
               type="button"

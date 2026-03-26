@@ -362,7 +362,18 @@ class ReminderVaksinasiController extends Controller
             'id_hewan' => 'sometimes|exists:hewan,id_hewan',
             'id_jenis_vaksin' => 'sometimes|integer|exists:jenis_vaksin,id_vaksinasi',
             'tanggal_vaksin' => 'sometimes|date|after_or_equal:today',
+            'status' => 'sometimes|string|in:Selesai,Dijadwalkan,Terkirim,Terlewat',
+            'tanggal_vaksin_aktual' => 'sometimes|nullable|date',
+            'dilakukan_oleh' => 'sometimes|nullable|string|max:255',
+            'catatan' => 'sometimes|nullable|string',
+            'jadwal_vaksin_berikutnya' => 'sometimes|nullable|date',
+            'tipe_jadwal' => 'sometimes|nullable|string|in:automatic,manual,final',
         ]);
+
+        if (($validated['tipe_jadwal'] ?? null) === 'final') {
+            $validated['status'] = 'Selesai';
+            $validated['jadwal_vaksin_berikutnya'] = null;
+        }
 
         try {
             $vaksinasi = ReminderVaksinasi::findOrFail($id);
@@ -460,3 +471,6 @@ class ReminderVaksinasiController extends Controller
     }
 
 }
+
+
+
