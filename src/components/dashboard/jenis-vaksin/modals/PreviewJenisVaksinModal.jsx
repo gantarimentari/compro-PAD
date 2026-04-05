@@ -10,7 +10,9 @@ const PreviewJenisVaksinModal = ({ isOpen, onClose, jenisVaksin }) => {
   return (
     <PreviewModal
       isOpen={isOpen} onClose={onClose}  maxWidth="max-w-md"
-      title={`Detail Vaksinasi ${jenisVaksin.type}`}>
+      title={`Detail Vaksinasi ${jenisVaksin.type}`}
+      description="Detail lengkap jenis vaksin">
+      
          <div className="space-y-4">
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000 mb-1">

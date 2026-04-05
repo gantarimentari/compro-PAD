@@ -124,12 +124,13 @@ const { data: jenisHewanOptions = [] } = useQuery({
 
       await patientService.update(id, pasienPayload);
 
-      const oldPets = selectedPasien.pets || [];
-      for (const pet of oldPets) {
-        await hewanService.remove(pet.id);
-      }
+      
+      if (Array.isArray(formData.pets)) {
+        const oldPets = selectedPasien?.pets || [];
+        for (const pet of oldPets) {
+          await hewanService.remove(pet.id);
+        }
 
-      if (formData.pets && formData.pets.length > 0) {
         for (const pet of formData.pets) {
           await hewanService.create({
             id_pasien: id,

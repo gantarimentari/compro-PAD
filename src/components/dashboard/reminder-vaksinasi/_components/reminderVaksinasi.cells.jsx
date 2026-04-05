@@ -1,15 +1,25 @@
 import React from 'react';
-import Button from '@/components/ui/Button';
-import { PenIcon, TrashIcon } from '@/components/icons';
+import ReminderActionButtons from './ReminderActionButtons';
+
 import { NEXT_DATE_URGENCY_CLASS, STATUS_BADGE_CLASS } from '../reminderVaksinasi.constants';
 
-const renderStatusTag = (status) => (
-  <span className={`inline-flex px-4 py-2 rounded-lg text-body-2 ${STATUS_BADGE_CLASS[status] || 'bg-gray-100 text-gray-700'}`}>
+
+const renderStatusTag = (status) => {
+  const config = STATUS_BADGE_CLASS[status] || { 
+    text: 'text-gray-700', 
+    bg: 'bg-gray-100' 
+  };
+  return (
+  <div className={`text-center whitespace-normal max-w-xs  ${config.bg || 'bg-gray-100'} rounded-lg`}>
+    <span className={`inline-flex px-4 py-2  text-body-2 rounded-lg  ${config.text || ' text-gray-700'}`}>    
     {status}
   </span>
-);
+  </div>
+  );
+  
+};
 
-export const createReminderCellRenderer = ({ onDelete, onOpenAction }) => {
+export const createReminderCellRenderer = ({ onDelete, onOpenAction, onOpenEdit, onOpenHistory, onOpenSchedule, onOpenSend }) => {
   return (item, key) => {
     switch (key) {
       case 'petName': {
@@ -42,7 +52,7 @@ export const createReminderCellRenderer = ({ onDelete, onOpenAction }) => {
         return (
           <div className="whitespace-normal max-w-xs">
             <p className="text-body-2 text-accent-neutral-1000">{item.latestVaccinationDate}</p>
-            <p className="text-body-5 text-accent-neutral-500">#1 kali vaksin</p>
+            <p className="text-body-5 text-accent-neutral-500">{item.latestVaccinationCountLabel || '-'}</p>
           </div>
         );
       }
@@ -60,32 +70,16 @@ export const createReminderCellRenderer = ({ onDelete, onOpenAction }) => {
         return renderStatusTag(item.status);
       }
       case 'actions': {
-          return (
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={()=>{
-                if (item.status !=='Selesai'){
-                  onOpenAction(item)
-                }
-              }}
-              className={`px-5 py-2 rounded-lg text-white text-body-2 ${item.status === 'Selesai' ? 'bg-[#DCFCE7]  text-[#008236] cursor-default' : 'bg-accent-green-400 hover:bg-accent-green-500'}`}
-            >
-              {item.status === 'Selesai' ? 'Selesai' : 'Vaksinasi'}
-            </button>
-            <button type="button" className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50">⟳</button>
-            <button type="button" className="p-2 rounded-lg bg-accent-yellow-300 hover:bg-accent-yellow-400">
-              <PenIcon className="w-4 h-4" />
-            </button>
-            <Button
-              icon={<TrashIcon className="h-4 w-4" />}
-              roundedClass="rounded-lg"
-              color="bg-accent-red-300"
-              hoverColor="hover:bg-accent-red-400"
-              onClick={() => onDelete(item)}
-              label={`Hapus ${item.petName}`}
-            />
-          </div>
+        return (
+          <ReminderActionButtons
+            item={item}
+            onDelete={onDelete}
+            onOpenAction={onOpenAction}
+            onOpenEdit={onOpenEdit}
+            onOpenHistory={onOpenHistory}
+            onOpenSchedule={onOpenSchedule}
+            onOpenSend={onOpenSend}
+          />
         );
       }
       default:

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 use App\Models\ReminderVaksinasi;
 use Illuminate\Support\Facades\Log;
-
+use App\Models\Notification;
 
 class ReminderVaksinasiController extends Controller
 {
@@ -20,7 +20,7 @@ class ReminderVaksinasiController extends Controller
             $upcomingVaksinasi = ReminderVaksinasi::with(['hewan.pasien', 'jenisVaksin'])
                 ->whereBetween('tanggal_vaksin', [
                     $now->copy()->startOfDay(),
-                    $now->copy()->addDays(3)->endOfDay()
+                    $now->copy()->addDays(7)->endOfDay()
                 ])
                 ->get();
             
@@ -35,15 +35,17 @@ class ReminderVaksinasiController extends Controller
                 $reminderType = null;
                 if($daysUntil==3){
                     $reminderType = '3_days_sebelum';
-                } elseif ($daysUntil==1){
-                    $reminderType = '1_day_before';
+                } elseif ($daysUntil==7){
+                    $reminderType = '7_day_before';
                 } elseif ($daysUntil==0){
                     $reminderType = 'same_day';
                 }
                 if(!$reminderType)continue;
 
+                $logReminderType = $this->normalizeReminderTypeForLog($reminderType);
+
                 $alreadySent = ReminderLog::where('id_vaksinasi', $vaksinasi->id_vaksinasi)
-                    ->where('reminder_type', $reminderType)
+                    ->where('reminder_type', $logReminderType)
                     ->where('status', 'sent')
                     ->exists();
                 
@@ -60,10 +62,22 @@ class ReminderVaksinasiController extends Controller
                 if($sent){
                     ReminderLog::create([
                         'id_vaksinasi'=>$vaksinasi->id_vaksinasi,
-                        'reminder_type'=>$reminderType,
+                        'reminder_type'=>$logReminderType,
                         'sent_at'=> now(),
                         'status'=>'sent',
                         'phone_number'=> $vaksinasi->hewan->pasien->phone_number ?? null,
+                    ]);
+
+                    Notification::create([
+                        'id_vaksinasi' => $vaksinasi->id_vaksinasi,
+                        'id_pasien' => $vaksinasi->id_pasien,
+                        'recipient' => $vaksinasi->hewan->pasien->phone_number ?? 'N/A',
+                        'channel' => 'wa',
+                        'waktu_kirim' => now(),
+                        'tipe' => 'vaksinasi',
+                        'status' => 'sent',
+                        'reminder_type' => $reminderType,
+                        'error_message' => null,             
                     ]);
 
                     if($reminderType === 'same_day'){
@@ -128,7 +142,7 @@ class ReminderVaksinasiController extends Controller
             $message = $this->generateMessage($vaksinasi, $reminderType);
 
             $response = Http::withHeaders([
-                'apikey'=> env('WHATSAPP_API_KEY'),
+                'apikey'=> env('WHATSAPP_TOKEN'),
                 'Content-Type'=> 'application/json',
             ])->post(env('WHATSAPP_API_URL'), [
                 'number'=>$phoneNumber,
@@ -171,9 +185,9 @@ class ReminderVaksinasiController extends Controller
                 "💉 Jenis Vaksin: {$jenisVaksin}\n\n" .
                 "Jangan lupa untuk datang ya! Kesehatan hewan peliharaan Anda adalah prioritas kami. 🏥❤️",
 
-            '1_day_before' => "💉 *Reminder Vaksinasi*\n\n" .
+            '7_day_before' => "💉 *Reminder Vaksinasi*\n\n" .
                 "Halo {$ownerName}! 👋\n\n" .
-                "Ini adalah pengingat bahwa {$petName} memiliki jadwal vaksinasi *{$jenisVaksin}* *besok*.\n\n" .
+                "Ini adalah pengingat bahwa {$petName} memiliki jadwal vaksinasi *{$jenisVaksin}* dalam *7 hari*.\n\n" .
                 "📅 Tanggal: {$date}\n" .
                 "🐾 Hewan: {$petName}\n" .
                 "💉 Jenis Vaksin: {$jenisVaksin}\n\n" .
@@ -187,7 +201,7 @@ class ReminderVaksinasiController extends Controller
                 "Kami tunggu kedatangan Anda di klinik! Sampai jumpa! 🏥✨",
         ];
 
-        return $messages[$reminderType] ?? $messages['1_day_before'];
+        return $messages[$reminderType] ?? $messages['7_day_before'];
     }
 
         private function formatPhoneNumber($phone)
@@ -215,28 +229,48 @@ class ReminderVaksinasiController extends Controller
     {
         $validated = $request->validate([
             'id_vaksinasi' => 'required|exists:reminder_vaksinasi,id_vaksinasi',
-            'reminder_type' => 'required|in:3_days_sebelum,1_day_before,same_day',
+            'reminder_type' => 'required|in:7_day_before,3_days_sebelum,same_day',
         ]);
 
         try {
             $vaksinasi = ReminderVaksinasi::with(['hewan.pasien', 'jenisVaksin'])
                 ->findOrFail($validated['id_vaksinasi']);
 
+            $logReminderType = $this->normalizeReminderTypeForLog($validated['reminder_type']);
+
+            $alreadySent = ReminderLog::where('id_vaksinasi', $vaksinasi->id_vaksinasi)
+                ->where('status', 'sent')
+                ->where('is_manual', true)
+                ->exists();
+
+            if ($alreadySent) {
+                return response()->json([
+                    'message' => 'Reminder untuk jadwal ini sudah dikirim',
+                    'error' => 'reminder_already_sent'
+                ], 409);
+            }
+
             $sent = $this->sendWhatsAppReminder($vaksinasi, $validated['reminder_type']);
 
             if ($sent) {
-                ReminderLog::create([
-                    'id_vaksinasi' => $vaksinasi->id_vaksinasi,
-                    'reminder_type' => $validated['reminder_type'],
-                    'sent_at' => now(),
-                    'status' => 'sent',
-                    'phone_number' => $vaksinasi->hewan->pasien->phone_number ?? null,
-                    'is_manual' => true,
-                ]);
+                ReminderLog::updateOrCreate(
+                    [
+                        'id_vaksinasi' => $vaksinasi->id_vaksinasi,
+                        'reminder_type' => $logReminderType,
+                    ],
+                    [
+                        'sent_at' => now(),
+                        'status' => 'sent',
+                        'phone_number' => $vaksinasi->hewan->pasien->phone_number ?? null,
+                        'is_manual' => true,
+                        'error_message' => null,
+                    ]
+                );
 
                 return response()->json([
                     'message' => 'Reminder sent successfully',
-                    'id_vaksinasi' => $vaksinasi->id_vaksinasi
+                    'id_vaksinasi' => $vaksinasi->id_vaksinasi,
+                    'reminder_sent' => true,
                 ]);
             } else {
                 return response()->json([
@@ -309,8 +343,21 @@ class ReminderVaksinasiController extends Controller
 
             // Order by date
             $vaksinasi = $query->orderBy('tanggal_vaksin', 'asc')->get();
+            $sentReminderIds = ReminderLog::query()
+                ->whereIn('id_vaksinasi', $vaksinasi->pluck('id_vaksinasi'))
+                ->where('status', 'sent')
+                ->where('is_manual', true)
+                ->pluck('id_vaksinasi')
+                ->map(fn ($id) => (string) $id)
+                ->flip();
 
-            return response()->json($vaksinasi);
+            $payload = $vaksinasi->map(function ($item) use ($sentReminderIds) {
+                $row = $item->toArray();
+                $row['reminder_sent'] = $sentReminderIds->has((string) ($item->id_vaksinasi ?? ''));
+                return $row;
+            });
+
+            return response()->json($payload);
 
         } catch (\Exception $e) {
             Log::error('Error fetching vaksinasi: ' . $e->getMessage());
@@ -326,8 +373,10 @@ class ReminderVaksinasiController extends Controller
     {
         $validated = $request->validate([
             'id_hewan' => 'required|exists:hewan,id_hewan',
+            'dilakukan_oleh'=>'required|string|max:255',
             'id_jenis_vaksin' => 'required|integer|exists:jenis_vaksin,id_vaksinasi',
             'tanggal_vaksin' => 'required|date|after_or_equal:today',
+            'catatan'=> 'nullable|string|max:100',
         ]);
 
         try {
@@ -338,12 +387,24 @@ class ReminderVaksinasiController extends Controller
 
             Log::info('✅ Vaksinasi reminder created', [
                 'id' => $vaksinasi->id_vaksinasi,
-                'hewan' => $validated['id_hewan']
+                'hewan' => $validated['id_hewan'],
+                'jenis_vaksin'=>$validated['id_jenis_vaksin'],
+                'tanggal'=>$validated['tanggal_vaksin'],
+                'oleh'=>$validated['dilakukan_oleh'],
             ]);
 
             return response()->json([
                 'message' => 'Vaccination reminder created successfully',
-                'data' => $vaksinasi->load('hewan.pasien')
+                'data' => $vaksinasi->load('hewan.pasien', 'jenisVaksin'),
+                'vaccination_stats' => [
+                    'total_scheduled' => ReminderVaksinasi::where('id_hewan', $hewan->id_hewan)->count(),
+                    'completed' => ReminderVaksinasi::where('id_hewan', $hewan->id_hewan)
+                        ->where('status', 'Selesai')->count(),
+                    'upcoming' => ReminderVaksinasi::where('id_hewan', $hewan->id_hewan)
+                        ->where('status', 'Dijadwalkan')
+                        ->where('tanggal_vaksin', '>', now())
+                        ->count(),
+                ]
             ], 201);
 
         } catch (\Exception $e) {
@@ -376,14 +437,113 @@ class ReminderVaksinasiController extends Controller
         }
 
         try {
-            $vaksinasi = ReminderVaksinasi::findOrFail($id);
+            $vaksinasi = ReminderVaksinasi::with(['hewan', 'jenisVaksin'])
+                ->findOrFail($id);
+
+
+            if (isset($validated['tipe_jadwal']) && $validated['tipe_jadwal'] !== null) {
+                if ($validated['tipe_jadwal'] === 'final') {
+                    $validated['status'] = 'Selesai';
+                    $validated['jadwal_vaksin_berikutnya'] = null;
+                    
+                    Log::info('Vaksinasi marked as FINAL (no booster needed)', [
+                        'id_vaksinasi' => $id,
+                        'nama_vaksin' => $vaksinasi->jenisVaksin->nama_vaksin ?? '-',
+                        'hewan_id' => $vaksinasi->id_hewan
+                    ]);
+                }
+                
+                else if (in_array($validated['tipe_jadwal'], ['automatic', 'manual'])) {
+                    $validated['status'] = 'Dijadwalkan';
+                    
+                    if (!isset($validated['tanggal_vaksin_aktual']) || 
+                        is_null($validated['tanggal_vaksin_aktual'])) {
+                        return response()->json([
+                            'message' => 'Tanggal vaksin aktual harus diisi',
+                            'error' => 'tanggal_vaksin_aktual_required'
+                        ], 422);
+                    }
+                    
+                    $tanggalAktual = Carbon::parse($validated['tanggal_vaksin_aktual']);
+                    $nextVaksinDate = null;
+                    
+                    if ($validated['tipe_jadwal'] === 'automatic') {
+                        $interval = $vaksinasi->jenisVaksin->interval ?? 12;
+                        $nextVaksinDate = $tanggalAktual->copy()->addMonths($interval);
+                        $validated['jadwal_vaksin_berikutnya'] = $nextVaksinDate->format('Y-m-d');
+                        
+                        Log::info('✅ Vaksinasi marked as AUTOMATIC', [
+                            'id_vaksinasi' => $id,
+                            'interval_bulan' => $interval,
+                            'next_schedule' => $nextVaksinDate->format('Y-m-d'),
+                            'oleh' => $validated['dilakukan_oleh'] ?? 'N/A'
+                        ]);
+                    }
+                    
+                    else if ($validated['tipe_jadwal'] === 'manual') {
+                        
+                        if (!isset($validated['jadwal_vaksin_berikutnya']) || 
+                            is_null($validated['jadwal_vaksin_berikutnya'])) {
+                            return response()->json([
+                                'message' => 'Tanggal vaksin berikutnya harus diisi untuk manual scheduling',
+                                'error' => 'jadwal_vaksin_berikutnya_required'
+                            ], 422);
+                        }
+                        
+                        $nextVaksinDate = Carbon::parse($validated['jadwal_vaksin_berikutnya']);
+                        
+                        Log::info('✅ Vaksinasi marked as MANUAL with custom date', [
+                            'id_vaksinasi' => $id,
+                            'custom_next_date' => $nextVaksinDate->format('Y-m-d'),
+                            'oleh' => $validated['dilakukan_oleh'] ?? 'N/A'
+                        ]);
+                    }
+                    
+                    if ($nextVaksinDate) {
+                        try {
+                            ReminderVaksinasi::create([
+                                'id_hewan' => $vaksinasi->id_hewan,
+                                'id_pasien' => $vaksinasi->id_pasien,
+                                'id_jenis_vaksin' => $vaksinasi->id_jenis_vaksin,
+                                'tanggal_vaksin' => $nextVaksinDate->format('Y-m-d'),
+                                'status' => 'Dijadwalkan',
+                            ]);
+                            
+                            Log::info('✅ Next reminder vaksinasi created', [
+                                'id_hewan' => $vaksinasi->id_hewan,
+                                'tanggal_vaksin' => $nextVaksinDate->format('Y-m-d'),
+                                'jenis_vaksin' => $vaksinasi->jenisVaksin->nama_vaksin ?? '-'
+                            ]);
+                        } catch (\Exception $e) {
+                            Log::error('Error creating next reminder vaksinasi: ' . $e->getMessage());
+                            // Jangan return error, vaksinasi current tetap ter-update
+                        }
+                    }
+                }
+            }
+
             $vaksinasi->update($validated);
 
-            Log::info('✅ Vaksinasi reminder updated', ['id' => $id]);
+            $stats = [
+                'total_scheduled' => ReminderVaksinasi::where('id_hewan', $vaksinasi->id_hewan)->count(),
+                'completed' => ReminderVaksinasi::where('id_hewan', $vaksinasi->id_hewan)
+                    ->where('status', 'Selesai')->count(),
+                'upcoming' => ReminderVaksinasi::where('id_hewan', $vaksinasi->id_hewan)
+                    ->where('status', 'Dijadwalkan')
+                    ->where('tanggal_vaksin', '>', now())
+                    ->count(),
+                'overdue' => ReminderVaksinasi::where('id_hewan', $vaksinasi->id_hewan)
+                    ->where('status', 'Dijadwalkan')
+                    ->where('tanggal_vaksin', '<', now())
+                    ->count(),
+            ];
+
+            Log::info('✅ Vaksinasi reminder updated successfully', ['id' => $id]);
 
             return response()->json([
                 'message' => 'Vaccination reminder updated successfully',
-                'data' => $vaksinasi->load('hewan.pasien')
+                'data' => $vaksinasi->load('hewan.pasien', 'jenisVaksin'),
+                'vaccination_stats' => $stats,
             ]);
 
         } catch (\Exception $e) {
@@ -417,60 +577,14 @@ class ReminderVaksinasiController extends Controller
         }
     }
 
-    public function getUpcomingNotifications(){
-        try{
-            $now = Carbon::now('Asia/Jakarta');
-
-            $upcoming = ReminderVaksinasi::with(['hewan.pasien'])->whereBetween('tanggal_vaksin', [
-                $now->copy()->startOfDay(), $now->copy()->addDays(7)->endOfDay()
-            ])
-            ->orderBy('tanggal_vaksin', 'asc')
-            ->get();
-
-            $notifications = $upcoming->map(function ($vaksinasi) use($now) {
-                $daysUntil = (int) $now->copy()->startOfDay()->diffInDays($vaksinasi->tanggal_vaksin, false);
-
-                if ($daysUntil === 3) {
-                    $reminderType = '3_days_sebelum';
-                    $label        = '3 hari lagi';
-                } elseif ($daysUntil === 1) {
-                    $reminderType = '1_day_before';
-                    $label        = 'Besok';
-                } elseif ($daysUntil === 0) {
-                    $reminderType = 'same_day';
-                    $label        = 'Hari ini';
-                } else {
-                    $reminderType = null;
-                    $label        = "{$daysUntil} hari lagi";
-                }
-                return [
-                'id_vaksinasi'   => $vaksinasi->id_vaksinasi,
-                'id_jenis_vaksin' => $vaksinasi->id_jenis_vaksin,
-                'tanggal_vaksin' => $vaksinasi->tanggal_vaksin->format('d/m/Y'),
-                'days_until'     => $daysUntil,
-                'reminder_type'  => $reminderType,
-                'label'          => $label,
-                'nama_hewan'     => $vaksinasi->hewan->nama_hewan ?? '-',
-                'nama_pemilik'   => $vaksinasi->hewan->pasien->username
-                                   ?? $vaksinasi->hewan->pasien->name
-                                   ?? '-',
-                ];
-            });
-
-            return response()->json([
-                'count'=>$notifications->count(),
-                'notifications'=>$notifications,
-            ]);
-        } catch(\Exception $e){
-            Log::error('error fetching vac notifications: '. $e->getMessage());
-            return response()->json([
-                'message'=> 'failed to fetch notifs',
-                'error'=> $e->getMessage()
-            ]);
+    private function normalizeReminderTypeForLog(string $reminderType): string
+    {
+        // Keep DB enum compatibility with existing schema in reminder_log.
+        if ($reminderType === '7_day_before') {
+            return '1_day_before';
         }
+
+        return $reminderType;
     }
 
 }
-
-
-

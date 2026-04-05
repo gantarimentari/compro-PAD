@@ -26,7 +26,7 @@ class ReminderVaksinasi extends Model
 
     protected $casts = [
         'tanggal_vaksin'=> 'date',
-         'tanggal_vaksin_aktual' => 'date',
+        'tanggal_vaksin_aktual' => 'date',
         'jadwal_vaksin_berikutnya' => 'date',
     ];
 

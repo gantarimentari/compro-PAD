@@ -8,6 +8,8 @@ const INITIAL_FORM_DATA = {
   id_jenis_vaksin: '',
   tanggal_vaksin: '',
   notes: '',
+  performedBy: '',
+  vaccineInterval: 12,
 };
 
 const normalizeRows = (rawData) => {
@@ -45,6 +47,7 @@ const mapJenisVaksinOptions = (jenisVaksinData) => {
       return {
         id: itemId,
         nama_vaksin: item.nama_vaksin ?? '-',
+        interval: Number(item.interval ?? 12),
         isActive,
       };
     })
@@ -104,12 +107,21 @@ export default function useTambahReminderVaksinasiForm({ isOpen, onClose, onSave
   };
 
   const handleJenisVaksinChange = (value) => {
-    setFormData((prev) => ({ ...prev, id_jenis_vaksin: value }));
+    const selectedVaksin = jenisVaksinOptions.find((vaksin) => String(vaksin.id) === String(value));
+
+    setFormData((prev) => ({
+      ...prev,
+      id_jenis_vaksin: value,
+      vaccineInterval: Number(selectedVaksin?.interval ?? 12),
+    }));
   };
 
   const handleTanggalChange = (value) => {
     setFormData((prev) => ({ ...prev, tanggal_vaksin: value }));
   };
+  const handlePerformedByChange = (value) => {
+    setFormData((prev) => ({ ...prev, performedBy: value }));
+  }
 
   const handleNotesChange = (value) => {
     setFormData((prev) => ({ ...prev, notes: value }));
@@ -146,6 +158,6 @@ export default function useTambahReminderVaksinasiForm({ isOpen, onClose, onSave
     handleJenisVaksinChange,
     handleTanggalChange,
     handleNotesChange,
-    handleSubmit,
+    handleSubmit, handlePerformedByChange,
   };
 }

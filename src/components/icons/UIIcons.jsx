@@ -670,5 +670,47 @@ export const CheckCircleIcon = ({ className = "w-6 h-6", color = "currentColor" 
 </svg>
 
 );
+export const RetryIcon = ({ className = "w-6 h-6",  }) => (
+  <svg width="16" className={className} height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M14 8C14 9.18669 13.6481 10.3467 12.9888 11.3334C12.3295 12.3201 11.3925 13.0892 10.2961 13.5433C9.19975 13.9974 7.99335 14.1162 6.82946 13.8847C5.66558 13.6532 4.59648 13.0818 3.75736 12.2426C2.91825 11.4035 2.3468 10.3344 2.11529 9.17054C1.88378 8.00666 2.0026 6.80026 2.45673 5.7039C2.91085 4.60754 3.67989 3.67047 4.66658 3.01118C5.65328 2.35189 6.81331 2 8 2C9.68 2 11.2867 2.66667 12.4933 3.82667L14 5.33333" 
+stroke="#0A0A0A" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M13.9998 2V5.33333H10.6665" stroke="#0A0A0A" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
 
 
+
+
+);
+export const HistoryIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
+  <svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 8C2 9.18669 2.35189 10.3467 3.01118 11.3334C3.67047 12.3201 4.60754 13.0892 5.7039 13.5433C6.80026 13.9974 8.00666 14.1162 9.17054 13.8847C10.3344 13.6532 11.4035 13.0818 12.2426 12.2426C13.0818 11.4035 13.6532 10.3344 13.8847 9.17054C14.1162 8.00666 13.9974 6.80026 13.5433 5.7039C13.0892 4.60754 12.3201 3.67047 11.3334 3.01118C10.3467 2.35189 9.18669 2 8 2C6.32263 2.00631 4.71265 2.66082 3.50667 3.82667L2 5.33333" stroke="#0A0A0A" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M2 2V5.33333H5.33333" stroke="#0A0A0A" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M8 4.66699V8.00033L10.6667 9.33366" stroke="#0A0A0A" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+
+);
+export const CalenderCheckIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
+  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+{/* <g clip-path="url(#clip0_2706_35797)"> */}
+<path d="M3.33301 0.833008V2.49967" stroke="#00C950" strokeWidth="0.833333" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M6.6665 0.833008V2.49967" stroke="#00C950" strokeWidth="0.833333" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M7.91667 1.66699H2.08333C1.6231 1.66699 1.25 2.04009 1.25 2.50033V8.33366C1.25 8.7939 1.6231 9.16699 2.08333 9.16699H7.91667C8.3769 9.16699 8.75 8.7939 8.75 8.33366V2.50033C8.75 2.04009 8.3769 1.66699 7.91667 1.66699Z" stroke="#00C950" strokeWidth="0.833333" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M1.25 4.16699H8.75" stroke="#00C950" strokeWidth="0.833333" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M3.75 6.66634L4.58333 7.49967L6.25 5.83301" stroke="#00C950" strokeWidth="0.833333" strokeLinecap="round" strokeLinejoin="round"/>
+{/* </g> */}
+{/* <defs>
+<clipPath id="clip0_2706_35797">
+<rect width="10" height="10" fill="white"/>
+</clipPath>
+</defs> */}
+</svg>
+
+
+);
+export const SendIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
+  <svg className={className} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12.2998 10.0003H5.69316C5.69316 9.77109 5.64566 9.54193 5.5515 9.32693L3.57066 4.84526C2.93733 3.41193 4.45233 1.97693 5.849 2.68609L17.3332 8.51443C18.5498 9.13109 18.5498 10.8694 17.3332 11.4861L5.84983 17.3144C4.45233 18.0236 2.93733 16.5878 3.57066 15.1553L5.54983 10.6736C5.64337 10.4614 5.69162 10.2321 5.6915 10.0003" 
+stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+
+);

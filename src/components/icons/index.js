@@ -51,7 +51,7 @@ export {
   TotalHewanIcon, TotalKunjunganIcon, KunjunganBaruIcon, RekamMedisIcon, WaveHandIcon,
   RightArrowIcon,
   JarumSuntikIcon, NoteIcon, CheckCircleIcon
-  
+  ,RetryIcon, HistoryIcon, CalenderCheckIcon, SendIcon
 } from './UIIcons';
 
 

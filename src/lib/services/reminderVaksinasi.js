@@ -20,6 +20,16 @@ const reminderVaksinasiService = {
     return response.data;
 
   },
+  sendManual: async (data) => {
+    await api.get('/sanctum/csrf-cookie');
+    const response = await api.post('/api/reminder-vaksinasi/send-manual', data);
+    return response.data;
+  },
+  sendScheduled: async () => {
+    await api.get('/sanctum/csrf-cookie');
+    const response = await api.post('/api/reminder-vaksinasi/send-scheduled');
+    return response.data;
+  },
   remove: async (id) => {
     const response = await api.delete(`/api/reminder-vaksinasi/${id}`);
     return response.data;}

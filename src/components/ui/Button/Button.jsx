@@ -58,7 +58,8 @@ export default function Button({
   let iconWithColor = null;
   if (icon) {
     iconWithColor = React.cloneElement(icon, { 
-      color: 'white',
+      
+      color: icon.props?.color || 'white',
       className: icon.props?.className || 'w-5 h-5'
     });
   }

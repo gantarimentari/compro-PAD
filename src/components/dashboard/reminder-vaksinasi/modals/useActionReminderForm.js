@@ -54,10 +54,10 @@ export default function useActionReminderForm({ isOpen, onClose, onSave, reminde
 
       setFormData({
         actualVaccinationDate: actualDateInput,
-        performedBy: '',
-        notes: '',
-        scheduleType: 'automatic',
-        manualNextDate: '',
+        performedBy: reminder.performedBy ?? '',
+        notes: reminder.notes ?? '',
+        scheduleType: reminder.scheduleType || 'automatic',
+        manualNextDate: reminder.scheduleType === 'manual' ? toISODate(reminder.nextVaccinationDateRaw) ?? '' : '',
       });
 
       // Calculate automatic next date
@@ -103,7 +103,7 @@ export default function useActionReminderForm({ isOpen, onClose, onSave, reminde
   const getFinalNextDate = () => {
     switch (formData.scheduleType) {
       case 'automatic':
-        if (!formData.actualVaccinationDate || !reminder.vaccineInterval) return null;
+        if (!formData.actualVaccinationDate || !reminder?.vaccineInterval) return null;
         return toISODate(addMonthsToDate(new Date(formData.actualVaccinationDate), reminder.vaccineInterval));
       case 'manual':
         return formData.manualNextDate || null;

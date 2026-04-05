@@ -40,4 +40,5 @@ export { default as PreviewJenisVaksinModal } from './jenis-vaksin/modals/Previe
 
 // reminder vaksinasi
 export { default as TambahReminderVaksinasiModal } from './reminder-vaksinasi/modals/TambahReminderVaksinasiModal';
-export { default as ActionreminderVaksinasiModal } from './reminder-vaksinasi/modals/ActionModals';
+export { default as ActionReminderVaksinasiModal } from './reminder-vaksinasi/modals/ActionReminderVaksinasiModal';
+export { default as EditReminderModal } from './reminder-vaksinasi/modals/EditReminderModal';
