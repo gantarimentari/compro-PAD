@@ -195,19 +195,33 @@ export default function useReminderVaksinasiData() {
     });
   };
 
-  const updateReminder = async (reminderId, formData) => {
+  const updateReminder = async (reminderId, formData = {}) => {
     if (!reminderId) {
       throw new Error('ID reminder tidak valid.');
     }
 
+    const payload = {};
+
+    if (formData.id_hewan !== undefined) {
+      payload.id_hewan = formData.id_hewan;
+    }
+
+    if (formData.id_jenis_vaksin !== undefined) {
+      payload.id_jenis_vaksin = formData.id_jenis_vaksin;
+    }
+
+    if (formData.tanggal_vaksin !== undefined) {
+      payload.tanggal_vaksin = formData.tanggal_vaksin;
+      payload.jadwal_vaksin_berikutnya = formData.tanggal_vaksin;
+    }
+
+    if (Object.keys(payload).length === 0) {
+      throw new Error('Tidak ada perubahan data untuk disimpan.');
+    }
+
     return updateMutation.mutateAsync({
       reminderId,
-      payload: {
-        id_hewan: formData.id_hewan,
-        id_jenis_vaksin: formData.id_jenis_vaksin,
-        tanggal_vaksin: formData.tanggal_vaksin,
-        jadwal_vaksin_berikutnya: formData.tanggal_vaksin,
-      },
+      payload,
     });
   };
 

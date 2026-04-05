@@ -4,7 +4,7 @@ import BaseModal from '../../shared-modals/BaseModal';
 import useActionReminderForm from './useActionReminderForm';
 import { CheckCircleIcon } from '@/components/icons';
 import Button from '@/components/ui/Button';
-import { VaccinationInfo } from '../_components/VaccinationInfo';
+import { VaccinationInfo } from '../_components/CardVaccinationInfo';
 import { ScheduleSelector } from '../_components/ScheduleSelector';
 import { PencatatanVaksinasi } from '../_components/PencatatanVaksinasi';
 

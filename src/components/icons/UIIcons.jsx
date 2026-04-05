@@ -553,7 +553,7 @@ export const CalendarIcon =({ className = "w-6 h-6", color = "currentColor" }) =
 );
 
 export const JarumSuntikIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
-  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg width="20" height="20" className={className} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 {/* <g clip-path="url(#clip0_2541_6753)"> */}
 <path d="M15 1.66699L18.3333 5.00033" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
 <path d="M14.167 5.83301L16.667 3.33301" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
@@ -690,13 +690,13 @@ export const HistoryIcon = ({ className = "w-6 h-6", color = "currentColor" }) =
 
 );
 export const CalenderCheckIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
-  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg className={className} width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
 {/* <g clip-path="url(#clip0_2706_35797)"> */}
-<path d="M3.33301 0.833008V2.49967" stroke="#00C950" strokeWidth="0.833333" strokeLinecap="round" strokeLinejoin="round"/>
-<path d="M6.6665 0.833008V2.49967" stroke="#00C950" strokeWidth="0.833333" strokeLinecap="round" strokeLinejoin="round"/>
-<path d="M7.91667 1.66699H2.08333C1.6231 1.66699 1.25 2.04009 1.25 2.50033V8.33366C1.25 8.7939 1.6231 9.16699 2.08333 9.16699H7.91667C8.3769 9.16699 8.75 8.7939 8.75 8.33366V2.50033C8.75 2.04009 8.3769 1.66699 7.91667 1.66699Z" stroke="#00C950" strokeWidth="0.833333" strokeLinecap="round" strokeLinejoin="round"/>
-<path d="M1.25 4.16699H8.75" stroke="#00C950" strokeWidth="0.833333" strokeLinecap="round" strokeLinejoin="round"/>
-<path d="M3.75 6.66634L4.58333 7.49967L6.25 5.83301" stroke="#00C950" strokeWidth="0.833333" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M3.33301 0.833008V2.49967" stroke={color} strokeWidth="0.833333" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M6.6665 0.833008V2.49967" stroke={color} strokeWidth="0.833333" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M7.91667 1.66699H2.08333C1.6231 1.66699 1.25 2.04009 1.25 2.50033V8.33366C1.25 8.7939 1.6231 9.16699 2.08333 9.16699H7.91667C8.3769 9.16699 8.75 8.7939 8.75 8.33366V2.50033C8.75 2.04009 8.3769 1.66699 7.91667 1.66699Z" stroke={color} strokeWidth="0.833333" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M1.25 4.16699H8.75" stroke={color} strokeWidth="0.833333" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M3.75 6.66634L4.58333 7.49967L6.25 5.83301" stroke={color} strokeWidth="0.833333" strokeLinecap="round" strokeLinejoin="round"/>
 {/* </g> */}
 {/* <defs>
 <clipPath id="clip0_2706_35797">

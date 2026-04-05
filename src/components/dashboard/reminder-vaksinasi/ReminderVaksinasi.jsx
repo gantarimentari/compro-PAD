@@ -185,7 +185,43 @@ export default function ReminderVaksinasi() {
     }
 
     try {
-      await updateReminder(reminderId, formData);
+      const sourceHewanId = String(reminderToEdit?.hewanId ?? '');
+      const sourceVaksinId = String(reminderToEdit?.vaksinId ?? '');
+      const targetHewanId = String(formData?.id_hewan ?? '');
+      const targetVaksinId = String(formData?.id_jenis_vaksin ?? '');
+
+      const isSeriesMoved =
+        sourceHewanId &&
+        sourceVaksinId &&
+        targetHewanId &&
+        targetVaksinId &&
+        (sourceHewanId !== targetHewanId || sourceVaksinId !== targetVaksinId);
+
+      if (isSeriesMoved) {
+        const relatedReminderIds = Array.from(
+          new Set(
+            vaksinasiData
+              .filter((row) =>
+                String(row?.hewanId ?? '') === sourceHewanId &&
+                String(row?.vaksinId ?? '') === sourceVaksinId
+              )
+              .map((row) => row?.reminderId)
+              .filter(Boolean)
+          )
+        );
+
+        for (const relatedReminderId of relatedReminderIds) {
+          await updateReminder(relatedReminderId, {
+            id_hewan: targetHewanId,
+            id_jenis_vaksin: targetVaksinId,
+          });
+        }
+      }
+
+      await updateReminder(reminderId, {
+        tanggal_vaksin: formData?.tanggal_vaksin,
+      });
+
       setIsEditModalOpen(false);
       setReminderToEdit(null);
     } catch (err) {

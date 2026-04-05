@@ -59,13 +59,16 @@ const ReminderActionButtons = ({
         onClick={() => onOpenSend?.(item)}
       />
       )}
-      
-
-      <Button
+      {!isCompleted && (
+        <Button
         className="p-2 rounded-lg bg-accent-yellow-300 hover:bg-accent-yellow-400"
         icon={<PenIcon />}
         onClick={() => onOpenEdit?.(item)}
       />
+      )}
+      
+
+      
 
       <Button
         icon={<TrashIcon />}
