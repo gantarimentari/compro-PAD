@@ -18,7 +18,7 @@ export default function PageHeader({ title, description, onAddClick, addButtonTe
                         iconPosition="left"
                         roundedClass="rounded-md"
                         // color="#0081DD" 
-                        hoverColor="hover:bg-accent-blue-500"
+                        hoverColor="hover:bg-accent-blue-500 hover:text-white"
                         focusColor="focus:bg-accent-blue-400"
                         label="kirim semua"
                         textColor="text-accent-blue-400"

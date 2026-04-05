@@ -35,7 +35,6 @@ export default function ReminderVaksinasi() {
     isLoading,
     createReminder,updateReminder,
     sendManualReminder,
-    sendScheduledReminders,
     deleteReminder,
     completeVaccination,
     isUpdating,
@@ -91,9 +90,19 @@ export default function ReminderVaksinasi() {
     return filterReminderRows(displayData, searchQuery, statusFilter);
   }, [displayData, searchQuery, statusFilter]);
 
-  const unsendCount = useMemo(() => {
-    return displayData.filter((item) => item.status !== 'Selesai').length;
+  const unsentReminderRows = useMemo(() => {
+    return displayData.filter((item) => {
+      const hasValidReminderId = Boolean(item?.reminderId);
+      const isCompleted = item?.status === 'Selesai';
+      const alreadySent = Boolean(item?.reminderSent);
+
+      return hasValidReminderId && !isCompleted && !alreadySent;
+    });
   }, [displayData]);
+
+  const unsendCount = useMemo(() => {
+    return unsentReminderRows.length;
+  }, [unsentReminderRows]);
 
   const historyItems = useMemo(() => {
     if (!reminderToHistory) return [];
@@ -264,10 +273,46 @@ export default function ReminderVaksinasi() {
   };
 
   const handleOpenWhatsApp = async () => {
+    const resolveReminderType = (dateSource) => {
+      if (!dateSource) return 'same_day';
+
+      const targetDate = new Date(dateSource);
+      if (Number.isNaN(targetDate.getTime())) return 'same_day';
+
+      const now = new Date();
+      const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const startTarget = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
+      const dayDiff = Math.ceil((startTarget - startToday) / (1000 * 60 * 60 * 24));
+
+      if (dayDiff >= 7) return '7_day_before';
+      if (dayDiff >= 3) return '3_days_sebelum';
+      return 'same_day';
+    };
+
     try {
-      const result = await sendScheduledReminders();
-      const sentCount = result?.sent_count ?? result?.data?.sent_count ?? 0;
-      alert(`Kirim semua reminder selesai. Total terkirim: ${sentCount}`);
+      if (unsentReminderRows.length === 0) {
+        alert('Tidak ada reminder yang perlu dikirim.');
+        return;
+      }
+
+      let sentCount = 0;
+      let failedCount = 0;
+
+      for (const row of unsentReminderRows) {
+        try {
+          await sendManualReminder({
+            reminderId: row.reminderId,
+            reminderType: resolveReminderType(row.nextVaccinationDateRaw),
+          });
+          sentCount += 1;
+        } catch (error) {
+          failedCount += 1;
+        }
+      }
+
+      alert(
+        `Kirim semua reminder selesai. Berhasil: ${sentCount}${failedCount > 0 ? `, Gagal: ${failedCount}` : ''}`
+      );
     } catch (err) {
       alert(`Gagal kirim semua reminder! ${err?.response?.data?.message || err?.message || ''}`.trim());
     }
