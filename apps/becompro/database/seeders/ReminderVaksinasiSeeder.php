@@ -7,6 +7,7 @@ use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\JenisHewan;
 use App\Models\Hewan;
+use App\Models\JenisVaksin;
 use App\Models\ReminderVaksinasi;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -15,91 +16,143 @@ class ReminderVaksinasiSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->command->info('🔄 Starting seeder...');
+        $this->command->info('═══════════════════════════════════════════════');
+        $this->command->info('Reminder Vaksinasi Test Seeder (H-8, H-7, H-0)');
+        $this->command->info('═══════════════════════════════════════════════');
+        $this->command->newLine();
 
-        $this->command->info('👤 Creating patient user...');
-        
+        // Create patient
         $patient = User::firstOrCreate(
-            ['email' => 'patient@test.com'],
+            ['email' => 'patientarasaasdsd@test.com'],
             [
-                'username' => 'john_doe',
-                'phone_number' => '081234567890',
+                'username' => 'john_doesdasddasdda',
+                'phone_number' => '081316965533',
                 'password' => Hash::make('password123'),
                 'role' => 'user',
             ]
         );
+        $this->command->info("✓ Patient: ID={$patient->id}, {$patient->username}");
 
-        $this->command->info("✅ Patient created: ID={$patient->id}, Email={$patient->email}");
-
-        $this->command->info('🐕 Creating jenis hewan...');
-        
+        // Create jenis hewan
         $jenisHewan = JenisHewan::firstOrCreate(
             [
-                'nama_jenis' => 'Anjing',
+                'nama_jenis' => 'Kucing',
                 'id_pasien' => $patient->id,
             ]
         );
+        $this->command->info("✓ Jenis Hewan: {$jenisHewan->nama_jenis}");
 
-        $this->command->info("✅ Jenis Hewan created: ID={$jenisHewan->id_jenisHewan}, Nama={$jenisHewan->nama_jenis}");
-
-        $this->command->info('🐾 Creating hewan...');
-        
+        // Create hewan - FIX: Use id_jenisHewan (camelCase) and tanggal_lahir_hewan
         $hewan = Hewan::firstOrCreate(
             [
                 'id_pasien' => $patient->id,
-                'nama_hewan' => 'Buddy'
+                'nama_hewan' => 'Buddys',
             ],
             [
                 'id_jenisHewan' => $jenisHewan->id_jenisHewan,
                 'tanggal_lahir_hewan' => '2020-01-15',
             ]
         );
+        $this->command->info("✓ Hewan: {$hewan->nama_hewan}");
+        $this->command->newLine();
 
-        $this->command->info("✅ Hewan created: ID={$hewan->id_hewan}, Nama={$hewan->nama_hewan}");
+        // Create jenis vaksin
+        $jenisVaksinMap = [];
+        foreach (['Rabies', 'Parvo', 'Distemper'] as $namaVaksin) {
+            $jenis = JenisVaksin::firstOrCreate(
+                ['nama_vaksin' => $namaVaksin],
+                [
+                    'interval' => 12,
+                    'deskripsi' => "Vaksin {$namaVaksin}",
+                    'efek_samping' => 'Tidak ada efek samping serius yang umum',
+                    'status' => 'active',
+                ]
+            );
+            $jenisVaksinMap[$namaVaksin] = $jenis->id_vaksinasi;
+        }
 
-        $this->command->info('💉 Creating vaccination reminders...');
-        
-        $vaccinations = [
+        // Create test reminders with explicit days
+        $testCases = [
             [
-                'jenis_vaksin' => 'Rabies',
-                'tanggal_vaksin' => Carbon::now()->addDays(3), // H-3
+                'label' => 'H-8 (SHOULD BE REJECTED with 422)',
+                'nama_vaksin' => 'Rabies',
+                'days' => 12,
+                'reminder_type' => '7_day_before',  // Wrong type for H-8
+                'expected_status' => '❌ 422 invalid_reminder_day',
             ],
             [
-                'jenis_vaksin' => 'Parvo',
-                'tanggal_vaksin' => Carbon::now()->addDays(1), // H-1
+                'label' => 'H-7 (SHOULD BE ACCEPTED with 200)',
+                'nama_vaksin' => 'Parvo',
+                'days' => 7,
+                'reminder_type' => '7_day_before',  // Correct type for H-7
+                'expected_status' => '✅ 200 Success',
             ],
             [
-                'jenis_vaksin' => 'Distemper',
-                'tanggal_vaksin' => Carbon::now(), // H-0 (hari ini)
+                'label' => 'H-0 (SHOULD BE ACCEPTED with 200)',
+                'nama_vaksin' => 'Distemper',
+                'days' => 0,
+                'reminder_type' => 'same_day',  // Correct type for H-0
+                'expected_status' => '✅ 200 Success',
             ],
         ];
 
-        $createdCount = 0;
-        foreach ($vaccinations as $vaccination) {
-            $reminder = ReminderVaksinasi::create([
-                'id_pasien' => $patient->id,
-                'id_hewan' => $hewan->id_hewan,
-                'jenis_vaksin' => $vaccination['jenis_vaksin'],
-                'tanggal_vaksin' => $vaccination['tanggal_vaksin'],
-            ]);
+        $this->command->info('Creating Test Vaccination Reminders:');
+        $this->command->newLine();
+
+        $reminders = [];
+        foreach ($testCases as $testCase) {
+            $tanggalVaksin = Carbon::now()->addDays($testCase['days']);
             
-            $createdCount++;
-            $this->command->info("  ✓ {$reminder->jenis_vaksin} - {$reminder->tanggal_vaksin->format('Y-m-d')}");
+            $reminder = ReminderVaksinasi::firstOrCreate(
+                [
+                    'id_pasien' => $patient->id,
+                    'id_hewan' => $hewan->id_hewan,
+                    'id_jenis_vaksin' => $jenisVaksinMap[$testCase['nama_vaksin']],
+                    'tanggal_vaksin' => $tanggalVaksin->toDateString(),
+                ],
+                [
+                    'status' => 'Dijadwalkan',
+                ]
+            );
+
+            $reminders[] = $reminder;
+
+            $this->command->line("  {$testCase['label']}");
+            $this->command->line("    ID: {$reminder->id_vaksinasi}");
+            $this->command->line("    Vaksin: {$testCase['nama_vaksin']}");
+            $this->command->line("    Tanggal: {$tanggalVaksin->format('Y-m-d')} (H-{$testCase['days']})");
+            $this->command->line("    Tipe: {$testCase['reminder_type']}");
+            $this->command->line("    Expected: {$testCase['expected_status']}");
+            $this->command->newLine();
         }
 
-
+        // Display testing instructions
         $this->command->newLine();
-        $this->command->info('═══════════════════════════════════════');
-        $this->command->info('✅ Seeder Completed Successfully!');
-        $this->command->info('═══════════════════════════════════════');
-        $this->command->table(
-            ['Resource', 'Count', 'Details'],
-            [
-                ['Users (Patient)', '1', "ID: {$patient->id}, Email: {$patient->email}"],
-                ['Jenis Hewan', '1', "ID: {$jenisHewan->id_jenisHewan}, Nama: {$jenisHewan->nama_jenis}"],
-                ['Hewan', '1', "ID: {$hewan->id_hewan}, Nama: {$hewan->nama_hewan}"],
-                ['Vaccination Reminders', $createdCount, 'Rabies, Parvo, Distemper'],
-            ]
-        );
+        $this->command->info('═══════════════════════════════════════════════');
+        $this->command->info('TESTING INSTRUCTIONS (Manual Reminder Endpoint):');
+        $this->command->info('═══════════════════════════════════════════════');
+        $this->command->newLine();
+
+        $this->command->line('🧪 Test H-8 (Should REJECT with 422):');
+        $this->command->line("   curl -X POST http://localhost:8000/api/reminder-vaksinasi/send-manual \\");
+        $this->command->line("     -H \"Content-Type: application/json\" \\");
+        $this->command->line("     -d '{\"id_vaksinasi\":{$reminders[0]->id_vaksinasi},\"reminder_type\":\"7_day_before\"}'");
+        $this->command->newLine();
+
+        $this->command->line('✅ Test H-7 (Should ACCEPT with 200):');
+        $this->command->line("   curl -X POST http://localhost:8000/api/reminder-vaksinasi/send-manual \\");
+        $this->command->line("     -H \"Content-Type: application/json\" \\");
+        $this->command->line("     -d '{\"id_vaksinasi\":{$reminders[1]->id_vaksinasi},\"reminder_type\":\"7_day_before\"}'");
+        $this->command->newLine();
+
+        $this->command->line('✅ Test H-0 (Should ACCEPT with 200):');
+        $this->command->line("   curl -X POST http://localhost:8000/api/reminder-vaksinasi/send-manual \\");
+        $this->command->line("     -H \"Content-Type: application/json\" \\");
+        $this->command->line("     -d '{\"id_vaksinasi\":{$reminders[2]->id_vaksinasi},\"reminder_type\":\"same_day\"}'");
+        $this->command->newLine();
+
+        $this->command->info('═══════════════════════════════════════════════');
+        $this->command->info('Seeder completed successfully! ✓');
+        $this->command->info('═══════════════════════════════════════════════');
     }
 }

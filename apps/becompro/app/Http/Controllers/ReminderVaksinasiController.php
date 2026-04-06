@@ -76,7 +76,7 @@ class ReminderVaksinasiController extends Controller
                         'waktu_kirim' => now(),
                         'tipe' => 'vaksinasi',
                         'status' => 'sent',
-                        'reminder_type' => $reminderType,
+                        'reminder_type' => $logReminderType,
                         'error_message' => null,             
                     ]);
 
@@ -142,7 +142,7 @@ class ReminderVaksinasiController extends Controller
             $message = $this->generateMessage($vaksinasi, $reminderType);
 
             $response = Http::withHeaders([
-                'apikey'=> env('WHATSAPP_TOKEN'),
+                'apikey'=> env('WHATSAPP_API_KEY'),
                 'Content-Type'=> 'application/json',
             ])->post(env('WHATSAPP_API_URL'), [
                 'number'=>$phoneNumber,
@@ -236,6 +236,41 @@ class ReminderVaksinasiController extends Controller
             $vaksinasi = ReminderVaksinasi::with(['hewan.pasien', 'jenisVaksin'])
                 ->findOrFail($validated['id_vaksinasi']);
 
+            // Hitung selisih hari dari hari ini ke tanggal vaksin
+            $daysUntil = Carbon::now()->startOfDay()->diffInDays(
+                Carbon::parse($vaksinasi->tanggal_vaksin)->startOfDay(),
+                false
+            );
+
+            // Validasi: hanya boleh H-7, H-3, atau H0
+            if (!in_array($daysUntil, [7, 3, 0], true)) {
+                return response()->json([
+                    'message' => 'Reminder manual hanya boleh dikirim pada H-7, H-3, atau hari-H (H0)',
+                    'error' => 'invalid_reminder_day',
+                    'days_until' => $daysUntil,
+                    'allowed_days' => [7, 3, 0],
+                ], 422);
+            }
+
+            // Validasi: reminder_type harus cocok dengan hari
+            $expectedTypeByDay = [
+                7 => '7_day_before',
+                3 => '3_days_sebelum',
+                0 => 'same_day',
+            ];
+
+            $expectedType = $expectedTypeByDay[$daysUntil];
+
+            if ($validated['reminder_type'] !== $expectedType) {
+                return response()->json([
+                    'message' => "reminder_type tidak sesuai. Untuk H-{$daysUntil} gunakan '{$expectedType}'",
+                    'error' => 'reminder_type_mismatch',
+                    'days_until' => $daysUntil,
+                    'expected_reminder_type' => $expectedType,
+                    'received_reminder_type' => $validated['reminder_type'],
+                ], 422);
+            }
+
             $logReminderType = $this->normalizeReminderTypeForLog($validated['reminder_type']);
 
             $alreadySent = ReminderLog::where('id_vaksinasi', $vaksinasi->id_vaksinasi)
@@ -266,17 +301,30 @@ class ReminderVaksinasiController extends Controller
                         'error_message' => null,
                     ]
                 );
+                Notification::create([
+                    'id_vaksinasi' => $vaksinasi->id_vaksinasi,
+                    'id_pasien' => $vaksinasi->id_pasien,
+                    'recipient' => $vaksinasi->hewan->pasien->phone_number ?? 'N/A',
+                    'channel' => 'wa',
+                    'waktu_kirim' => now(),
+                    'tipe' => 'vaksinasi',
+                    'status' => 'sent',
+                    'reminder_type' => $logReminderType,
+                    'error_message' => null,             
+                ]);
 
                 return response()->json([
                     'message' => 'Reminder sent successfully',
                     'id_vaksinasi' => $vaksinasi->id_vaksinasi,
                     'reminder_sent' => true,
+                    'days_until' => $daysUntil,
                 ]);
             } else {
                 return response()->json([
                     'message' => 'Failed to send reminder'
                 ], 500);
             }
+            
 
         } catch (\Exception $e) {
             Log::error('Error sending manual reminder: ' . $e->getMessage());
