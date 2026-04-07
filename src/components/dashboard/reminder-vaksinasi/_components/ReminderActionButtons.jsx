@@ -13,7 +13,7 @@ const ReminderActionButtons = ({
 }) => {
   const isCompleted = item.status === 'Selesai';
   const isOverdue = item.status === 'Terlewat';
-  const canSendReminder = !isCompleted && !item.reminderSent;
+  const canSendReminder = !isCompleted && !item.reminderSent && !item.reminderScheduled;
 
   return (
     <div className="flex items-center gap-2">
@@ -51,7 +51,7 @@ const ReminderActionButtons = ({
       />
       {canSendReminder && (
         <Button
-        label="kirim"
+        label="jadwalkan"
         icon={<SendIcon />}
         roundedClass="rounded-lg"
         color="bg-accent-blue-400"

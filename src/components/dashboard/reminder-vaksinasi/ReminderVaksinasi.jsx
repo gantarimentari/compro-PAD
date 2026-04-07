@@ -1,5 +1,5 @@
 'use client';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Table from '@/components/shared/Table';
 import SearchBar from '@/components/shared/ManagementSearch';
 // import PageHeader from '@/components/shared/PageHeader';
@@ -13,6 +13,63 @@ import VaccinationHistoryModal from './modals/VaccinationHistoryModal';
 import RescheduleModal from './modals/Reschedule';
 import EditReminderModal from './modals/EditReminderModal';
 import SendReminderModal from './modals/SendReminderModal';
+
+const REMINDER_QUEUE_STORAGE_KEY = 'reminder-vaksinasi-schedule-queue';
+const REMINDER_TYPE_BY_DAY = {
+  7: '7_day_before',
+  3: '3_days_sebelum',
+  0: 'same_day',
+};
+
+const getStartOfDay = (value) => new Date(value.getFullYear(), value.getMonth(), value.getDate());
+
+const resolveReminderDispatch = (dateSource) => {
+  if (!dateSource) {
+    return { dayDiff: null, reminderType: null, canDispatchNow: false };
+  }
+
+  const targetDate = new Date(dateSource);
+  if (Number.isNaN(targetDate.getTime())) {
+    return { dayDiff: null, reminderType: null, canDispatchNow: false };
+  }
+
+  const now = new Date();
+  const startToday = getStartOfDay(now);
+  const startTarget = getStartOfDay(targetDate);
+  const dayDiff = Math.ceil((startTarget - startToday) / (1000 * 60 * 60 * 24));
+  const reminderType = REMINDER_TYPE_BY_DAY[dayDiff] || null;
+
+  return {
+    dayDiff,
+    reminderType,
+    canDispatchNow: Boolean(reminderType),
+  };
+};
+
+const readReminderQueue = () => {
+  if (typeof window === 'undefined') return [];
+
+  try {
+    const rawValue = window.localStorage.getItem(REMINDER_QUEUE_STORAGE_KEY);
+    const parsed = rawValue ? JSON.parse(rawValue) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveReminderQueue = (queue) => {
+  if (typeof window === 'undefined') return;
+
+  window.localStorage.setItem(REMINDER_QUEUE_STORAGE_KEY, JSON.stringify(queue));
+};
+
+const isAlreadySentConflictError = (error) => {
+  return (
+    error?.response?.status === 409 &&
+    String(error?.response?.data?.error || '') === 'reminder_already_sent'
+  );
+};
 
 export default function ReminderVaksinasi() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -30,6 +87,7 @@ export default function ReminderVaksinasi() {
   const [isSendModalOpen, setIsSendModalOpen] = useState(false);
   const [reminderToSend, setReminderToSend] = useState(null);
   const [reminderToEdit, setReminderToEdit] = useState(null);
+  const [scheduledReminderIds, setScheduledReminderIds] = useState([]);
   const {
     vaksinasiData,
     isLoading,
@@ -41,6 +99,35 @@ export default function ReminderVaksinasi() {
     isSendingReminder,
     isSendingScheduledReminder,
   } = useReminderVaksinasiData();
+  const vaksinasiDataRef = useRef(vaksinasiData);
+  const sendManualReminderRef = useRef(sendManualReminder);
+  const isFlushingQueueRef = useRef(false);
+
+  useEffect(() => {
+    vaksinasiDataRef.current = vaksinasiData;
+  }, [vaksinasiData]);
+
+  useEffect(() => {
+    sendManualReminderRef.current = sendManualReminder;
+  }, [sendManualReminder]);
+
+  const syncScheduledReminderIds = useCallback(() => {
+    const queue = readReminderQueue();
+    const ids = Array.from(
+      new Set(
+        queue
+          .map((item) => String(item?.reminderId || ''))
+          .filter(Boolean)
+      )
+    );
+
+    setScheduledReminderIds((prevIds) => {
+      if (prevIds.length === ids.length && prevIds.every((id, index) => id === ids[index])) {
+        return prevIds;
+      }
+      return ids;
+    });
+  }, []);
 
   const handleDelete = React.useCallback((item) => {
     setReminderToDelete(item);
@@ -78,13 +165,90 @@ export default function ReminderVaksinasi() {
       return;
     }
 
+    if (item?.reminderScheduled) {
+      alert('Reminder untuk jadwal ini sudah dijadwalkan.');
+      return;
+    }
+
     setReminderToSend(item);
     setIsSendModalOpen(true);
   }, []);
 
+  const flushScheduledReminderQueue = useCallback(async () => {
+    if (typeof window === 'undefined' || vaksinasiDataRef.current.length === 0) return;
+    if (isFlushingQueueRef.current) return;
+
+    isFlushingQueueRef.current = true;
+
+    try {
+      const queue = readReminderQueue();
+      if (queue.length === 0) return;
+
+      let nextQueue = [...queue];
+      let queueChanged = false;
+
+      for (const queuedItem of queue) {
+        const currentReminder = vaksinasiDataRef.current.find(
+          (row) => String(row?.reminderId) === String(queuedItem?.reminderId)
+        );
+
+        if (!currentReminder || currentReminder.reminderSent || currentReminder.status === 'Selesai') {
+          nextQueue = nextQueue.filter((item) => String(item?.reminderId) !== String(queuedItem?.reminderId));
+          queueChanged = true;
+          continue;
+        }
+
+        const dispatchInfo = resolveReminderDispatch(currentReminder.nextVaccinationDateRaw);
+        if (!dispatchInfo.canDispatchNow) continue;
+
+        try {
+          await sendManualReminderRef.current({
+            reminderId: currentReminder.reminderId,
+            reminderType: dispatchInfo.reminderType,
+          });
+          nextQueue = nextQueue.filter((item) => String(item?.reminderId) !== String(queuedItem?.reminderId));
+          queueChanged = true;
+        } catch (error) {
+          if (isAlreadySentConflictError(error)) {
+            nextQueue = nextQueue.filter((item) => String(item?.reminderId) !== String(queuedItem?.reminderId));
+            queueChanged = true;
+            continue;
+          }
+
+          console.error('Failed to dispatch scheduled reminder:', error);
+        }
+      }
+
+      if (queueChanged) {
+        saveReminderQueue(nextQueue);
+        syncScheduledReminderIds();
+      }
+    } finally {
+      isFlushingQueueRef.current = false;
+    }
+  }, [syncScheduledReminderIds]);
+
+  useEffect(() => {
+    syncScheduledReminderIds();
+    void flushScheduledReminderQueue();
+
+    const intervalId = window.setInterval(() => {
+      void flushScheduledReminderQueue();
+    }, 60000);
+
+    return () => window.clearInterval(intervalId);
+  }, [flushScheduledReminderQueue, syncScheduledReminderIds]);
+
+  const scheduledReminderIdSet = useMemo(() => {
+    return new Set(scheduledReminderIds.map((id) => String(id)));
+  }, [scheduledReminderIds]);
+
   const displayData = useMemo(() => {
-    return collapseReminderSeries(vaksinasiData);
-  }, [vaksinasiData]);
+    return collapseReminderSeries(vaksinasiData).map((item) => ({
+      ...item,
+      reminderScheduled: scheduledReminderIdSet.has(String(item?.reminderId || '')),
+    }));
+  }, [scheduledReminderIdSet, vaksinasiData]);
 
   const filteredData = useMemo(() => {
     return filterReminderRows(displayData, searchQuery, statusFilter);
@@ -95,8 +259,9 @@ export default function ReminderVaksinasi() {
       const hasValidReminderId = Boolean(item?.reminderId);
       const isCompleted = item?.status === 'Selesai';
       const alreadySent = Boolean(item?.reminderSent);
+      const alreadyScheduled = Boolean(item?.reminderScheduled);
 
-      return hasValidReminderId && !isCompleted && !alreadySent;
+      return hasValidReminderId && !isCompleted && !alreadySent && !alreadyScheduled;
     });
   }, [displayData]);
 
@@ -150,7 +315,8 @@ export default function ReminderVaksinasi() {
               if (reminderToDelete.hewanId && reminderToDelete.vaksinId) {
                 return row.hewanId === reminderToDelete.hewanId && row.vaksinId === reminderToDelete.vaksinId;
               }
-              return row.reminderId === reminderToDelete.reminderId;
+
+              return String(row.reminderId) === String(reminderToDelete.reminderId);
             })
             .map((row) => row.reminderId)
             .filter(Boolean)
@@ -194,40 +360,9 @@ export default function ReminderVaksinasi() {
     }
 
     try {
-      const sourceHewanId = String(reminderToEdit?.hewanId ?? '');
-      const sourceVaksinId = String(reminderToEdit?.vaksinId ?? '');
-      const targetHewanId = String(formData?.id_hewan ?? '');
-      const targetVaksinId = String(formData?.id_jenis_vaksin ?? '');
-
-      const isSeriesMoved =
-        sourceHewanId &&
-        sourceVaksinId &&
-        targetHewanId &&
-        targetVaksinId &&
-        (sourceHewanId !== targetHewanId || sourceVaksinId !== targetVaksinId);
-
-      if (isSeriesMoved) {
-        const relatedReminderIds = Array.from(
-          new Set(
-            vaksinasiData
-              .filter((row) =>
-                String(row?.hewanId ?? '') === sourceHewanId &&
-                String(row?.vaksinId ?? '') === sourceVaksinId
-              )
-              .map((row) => row?.reminderId)
-              .filter(Boolean)
-          )
-        );
-
-        for (const relatedReminderId of relatedReminderIds) {
-          await updateReminder(relatedReminderId, {
-            id_hewan: targetHewanId,
-            id_jenis_vaksin: targetVaksinId,
-          });
-        }
-      }
-
       await updateReminder(reminderId, {
+        id_hewan: formData?.id_hewan,
+        id_jenis_vaksin: formData?.id_jenis_vaksin,
         tanggal_vaksin: formData?.tanggal_vaksin,
       });
 
@@ -260,61 +395,59 @@ export default function ReminderVaksinasi() {
     }
 
     try {
-      await sendManualReminder({
+      const queue = readReminderQueue();
+      const nextQueue = queue.filter((item) => String(item?.reminderId) !== String(reminderToSend.reminderId));
+
+      nextQueue.push({
         reminderId: reminderToSend.reminderId,
         reminderType,
+        queuedAt: new Date().toISOString(),
       });
+
+      saveReminderQueue(nextQueue);
+      syncScheduledReminderIds();
       setIsSendModalOpen(false);
       setReminderToSend(null);
-      // alert(`Reminder berhasil dikirim ke ${reminderToSend.ownerName} (${reminderToSend.ownerPhone || '-'})`);
+      alert('Reminder sudah dijadwalkan. Sistem akan mencoba mengirim otomatis saat H-7, H-3, atau hari-H.');
+      void flushScheduledReminderQueue();
     } catch (err) {
-      alert(`Gagal mengirim reminder! ${err?.response?.data?.message || err?.message || ''}`.trim());
+      alert(`Gagal menjadwalkan reminder! ${err?.response?.data?.message || err?.message || ''}`.trim());
     }
   };
 
   const handleOpenWhatsApp = async () => {
-    const resolveReminderType = (dateSource) => {
-      if (!dateSource) return 'same_day';
-
-      const targetDate = new Date(dateSource);
-      if (Number.isNaN(targetDate.getTime())) return 'same_day';
-
-      const now = new Date();
-      const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const startTarget = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
-      const dayDiff = Math.ceil((startTarget - startToday) / (1000 * 60 * 60 * 24));
-
-      if (dayDiff >= 7) return '7_day_before';
-      if (dayDiff >= 3) return '3_days_sebelum';
-      return 'same_day';
-    };
-
     try {
       if (unsentReminderRows.length === 0) {
         alert('Tidak ada reminder yang perlu dikirim.');
         return;
       }
 
-      let sentCount = 0;
-      let failedCount = 0;
+      const queue = readReminderQueue();
+      const queuedIds = new Set(queue.map((item) => String(item?.reminderId)));
+      const nextQueue = [...queue];
 
       for (const row of unsentReminderRows) {
-        try {
-          await sendManualReminder({
-            reminderId: row.reminderId,
-            reminderType: resolveReminderType(row.nextVaccinationDateRaw),
-          });
-          sentCount += 1;
-        } catch (error) {
-          failedCount += 1;
+        if (queuedIds.has(String(row.reminderId))) {
+          continue;
         }
+
+        const dispatchInfo = resolveReminderDispatch(row.nextVaccinationDateRaw);
+        nextQueue.push({
+          reminderId: row.reminderId,
+          reminderType: dispatchInfo.reminderType || 'same_day',
+          queuedAt: new Date().toISOString(),
+        });
       }
 
+      saveReminderQueue(nextQueue);
+      syncScheduledReminderIds();
+      void flushScheduledReminderQueue();
+
       alert(
-        `Kirim semua reminder selesai. Berhasil: ${sentCount}${failedCount > 0 ? `, Gagal: ${failedCount}` : ''}`
+        'Semua reminder sudah masuk antrean. Sistem akan mengirim otomatis hanya saat H-7, H-3, atau hari-H.'
       );
     } catch (err) {
-      alert(`Gagal kirim semua reminder! ${err?.response?.data?.message || err?.message || ''}`.trim());
+      alert(`Gagal menjadwalkan semua reminder! ${err?.response?.data?.message || err?.message || ''}`.trim());
     }
   };
 

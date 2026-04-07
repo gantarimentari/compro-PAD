@@ -20,12 +20,12 @@ export default function PageHeader({ title, description, onAddClick, addButtonTe
                         // color="#0081DD" 
                         hoverColor="hover:bg-accent-blue-500 hover:text-white"
                         focusColor="focus:bg-accent-blue-400"
-                        label="kirim semua"
+                        label="jadwalkan semua"
                         textColor="text-accent-blue-400"
                         textSize="text-body-2 font-semibold"
                         className='border-2 border-accent-blue-400'
                       >
-                        Kirim Semua Reminder ({unsendCount})
+                        Jadwalkan Semua Reminder ({unsendCount})
                       </Button>
           {onAddClick && addButtonText && (
             <Button 

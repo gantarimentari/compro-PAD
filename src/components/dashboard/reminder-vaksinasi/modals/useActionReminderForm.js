@@ -14,7 +14,7 @@ export default function useActionReminderForm({ isOpen, onClose, onSave, reminde
     actualVaccinationDate: '',
     performedBy: '',
     notes: '',
-    scheduleType: 'automatic', // 'automatic' | 'manual' | 'final'
+    scheduleType: 'final', // 'automatic' | 'manual' | 'final'
     manualNextDate: '',
   });
 
@@ -56,7 +56,7 @@ export default function useActionReminderForm({ isOpen, onClose, onSave, reminde
         actualVaccinationDate: actualDateInput,
         performedBy: reminder.performedBy ?? '',
         notes: reminder.notes ?? '',
-        scheduleType: reminder.scheduleType || 'automatic',
+        scheduleType: reminder.scheduleType || 'final',
         manualNextDate: reminder.scheduleType === 'manual' ? toISODate(reminder.nextVaccinationDateRaw) ?? '' : '',
       });
 

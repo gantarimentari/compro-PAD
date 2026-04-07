@@ -48,6 +48,11 @@ const addMonthsDateOnly = (dateString, monthsToAdd) => {
 export default function useReminderVaksinasiData() {
   const queryClient = useQueryClient();
 
+  const refreshReminderData = async () => {
+    await queryClient.invalidateQueries({ queryKey: REMINDER_QUERY_KEY, refetchType: 'all' });
+    await queryClient.refetchQueries({ queryKey: REMINDER_QUERY_KEY, type: 'active' });
+  };
+
   const { data: vaksinasiData = [], isLoading } = useQuery({
     queryKey: REMINDER_QUERY_KEY,
     queryFn: async () => {
@@ -64,24 +69,15 @@ export default function useReminderVaksinasiData() {
 
   const createMutation = useMutation({
     mutationFn: (payload) => reminderVaksinasiService.create(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: REMINDER_QUERY_KEY });
-    },
   });
 
   const deleteMutation = useMutation({
     mutationFn: (reminderId) => reminderVaksinasiService.remove(reminderId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: REMINDER_QUERY_KEY });
-    },
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ reminderId, payload }) =>
       reminderVaksinasiService.update(reminderId, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: REMINDER_QUERY_KEY });
-    },
   });
 
   const sendManualMutation = useMutation({
@@ -164,6 +160,8 @@ export default function useReminderVaksinasiData() {
       });
     }
 
+    await refreshReminderData();
+
     return createdReminder;
   };
 
@@ -172,7 +170,9 @@ export default function useReminderVaksinasiData() {
       throw new Error('ID reminder tidak valid.');
     }
 
-    return deleteMutation.mutateAsync(reminderId);
+    const response = await deleteMutation.mutateAsync(reminderId);
+    await refreshReminderData();
+    return response;
   };
 
   const completeVaccination = async (reminderId, vaccinationData) => {
@@ -182,7 +182,7 @@ export default function useReminderVaksinasiData() {
 
     const isFinalSchedule = vaccinationData.scheduleType === 'final';
 
-    return updateMutation.mutateAsync({
+    const response = await updateMutation.mutateAsync({
       reminderId,
       payload: {
         status: isFinalSchedule ? 'Selesai' : 'Dijadwalkan',
@@ -193,6 +193,9 @@ export default function useReminderVaksinasiData() {
         tipe_jadwal: vaccinationData.scheduleType,
       },
     });
+
+    await refreshReminderData();
+    return response;
   };
 
   const updateReminder = async (reminderId, formData = {}) => {
@@ -219,10 +222,13 @@ export default function useReminderVaksinasiData() {
       throw new Error('Tidak ada perubahan data untuk disimpan.');
     }
 
-    return updateMutation.mutateAsync({
+    const response = await updateMutation.mutateAsync({
       reminderId,
       payload,
     });
+
+    await refreshReminderData();
+    return response;
   };
 
   const sendManualReminder = async ({ reminderId, reminderType = 'same_day' }) => {

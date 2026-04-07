@@ -164,16 +164,16 @@ export const mapReminderRows = (rawReminder, hewanMetaMap, vaksinMap) => {
       resolvedStatus = backendStatusRaw;
     }
 
-    // Prefer persisted schedule from completion modal, then planned date, then interval fallback.
+    // For active reminders, prioritize editable planned date so UI reflects reschedule/edit immediately.
     const nextVaccinationRawDate = normalizedScheduleType === 'final' || resolvedStatus === 'Selesai'
       ? null
-      : hasValidPersistedNextSchedule
-        ? persistedNextScheduleDate
-        : (!hasActualDate && hasValidPlannedDate
-            ? plannedVaccinationDate
-            : (hasValidLatestDate && intervalMonths > 0
-                ? addMonthsToDate(latestVaccinationRawDate, intervalMonths)
-                : null));
+      : (!hasActualDate && hasValidPlannedDate
+          ? plannedVaccinationDate
+          : (hasValidPersistedNextSchedule
+              ? persistedNextScheduleDate
+              : (hasValidLatestDate && intervalMonths > 0
+                  ? addMonthsToDate(latestVaccinationRawDate, intervalMonths)
+                  : null)));
     const nextVaccinationDayDiff = getDayDiff(nextVaccinationRawDate);
     const nextVaccinationUrgency = getUrgencyLevel(nextVaccinationDayDiff);
     const nextVaccinationHint = resolvedStatus === 'Selesai' ? '-' : getNextDateHint(nextVaccinationRawDate);
@@ -199,7 +199,9 @@ export const mapReminderRows = (rawReminder, hewanMetaMap, vaksinMap) => {
       latestVaccinationCountLabel: '-',
       nextVaccinationDate: nextVaccinationRawDate ? formatDateID(nextVaccinationRawDate) : '-',
       nextVaccinationDateRaw: nextVaccinationRawDate
-        ? (hasValidPersistedNextSchedule ? persistedNextScheduleSource : toISODateOnly(nextVaccinationRawDate))
+        ? (!hasActualDate && hasValidPlannedDate
+            ? toISODateOnly(plannedVaccinationDate)
+            : (hasValidPersistedNextSchedule ? persistedNextScheduleSource : toISODateOnly(nextVaccinationRawDate)))
         : null,
       nextVaccinationHint,
       nextVaccinationUrgency,

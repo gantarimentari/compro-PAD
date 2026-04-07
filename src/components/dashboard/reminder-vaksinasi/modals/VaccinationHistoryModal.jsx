@@ -74,11 +74,8 @@ const VaccinationHistoryModal = ({
             );
             })
           )}
-        </div>
-
-        
-        {!isComplete && (
-          <div className="relative flex items-start gap-4">
+          {!isComplete && (
+          <div className="relative flex items-start gap-4 pt-4">
             <div className="relative z-10 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border-2 border-[#05DF72] bg-white">
               <CalenderCheckIcon className="h-2.5 w-2.5 text-[#05DF72]" />
             </div>
@@ -91,6 +88,10 @@ const VaccinationHistoryModal = ({
             </div>
           </div>
         )}
+        </div>
+
+        
+        
         <div className="mt-4 flex justify-end">
           <button
             type="button"

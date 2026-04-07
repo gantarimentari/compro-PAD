@@ -7,25 +7,8 @@ import { SendIcon } from '@/components/icons';
 export default function SendReminderModal({ isOpen, onClose,  onSend, sendReminder, isSending = false }) {
   if (!sendReminder) return null;
 
-  const resolveReminderType = () => {
-    const dateSource = sendReminder?.nextVaccinationDateRaw;
-    if (!dateSource) return 'same_day';
-
-    const targetDate = new Date(dateSource);
-    if (Number.isNaN(targetDate.getTime())) return 'same_day';
-
-    const now = new Date();
-    const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const startTarget = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
-    const dayDiff = Math.ceil((startTarget - startToday) / (1000 * 60 * 60 * 24));
-
-    if (dayDiff >= 7) return '7_day_before';
-    if (dayDiff >= 3) return '3_days_sebelum';
-    return 'same_day';
-  };
-
-  const handleSend = () => {
-    onSend?.(resolveReminderType());
+  const handleSchedule = () => {
+    onSend?.('schedule');
   };
 
   return (
@@ -53,9 +36,9 @@ export default function SendReminderModal({ isOpen, onClose,  onSend, sendRemind
           focusColor="focus:ring-accent-blue-400"
           disabled={isSending}
           roundedClass="rounded-lg"
-          onClick={handleSend}
+          onClick={handleSchedule}
         >
-          {isSending ? 'Mengirim...' : 'Kirim Reminder'}
+          {isSending ? 'Menjadwalkan...' : 'Jadwalkan Reminder'}
         </Button>
       </div>
       </div>
