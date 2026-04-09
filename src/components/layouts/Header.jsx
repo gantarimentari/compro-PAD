@@ -87,16 +87,14 @@ export default function Header() {
                 Artikel
               </Link>
             </nav>
-            
-            <button className="w-10 h-10 md:w-11 md:h-11 bg-accent-yellow-300 rounded-lg flex items-center justify-center text-accent-neutral-1000 hover:bg-accent-yellow-400 duration-300 hover:shadow-md">
-              <NotificationIcon className="w-5 h-5" />
-            </button>
+           
 
             {/* Show loading skeleton saat checking auth */}
             {isCheckingAuth ? (
               <AuthLoadingSkeleton />
             ) : isLoggedIn ? (
               <UserActions />
+              
             ) : (
               <AuthActions />
             )}           
@@ -145,10 +143,7 @@ export default function Header() {
             {/* Buttons */}
             <div className="flex flex-col items-center justify-center gap-3 pt-2">
               {/* Notifikasi Button */}
-              <button className="w-full bg-accent-yellow-300 text-accent-neutral-1000 rounded-lg px-4 py-3 text-body-2 font-medium flex items-center justify-center gap-2 hover:bg-accent-yellow-400 transition-colors">
-                <NotificationIcon className="w-5 h-5" />
-                Notifikasi
-              </button>
+              
 
               {/* Show loading atau buttons sesuai auth status */}
               {isCheckingAuth ? (
@@ -158,6 +153,7 @@ export default function Header() {
                 </div>
               ) : !isLoggedIn ? (
                 <>
+
                   <Link 
                     href="/auth/login"
                     className="w-full bg-accent-yellow-300 text-accent-neutral-1000 rounded-lg px-4 py-3 text-body-2 font-medium text-center hover:bg-accent-yellow-400 transition-colors"
@@ -175,7 +171,12 @@ export default function Header() {
                   </Link>
                 </>
               ) : (
-                <Link 
+                <>
+                <button className="w-full bg-accent-yellow-300 text-accent-neutral-1000 rounded-lg px-4 py-3 text-body-2 font-medium flex items-center justify-center gap-2 hover:bg-accent-yellow-400 transition-colors">
+                <NotificationIcon className="w-5 h-5" />
+                Notifikasi
+              </button>
+              <Link 
                   href="/profile"
                   className="w-full bg-accent-yellow-300 text-accent-neutral-1000 rounded-lg px-4 py-3 text-body-2 font-medium flex items-center justify-center gap-2 hover:bg-accent-yellow-400 transition-colors"
                   onClick={toggleMenu}
@@ -183,6 +184,8 @@ export default function Header() {
                   <UserIcon className="w-5 h-5" />
                   Profile
                 </Link>
+                </>
+                
               )}
             </div>
           </div>
@@ -219,11 +222,17 @@ const AuthActions = () => (
 );
 
 const UserActions = () => (
-  <Link 
-    href="/profile"
-    aria-label="Go to Profile"
-    className="w-10 h-10 md:w-11 md:h-11 bg-accent-yellow-300 rounded-lg flex items-center justify-center text-accent-neutral-1000 hover:bg-accent-yellow-400 duration-300 hover:shadow-md"
-  >
-    <UserIcon className="w-5 h-5" />
-  </Link>
+  <>
+    <button className="w-10 h-10 md:w-11 md:h-11 bg-accent-yellow-300 rounded-lg flex items-center justify-center text-accent-neutral-1000 hover:bg-accent-yellow-400 duration-300 hover:shadow-md">
+      <NotificationIcon className="w-5 h-5" />
+    </button>
+    <Link 
+      href="/profile"
+      aria-label="Go to Profile"
+      className="w-10 h-10 md:w-11 md:h-11 bg-accent-yellow-300 rounded-lg flex items-center justify-center text-accent-neutral-1000 hover:bg-accent-yellow-400 duration-300 hover:shadow-md"
+    >
+      <UserIcon className="w-5 h-5" />
+    </Link>
+  </>
+ 
 );
