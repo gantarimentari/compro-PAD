@@ -10,10 +10,6 @@ use Illuminate\Http\Request;
 use App\Models\ReminderVaksinasi;
 use Illuminate\Support\Facades\Log;
 use App\Models\Notification;
-<<<<<<< HEAD
-
-=======
->>>>>>> f318fdaaffe022c29b3bb340deafee64991ceb32
 class ReminderVaksinasiController extends Controller
 {
     public function sendScheduledVaksinasi(){
@@ -73,19 +69,6 @@ class ReminderVaksinasiController extends Controller
                         'phone_number'=> $vaksinasi->hewan->pasien->phone_number ?? null,
                     ]);
 
-<<<<<<< HEAD
-                    Notification::create([
-                        'id_vaksinasi' => $vaksinasi->id_vaksinasi,
-                        'id_pasien' => $vaksinasi->id_pasien,
-                        'recipient' => $vaksinasi->hewan->pasien->phone_number ?? 'N/A',
-                        'channel' => 'wa',
-                        'waktu_kirim' => now(),
-                        'tipe' => 'vaksinasi',
-                        'status' => 'sent',
-                        'reminder_type' => $logReminderType,
-                        'error_message' => null,             
-                    ]);
-=======
                         // ✅ Notification untuk WhatsApp
                     if($sent) {
                         Notification::create([
@@ -115,7 +98,6 @@ class ReminderVaksinasiController extends Controller
                             'error_message' => null,             
                         ]);
                     }
->>>>>>> f318fdaaffe022c29b3bb340deafee64991ceb32
 
                     if($reminderType === 'same_day'){
                         $interval = $vaksinasi->jenisVaksin->interval ?? null;
@@ -311,13 +293,8 @@ class ReminderVaksinasiController extends Controller
             $logReminderType = $this->normalizeReminderTypeForLog($validated['reminder_type']);
 
             $alreadySent = ReminderLog::where('id_vaksinasi', $vaksinasi->id_vaksinasi)
-<<<<<<< HEAD
-                ->where('reminder_type', $logReminderType)
-                ->where('status', 'sent')
-=======
                 ->where('status', 'sent')
                 ->where('is_manual', true)
->>>>>>> f318fdaaffe022c29b3bb340deafee64991ceb32
                 ->exists();
 
             if ($alreadySent) {
@@ -436,10 +413,7 @@ class ReminderVaksinasiController extends Controller
             $sentReminderIds = ReminderLog::query()
                 ->whereIn('id_vaksinasi', $vaksinasi->pluck('id_vaksinasi'))
                 ->where('status', 'sent')
-<<<<<<< HEAD
-=======
                 ->where('is_manual', true)
->>>>>>> f318fdaaffe022c29b3bb340deafee64991ceb32
                 ->pluck('id_vaksinasi')
                 ->map(fn ($id) => (string) $id)
                 ->flip();
@@ -668,37 +642,16 @@ class ReminderVaksinasiController extends Controller
                     
                     if (!$alreadySent) {
                         $sent = $this->sendWhatsAppReminder($vaksinasi, $reminderType);
-<<<<<<< HEAD
-                        
-                        if ($sent) {
-=======
 
                         $sentEmail = $this->sendEmailReminder($vaksinasi, $reminderType);
                         
                         if ($sent || $sentEmail) {
->>>>>>> f318fdaaffe022c29b3bb340deafee64991ceb32
                             ReminderLog::create([
                                 'id_vaksinasi' => $vaksinasi->id_vaksinasi,
                                 'reminder_type' => $logReminderType,
                                 'sent_at' => now(),
                                 'status' => 'sent',
                                 'phone_number' => $vaksinasi->hewan->pasien->phone_number ?? null,
-<<<<<<< HEAD
-                                'is_manual' => false,
-                            ]);
-                            
-                            Notification::create([
-                                'id_vaksinasi' => $vaksinasi->id_vaksinasi,
-                                'id_pasien' => $vaksinasi->id_pasien,
-                                'recipient' => $vaksinasi->hewan->pasien->phone_number ?? 'N/A',
-                                'channel' => 'wa',
-                                'waktu_kirim' => now(),
-                                'tipe' => 'vaksinasi',
-                                'status' => 'sent',
-                                'reminder_type' => $logReminderType,
-                                'error_message' => null,
-                            ]);
-=======
                             ]);
 
                             if ($sent) {
@@ -728,7 +681,6 @@ class ReminderVaksinasiController extends Controller
                                     'error_message' => null,
                                 ]);
                             }
->>>>>>> f318fdaaffe022c29b3bb340deafee64991ceb32
                             
                             Log::info('✅ Auto-sent reminder after schedule update', [
                                 'id_vaksinasi' => $vaksinasi->id_vaksinasi,
