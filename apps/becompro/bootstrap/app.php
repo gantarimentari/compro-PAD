@@ -19,8 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
         }
     )
     ->withSchedule(function (Schedule $schedule){
-        // $schedule->command('reminder:vaksin')->dailyAt('08:00')->timezone('Asia/Jakarta')->withoutOverlapping()->runInBackground();
-        $schedule->command('reminder:vaksin')->everyMinute()->withoutOverlapping()->runInBackground();
+        $schedule->command('reminder:vaksin')->dailyAt('08:00')->timezone('Asia/Jakarta')->withoutOverlapping()->runInBackground();
+        // $schedule->command('reminder:vaksin')->everyHours()->withoutOverlapping()->runInBackground();
     })
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->api(prepend: [

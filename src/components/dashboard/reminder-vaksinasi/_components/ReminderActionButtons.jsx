@@ -35,7 +35,7 @@ const ReminderActionButtons = ({
 
       {isOverdue && (
         <Button
-          icon={<RetryIcon />}
+          icon={<RetryIcon color='#0A0A0A'/>}
           type="button"
           roundedClass="rounded-lg"
           onClick={() => onOpenSchedule?.(item)}

@@ -348,23 +348,13 @@ export const UserIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
 );
 
 
-// export const CalendarIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
-//   <svg 
-//     className={className}
-//     viewBox="0 0 24 24" 
-//     fill="none" 
-//     stroke={color}
-//     strokeWidth="2"
-//     strokeLinecap="round"
-//     strokeLinejoin="round"
-//   >
-//     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-//     <line x1="16" y1="2" x2="16" y2="6"/>
-//     <line x1="8" y1="2" x2="8" y2="6"/>
-//     <line x1="3" y1="10" x2="21" y2="10"/>
-//   </svg>
-// );
+export const BellIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
+<svg className={className} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M8.55664 17.5C8.70293 17.7533 8.91332 17.9637 9.16668 18.11C9.42003 18.2563 9.70743 18.3333 9.99997 18.3333C10.2925 18.3333 10.5799 18.2563 10.8333 18.11C11.0866 17.9637 11.297 17.7533 11.4433 17.5" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M2.71821 12.772C2.60935 12.8913 2.53751 13.0397 2.51143 13.1991C2.48534 13.3585 2.50615 13.522 2.5713 13.6698C2.63646 13.8176 2.74316 13.9433 2.87843 14.0316C3.01369 14.1198 3.1717 14.1669 3.33321 14.167H16.6665C16.828 14.167 16.9861 14.1202 17.1214 14.0321C17.2568 13.944 17.3636 13.8184 17.429 13.6708C17.4943 13.5231 17.5153 13.3596 17.4894 13.2001C17.4635 13.0407 17.3919 12.8923 17.2832 12.7728C16.1749 11.6303 14.9999 10.4162 14.9999 6.66699C14.9999 5.34091 14.4731 4.06914 13.5354 3.13146C12.5977 2.19378 11.326 1.66699 9.99988 1.66699C8.6738 1.66699 7.40203 2.19378 6.46435 3.13146C5.52666 4.06914 4.99988 5.34091 4.99988 6.66699C4.99988 10.4162 3.82405 11.6303 2.71821 12.772Z" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
 
+);
 export const NotificationIcon = ({ className = "w-6 h-6" }) => (
   <svg
     className={className}
@@ -670,11 +660,11 @@ export const CheckCircleIcon = ({ className = "w-6 h-6", color = "currentColor" 
 </svg>
 
 );
-export const RetryIcon = ({ className = "w-6 h-6",  }) => (
+export const RetryIcon = ({ className = "w-6 h-6", color='currentColor' }) => (
   <svg width="16" className={className} height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M14 8C14 9.18669 13.6481 10.3467 12.9888 11.3334C12.3295 12.3201 11.3925 13.0892 10.2961 13.5433C9.19975 13.9974 7.99335 14.1162 6.82946 13.8847C5.66558 13.6532 4.59648 13.0818 3.75736 12.2426C2.91825 11.4035 2.3468 10.3344 2.11529 9.17054C1.88378 8.00666 2.0026 6.80026 2.45673 5.7039C2.91085 4.60754 3.67989 3.67047 4.66658 3.01118C5.65328 2.35189 6.81331 2 8 2C9.68 2 11.2867 2.66667 12.4933 3.82667L14 5.33333" 
-stroke="#0A0A0A" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
-<path d="M13.9998 2V5.33333H10.6665" stroke="#0A0A0A" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+stroke={color} strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M13.9998 2V5.33333H10.6665" stroke={color} strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>
 
 
