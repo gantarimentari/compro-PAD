@@ -106,7 +106,7 @@ class FaqController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Error deleting faq: ' . $e->getMessage());
-            return response()->json(['message' => 'Failed to delete faq'], 500);
+            return response()->json(['message' => 'Failed to delete faq'], 404);
         }
     }
     public function delete($id)

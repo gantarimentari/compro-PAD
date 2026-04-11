@@ -15,11 +15,19 @@ class ReminderVaksinasi extends Model
         'id_hewan',
         'id_jenis_vaksin',
         'tanggal_vaksin',
+        'status',
+        'tanggal_vaksin_aktual',
+        'dilakukan_oleh',
+        'catatan',
+        'jadwal_vaksin_berikutnya',
+        'tipe_jadwal',
 
     ];
 
     protected $casts = [
-        'tanggal_vaksin'=> 'date'
+        'tanggal_vaksin'=> 'date',
+         'tanggal_vaksin_aktual' => 'date',
+        'jadwal_vaksin_berikutnya' => 'date',
     ];
 
     public function pasien(){

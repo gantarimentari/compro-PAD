@@ -19,7 +19,7 @@ return new class extends Migration
             if (!Schema::hasColumn('reminder_vaksinasi', 'id_vaksin')) {
                 $table->unsignedBigInteger('id_vaksin')->nullable()->after('id_hewan');
                 $table->foreign('id_vaksin')
-                    ->references('id_vaksin')
+                    ->references('id_vaksinasi')
                     ->on('jenis_vaksin')
                     ->nullOnDelete();
             }
