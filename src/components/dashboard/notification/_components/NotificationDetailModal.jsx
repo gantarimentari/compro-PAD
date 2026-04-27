@@ -1,7 +1,7 @@
 import React from 'react';
 import { CloseIcon } from '@/components/icons';
-import NOTIFICATION_DUMMY_DATA from '../notifDummy.data';
-
+import { NOTIFICATION_TYPE_BADGE_CLASS, NOTIFICATION_STATUS_BADGE_CLASS } from '../notif.constants';
+import { BaseModal } from '../..';
 const buildMessage = (notification) => {
   if (notification?.message) {
     return notification.message;
@@ -19,68 +19,72 @@ export default function NotificationDetailModal({ isOpen, onClose, notification 
     return null;
   }
 
-  const typeClass = NOTIFICATION_DUMMY_DATA[notification.type] || 'bg-gray-100 text-gray-700';
-  const statusClass = NOTIFICATION_DUMMY_DATA[notification.status] || 'bg-gray-100 text-gray-700';
+  const typeConfig = NOTIFICATION_TYPE_BADGE_CLASS[notification.type] || {};
+  const statusConfig = NOTIFICATION_STATUS_BADGE_CLASS[notification.status] || {};
+  const typeClass = `${typeConfig.bg || 'bg-gray-100'} ${typeConfig.text || 'text-gray-1000'}`;
+  const statusClass = `${statusConfig.bg || 'bg-gray-100'} ${statusConfig.text || 'text-gray-1000'}`;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+    <BaseModal
+      isOpen={isOpen}
       onClick={onClose}
+      title="Detail Notifikasi"
+      description="Informasi lengkap tentang notifikasi yang dikirim"
     >
       <div
-        className="relative w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl"
+        className="relative w-full max-w-2xl rounded-2xl bg-white px-6 pb-6  shadow-xl"
         onClick={(event) => event.stopPropagation()}
       >
-        <button
+        {/* <button
           type="button"
           onClick={onClose}
           aria-label="Tutup detail notifikasi"
           className="absolute right-4 top-4 text-accent-neutral-500 transition hover:text-accent-neutral-900"
         >
           <CloseIcon className="h-5 w-5" />
-        </button>
+        </button> */}
 
-        <h2 className="text-h-6 font-bold text-accent-neutral-1000">Detail Notifikasi</h2>
-        <p className="mt-1 text-body-2 text-accent-neutral-700">
+        {/* <h2 className="text-h-6 font-bold text-accent-neutral-1000">Detail Notifikasi</h2>
+        <p className="mt-1 text-body-2 text-accent-neutral-1000">
           Informasi lengkap tentang notifikasi yang dikirim
-        </p>
+        </p> */}
 
         <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
           <div>
-            <p className="text-body-2 text-accent-neutral-700">Tipe</p>
-            <span className={`mt-1 inline-flex rounded-lg px-3 py-1 text-sm font-medium ${typeClass}`}>
+            <p className="text-body-1 text-accent-neutral-1000">Tipe</p>
+            <span className={` inline-flex rounded-lg px-3 py-1 text-body-2 font-medium ${typeClass}`}>
               {notification.type || '-'}
             </span>
           </div>
 
           <div>
-            <p className="text-body-2 text-accent-neutral-700">Channel</p>
-            <span className="mt-1 inline-flex rounded-lg border border-accent-neutral-300 px-3 py-1 text-sm text-accent-neutral-1000">
+            <p className="text-body-1 text-accent-neutral-1000">Channel</p>
+            <span className=" inline-flex rounded-lg border border-accent-neutral-300 px-3 py-1 text-body-2 text-accent-neutral-1000">
               {notification.channel || '-'}
             </span>
           </div>
 
           <div>
-            <p className="text-body-2 text-accent-neutral-700">Recipient</p>
-            <p className="mt-1 text-body-1 text-accent-neutral-1000">{notification.recipient || '-'}</p>
+            <p className="text-body-1 text-accent-neutral-1000">Recipient</p>
+            <p className=" text-body-2 text-accent-neutral-1000">{notification.recipient || '-'}</p>
           </div>
 
           <div>
-            <p className="text-body-2 text-accent-neutral-700">Status</p>
-            <span className={`mt-1 inline-flex rounded-lg px-3 py-1 text-sm font-medium ${statusClass}`}>
+            <p className="text-body-1 text-accent-neutral-1000">Status</p>
+            <span className={` inline-flex rounded-lg px-3 py-1 text-body-2   font-medium ${statusClass}`}>
               {notification.status || '-'}
             </span>
           </div>
         </div>
 
         <div className="mt-5">
-          <p className="text-body-2 text-accent-neutral-700">Waktu Kirim</p>
-          <p className="mt-1 text-body-1 text-accent-neutral-1000">{notification.sentAt || '-'}</p>
+          <p className="text-body-1 text-accent-neutral-1000">Waktu Kirim</p>
+          <p className=" text-body-2 text-accent-neutral-1000">{notification.sentAt || '-'}</p>
         </div>
 
         <div className="mt-5">
-          <p className="text-body-2 text-accent-neutral-700">Pesan</p>
-          <div className="mt-1 rounded-xl bg-accent-neutral-100 p-3 text-body-2 text-accent-neutral-900">
+          <p className="text-body-1 text-accent-neutral-00">Pesan</p>
+          <div className=" py-2 rounded-xl bg-[#F9FAFB] text-body-2 text-accent-neutral-900">
             {buildMessage(notification)}
           </div>
         </div>
@@ -95,6 +99,6 @@ export default function NotificationDetailModal({ isOpen, onClose, notification 
           </button>
         </div>
       </div>
-    </div>
+    </BaseModal>
   );
 }

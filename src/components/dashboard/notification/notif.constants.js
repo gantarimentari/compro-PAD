@@ -1,5 +1,3 @@
-import Reservasi from "../reservasi/Reservasi";
-
 export const NOTIFICATION_COLUMNS =[
   {key: 'recipient', header: 'Recipient'},
   {key: 'channel', header: 'Channel'},
@@ -22,7 +20,7 @@ export const NOTIFICATION_TYPE_BADGE_CLASS = {
 };
 export const NOTIFICATION_STATUS_BADGE_CLASS = {
   Sukses: {
-    ttext: 'text-accent-green-450', 
+    text: 'text-accent-green-450', 
     bg: 'bg-accent-green-50'
   },
   Pending: {

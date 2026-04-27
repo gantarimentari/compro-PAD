@@ -8,5 +8,6 @@ class VerifyCsrfToken extends Middleware
 {
     protected $except = [
         'login', // untuk dev/testing SPA
+        'api/login',
     ];
 }

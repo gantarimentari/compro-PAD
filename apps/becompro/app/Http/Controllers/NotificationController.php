@@ -102,12 +102,21 @@ class NotificationController extends Controller
             'id_vaksinasi' => 'sometimes|integer|exists:reminder_vaksinasi,id_vaksinasi',
             'from_date' => 'sometimes|date',
             'to_date' => 'sometimes|date|after_or_equal:from_date',
+            'search' => 'sometimes|string|max:255',
         ]);
 
         try {
             $query = Notification::with(['vaksinasi.hewan.pasien', 'pasien'])
                 ->orderBy('waktu_kirim', 'desc');
 
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('recipient', 'like', "%${search}%")
+                      ->orWhere('tipe', 'like', "%${search}%");
+                    
+                });
+            }
             if ($request->filled('id_pasien')) {
                 $query->where('id_pasien', $request->id_pasien);
             }
@@ -260,4 +269,6 @@ class NotificationController extends Controller
             ], 500);
         }
     }
+    // tambah endpoin untuk search 
+    
 }

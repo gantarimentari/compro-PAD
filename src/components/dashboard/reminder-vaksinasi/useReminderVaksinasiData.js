@@ -216,6 +216,13 @@ export default function useReminderVaksinasiData() {
     if (formData.tanggal_vaksin !== undefined) {
       payload.tanggal_vaksin = formData.tanggal_vaksin;
       payload.jadwal_vaksin_berikutnya = formData.tanggal_vaksin;
+      if (formData.status === undefined) {
+        payload.status = 'Dijadwalkan';
+      }
+    }
+
+    if (formData.status !== undefined) {
+      payload.status = formData.status;
     }
 
     if (Object.keys(payload).length === 0) {

@@ -537,6 +537,13 @@ class ReminderVaksinasiController extends Controller
             $vaksinasi = ReminderVaksinasi::with(['hewan', 'jenisVaksin'])
                 ->findOrFail($id);
 
+            if (isset($validated['tanggal_vaksin']) && !isset($validated['status'])) {
+                $daysUntilScheduledDate = Carbon::now()->startOfDay()
+                    ->diffInDays(Carbon::parse($validated['tanggal_vaksin'])->startOfDay(), false);
+
+                $validated['status'] = $daysUntilScheduledDate < 0 ? 'Terlewat' : 'Dijadwalkan';
+            }
+
 
             if (isset($validated['tipe_jadwal']) && $validated['tipe_jadwal'] !== null) {
                 if ($validated['tipe_jadwal'] === 'final') {
@@ -646,6 +653,10 @@ class ReminderVaksinasiController extends Controller
                         $sentEmail = $this->sendEmailReminder($vaksinasi, $reminderType);
                         
                         if ($sent || $sentEmail) {
+                            if (($vaksinasi->status ?? null) !== 'Selesai') {
+                                $vaksinasi->update(['status' => 'Terkirim']);
+                            }
+
                             ReminderLog::create([
                                 'id_vaksinasi' => $vaksinasi->id_vaksinasi,
                                 'reminder_type' => $logReminderType,
