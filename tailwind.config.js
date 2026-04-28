@@ -25,9 +25,11 @@ module.exports = {
               150: 'rgb(254, 249, 194)',
               200: 'rgb(255, 199, 116)',
               300: 'rgb(255, 171, 47)', // Digunakan untuk border oranye Anda
+              350: '#DDA24C',
               400: 'rgb(233, 139, 0)',
               500: 'rgb(164, 98, 0)',
               550: 'rgb(166, 95, 0)',
+              600: '#CE7B00',
           },
 
           // ALPHA ACCENT (Opacity)
