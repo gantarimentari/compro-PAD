@@ -9,6 +9,7 @@ import Input from '@/components/auth/Input';
 import Button from '@/components/auth/Button';
 import Separator from '@/components/auth/Separator';
 import GoogleIcon from '@/components/auth/GoogleIcon';
+import { getBackendUrl } from '@/lib/backendUrl';
 
 /**
  * Halaman Register
@@ -71,7 +72,7 @@ const handleSubmit = async (e) => {
 
   const handleGoogleRegister = () => {
     // TODO: Implementasi Google OAuth di sini
-    window.location.href = 'http://localhost:8000/auth/google/redirect';
+    window.location.href = getBackendUrl('/auth/google/redirect');
     console.log('Register with Google');
   };
 

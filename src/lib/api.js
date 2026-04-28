@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { getBackendBaseUrl } from './backendUrl';
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
+  baseURL: getBackendBaseUrl(),
   withCredentials: true,
   withXSRFToken: true,
   xsrfCookieName: 'XSRF-TOKEN',
@@ -13,7 +14,7 @@ const api = axios.create({
 });
 
 // Request interceptor
-api.interceptors.request.use(
+api.interceptors.   request.use(
   (config) => {
     const token = typeof document !== 'undefined'
       ? document.cookie

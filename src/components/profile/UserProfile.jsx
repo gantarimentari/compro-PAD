@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import profileService from '@/lib/services/profileService';
 import authService from '@/lib/services/authService';
+import { clearFrontendAuthState } from '@/lib/frontendAuth';
 
 // SVG Component untuk border putus-putus
 const ModalDashedBorder = ({ className, style = {} }) => (
@@ -262,12 +263,14 @@ export default function UserProfile() {
     const handleLogout = async () => {
         try {
             await authService.logout();
+            clearFrontendAuthState();
             localStorage.removeItem('user');
             sessionStorage.clear();
             router.push('/');
         } catch (err) {
             console.error('❌ Logout error:', err);
             // Force logout anyway
+            clearFrontendAuthState();
             localStorage.removeItem('user');
             sessionStorage.clear();
             router.push('/');

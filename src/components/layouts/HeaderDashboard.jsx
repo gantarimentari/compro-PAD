@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { AdminUserIcon } from "@/components/icons"; 
 import authService from '@/lib/services/authService';
 import { useRouter } from "next/navigation";
+import { clearFrontendAuthState } from "@/lib/frontendAuth";
 
 const MOCK_ADMIN_PROFILE={
     name: "Admin",
@@ -36,12 +37,14 @@ export default function HeaderDashboard(){
     const handleLogout = async () => {
         try{
           await authService.logout();
+          clearFrontendAuthState();
           localStorage.removeItem('admin');
           sessionStorage.clear();
           router.push('/');
         }catch (err){
           console.error('Logout error:', err);
           // force logout anyway
+          clearFrontendAuthState();
           localStorage.removeItem('admin');
           sessionStorage.clear();
           router.push('/');

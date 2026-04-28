@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:3000', '*'],
+    'allowed_origins' => ['http://localhost:3000'],
 
     'allowed_origins_patterns' => [],
 
@@ -31,4 +31,5 @@ return [
 
     'supports_credentials' => true,
 
+    // kalau pakai true di supports_credentials, allowed_origins tidak boleh pakai wildcard (*), harus spesifik domainnya
 ];

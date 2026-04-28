@@ -9,6 +9,8 @@ import Input from '@/components/auth/Input';
 import Button from '@/components/auth/Button';
 import Separator from '@/components/auth/Separator';
 import GoogleIcon from '@/components/auth/GoogleIcon';
+import { getBackendUrl } from '@/lib/backendUrl';
+import { setFrontendAuthState } from '@/lib/frontendAuth';
 
 
 export default function LoginPage() {
@@ -34,10 +36,13 @@ export default function LoginPage() {
 
     try {
       const res = await authService.login(formData);
+      console.log("ISI RESPON DARI BACKEND:", res);
 
       // Cek apakah response punya property user
       if (res && res.user) {
         const { user } = res;
+
+        setFrontendAuthState(user.role);
         
         // Simpan user info ke localStorage
         localStorage.setItem('user', JSON.stringify(user));
@@ -65,7 +70,7 @@ export default function LoginPage() {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:8000/auth/google/redirect';
+    window.location.href = getBackendUrl('/auth/google/redirect');
     console.log('Login with Google');
   };
 
