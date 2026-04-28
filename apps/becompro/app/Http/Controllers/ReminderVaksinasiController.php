@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ReminderLog;
 use App\Notifications\ReminderVaksinasiNotification;
 use Carbon\Carbon;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 use App\Models\ReminderVaksinasi;
@@ -57,6 +58,8 @@ class ReminderVaksinasiController extends Controller
                     continue;
                 }
 
+                $this->prepareNotificationRecords($vaksinasi, $logReminderType);
+
                 $sent = $this->sendWhatsAppReminder($vaksinasi, $reminderType);
                 $sentEmail = $this->sendEmailReminder($vaksinasi, $reminderType);
 
@@ -71,44 +74,25 @@ class ReminderVaksinasiController extends Controller
 
                         // ✅ Notification untuk WhatsApp
                     if($sent) {
-                        Notification::create([
-                            'id_vaksinasi' => $vaksinasi->id_vaksinasi,
-                            'id_pasien' => $vaksinasi->id_pasien,
-                            'recipient' => $vaksinasi->hewan->pasien->phone_number ?? 'N/A',
-                            'channel' => 'wa',
-                            'waktu_kirim' => now(),
-                            'tipe' => 'vaksinasi',
-                            'status' => 'sent',
-                            'reminder_type' => $logReminderType,
-                            'error_message' => null,             
-                        ]);
+                        $this->syncNotificationStatus($vaksinasi, 'wa', 'success', $logReminderType);
                     }
 
                     // ✅ Notification untuk Email
                     if($sentEmail) {
-                        Notification::create([
-                            'id_vaksinasi' => $vaksinasi->id_vaksinasi,
-                            'id_pasien' => $vaksinasi->id_pasien,
-                            'recipient' => $vaksinasi->hewan->pasien->email ?? 'N/A',
-                            'channel' => 'email',
-                            'waktu_kirim' => now(),
-                            'tipe' => 'vaksinasi',
-                            'status' => 'sent',
-                            'reminder_type' => $logReminderType,
-                            'error_message' => null,             
-                        ]);
+                        $this->syncNotificationStatus($vaksinasi, 'email', 'success', $logReminderType);
                     }
 
                     if($reminderType === 'same_day'){
                         $interval = $vaksinasi->jenisVaksin->interval ?? null;
                         if($interval){
-                            ReminderVaksinasi::create([
+                            $nextReminder = ReminderVaksinasi::create([
                                 'id_hewan'        => $vaksinasi->id_hewan,
                                 'id_pasien'       => $vaksinasi->id_pasien,
                                 'id_jenis_vaksin' => $vaksinasi->id_jenis_vaksin,
                                 'tanggal_vaksin'  => Carbon::parse($vaksinasi->tanggal_vaksin)
                                                         ->addMonths($interval)->toDateString(),
                             ]);
+                            $this->prepareNotificationRecords($nextReminder);
                         }
                     }
 
@@ -118,6 +102,15 @@ class ReminderVaksinasiController extends Controller
                         'type' => $reminderType,
                         'sent_to' => $vaksinasi->hewan->pasien->phone_number ?? 'N/A',
                     ];
+                } else {
+                    ReminderLog::create([
+                        'id_vaksinasi' => $vaksinasi->id_vaksinasi,
+                        'reminder_type' => $logReminderType,
+                        'sent_at' => now(),
+                        'status' => 'failed',
+                        'phone_number' => $vaksinasi->hewan->pasien->phone_number ?? null,
+                        'error_message' => 'WhatsApp dan email gagal dikirim',
+                    ]);
                 }
             }
             Log::info('✅ Vaccination reminders sent', [
@@ -147,6 +140,7 @@ class ReminderVaksinasiController extends Controller
                     'id_vaksinasi'=> $vaksinasi->id_vaksinasi,
                     'hewan_id'=> $vaksinasi->id_hewan
                 ]);
+                $this->syncNotificationStatus($vaksinasi, 'wa', 'failed', $this->normalizeReminderTypeForLog($reminderType), 'Nomor WhatsApp tidak tersedia');
                 return false;
             }
             $phoneNumber = $this->formatPhoneNumber($pasien->phone_number);
@@ -155,6 +149,7 @@ class ReminderVaksinasiController extends Controller
                     'id_vaksinasi'=>$vaksinasi->id_vaksinasi,
                     'phone'=>$pasien->phone_number
                 ]);
+                $this->syncNotificationStatus($vaksinasi, 'wa', 'failed', $this->normalizeReminderTypeForLog($reminderType), 'Nomor WhatsApp tidak valid');
                 return false;
             }
 
@@ -180,10 +175,24 @@ class ReminderVaksinasiController extends Controller
                     'status'=> $response->status(),
                     'body'=>$response->body()
                 ]);
+                $this->syncNotificationStatus(
+                    $vaksinasi,
+                    'wa',
+                    'failed',
+                    $this->normalizeReminderTypeForLog($reminderType),
+                    'WhatsApp API gagal: ' . $response->body()
+                );
                 return false;
             }
         } catch(\Exception $e){
             Log::error('error sending whatsapp: ' . $e->getMessage());
+            $this->syncNotificationStatus(
+                $vaksinasi,
+                'wa',
+                'failed',
+                $this->normalizeReminderTypeForLog($reminderType),
+                $e->getMessage()
+            );
             return false;    
         }
     }
@@ -304,6 +313,8 @@ class ReminderVaksinasiController extends Controller
                 ], 409);
             }
 
+            $this->prepareNotificationRecords($vaksinasi, $logReminderType);
+
             $sent = $this->sendWhatsAppReminder($vaksinasi, $validated['reminder_type']);
 
             if ($sent) {
@@ -320,17 +331,7 @@ class ReminderVaksinasiController extends Controller
                         'error_message' => null,
                     ]
                 );
-                Notification::create([
-                    'id_vaksinasi' => $vaksinasi->id_vaksinasi,
-                    'id_pasien' => $vaksinasi->id_pasien,
-                    'recipient' => $vaksinasi->hewan->pasien->phone_number ?? 'N/A',
-                    'channel' => 'wa',
-                    'waktu_kirim' => now(),
-                    'tipe' => 'vaksinasi',
-                    'status' => 'sent',
-                    'reminder_type' => $logReminderType,
-                    'error_message' => null,             
-                ]);
+                $this->syncNotificationStatus($vaksinasi, 'wa', 'success', $logReminderType);
 
                 return response()->json([
                     'message' => 'Reminder sent successfully',
@@ -339,6 +340,19 @@ class ReminderVaksinasiController extends Controller
                     'days_until' => $daysUntil,
                 ]);
             } else {
+                ReminderLog::updateOrCreate(
+                    [
+                        'id_vaksinasi' => $vaksinasi->id_vaksinasi,
+                        'reminder_type' => $logReminderType,
+                    ],
+                    [
+                        'sent_at' => now(),
+                        'status' => 'failed',
+                        'phone_number' => $vaksinasi->hewan->pasien->phone_number ?? null,
+                        'is_manual' => true,
+                        'error_message' => 'WhatsApp reminder gagal dikirim',
+                    ]
+                );
                 return response()->json([
                     'message' => 'Failed to send reminder'
                 ], 500);
@@ -382,6 +396,67 @@ class ReminderVaksinasiController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    private function prepareNotificationRecords(ReminderVaksinasi $vaksinasi, ?string $reminderType = null): void
+    {
+        $this->syncNotificationStatus($vaksinasi, 'wa', 'pending', $reminderType);
+        $this->syncNotificationStatus($vaksinasi, 'email', 'pending', $reminderType);
+    }
+
+    private function syncNotificationStatus(ReminderVaksinasi $vaksinasi, string $channel, string $status, ?string $reminderType = null, ?string $errorMessage = null): Notification
+    {
+        $recipient = $channel === 'email'
+            ? ($vaksinasi->hewan->pasien->email ?? 'N/A')
+            : ($vaksinasi->hewan->pasien->phone_number ?? 'N/A');
+
+        $keys = [
+            'id_vaksinasi' => $vaksinasi->id_vaksinasi,
+            'id_pasien' => $vaksinasi->id_pasien,
+            'channel' => $channel,
+        ];
+        // barusan fe tambahin ini 
+    //     $dbStatus = match ($status) {
+    //     'success' => 'sent',
+    //     'failed'  => 'gagal',
+    //     default   => $status,
+    // };
+    $dbStatus = match ($status) {
+        'success', 'sent', 'send' => 'sent',
+        'failed', 'gagal'         => 'gagal',
+        default                   => 'pending',
+    };
+
+        $payload = [
+            'recipient' => $recipient,
+            'waktu_kirim' => $status === 'pending' ? null : now(),
+            'tipe' => 'vaksinasi',
+            // 'status' => $status,
+            // 'status'        => $normalizedStatus,
+                'status' => $dbStatus,
+            'reminder_type' => $reminderType,
+            'error_message' => $errorMessage,
+        ];
+
+        return Notification::updateOrCreate($keys, $payload);
+
+        // try {
+        //     return Notification::updateOrCreate($keys, $payload);
+        // } catch (QueryException $e) {
+        //     // Backward compatibility: some DBs still use enum sent/gagal.
+        //     $legacyStatus = match ($status) {
+        //         'success' => 'sent',
+        //         'failed' => 'gagal',
+        //         default => $status,
+        //     };
+
+        //     if ($legacyStatus === $status) {
+        //         throw $e;
+        //     }
+
+        //     $payload['status'] = $legacyStatus;
+        //     return Notification::updateOrCreate($keys, $payload);
+        // }
     }
 
     /**
@@ -444,6 +519,7 @@ class ReminderVaksinasiController extends Controller
                     'id_vaksinasi' => $vaksinasi->id_vaksinasi,
                     'hewan_id' => $vaksinasi->id_hewan
                 ]);
+                $this->syncNotificationStatus($vaksinasi, 'email', 'failed', $this->normalizeReminderTypeForLog($reminderType), 'Alamat email tidak tersedia');
                 return false;
             }
 
@@ -460,6 +536,13 @@ class ReminderVaksinasiController extends Controller
 
         } catch (\Exception $e) {
             Log::error('error sending email: ' . $e->getMessage());
+            $this->syncNotificationStatus(
+                $vaksinasi,
+                'email',
+                'failed',
+                $this->normalizeReminderTypeForLog($reminderType),
+                $e->getMessage()
+            );
             return false;
         }
     }
@@ -478,9 +561,10 @@ class ReminderVaksinasiController extends Controller
         try {
             $hewan = \App\Models\Hewan::findOrFail($validated['id_hewan']);
             $validated['id_pasien'] = $hewan->id_pasien;
-            // $validated['status'] = 'Dijadwalkan';
 
             $vaksinasi = ReminderVaksinasi::create($validated);
+
+            $this->prepareNotificationRecords($vaksinasi);
 
             Log::info('✅ Vaksinasi reminder created', [
                 'id' => $vaksinasi->id_vaksinasi,
@@ -533,16 +617,16 @@ class ReminderVaksinasiController extends Controller
             $validated['jadwal_vaksin_berikutnya'] = null;
         }
 
+        if (isset($validated['tanggal_vaksin']) && !isset($validated['status'])) {
+            $daysUntilScheduledDate = Carbon::now()->startOfDay()
+                ->diffInDays(Carbon::parse($validated['tanggal_vaksin'])->startOfDay(), false);
+
+            $validated['status'] = $daysUntilScheduledDate < 0 ? 'Terlewat' : 'Dijadwalkan';
+        }
+
         try {
             $vaksinasi = ReminderVaksinasi::with(['hewan', 'jenisVaksin'])
                 ->findOrFail($id);
-
-            if (isset($validated['tanggal_vaksin']) && !isset($validated['status'])) {
-                $daysUntilScheduledDate = Carbon::now()->startOfDay()
-                    ->diffInDays(Carbon::parse($validated['tanggal_vaksin'])->startOfDay(), false);
-
-                $validated['status'] = $daysUntilScheduledDate < 0 ? 'Terlewat' : 'Dijadwalkan';
-            }
 
 
             if (isset($validated['tipe_jadwal']) && $validated['tipe_jadwal'] !== null) {
@@ -605,13 +689,14 @@ class ReminderVaksinasiController extends Controller
                     
                     if ($nextVaksinDate) {
                         try {
-                            ReminderVaksinasi::create([
+                            $nextReminder = ReminderVaksinasi::create([
                                 'id_hewan' => $vaksinasi->id_hewan,
                                 'id_pasien' => $vaksinasi->id_pasien,
                                 'id_jenis_vaksin' => $vaksinasi->id_jenis_vaksin,
                                 'tanggal_vaksin' => $nextVaksinDate->format('Y-m-d'),
                                 'status' => 'Dijadwalkan',
                             ]);
+                            $this->prepareNotificationRecords($nextReminder);
                             
                             Log::info('✅ Next reminder vaksinasi created', [
                                 'id_hewan' => $vaksinasi->id_hewan,
@@ -626,7 +711,21 @@ class ReminderVaksinasiController extends Controller
                 }
             }
 
+            $oldStatus = $vaksinasi->status;
+
             $vaksinasi->update($validated);
+            $vaksinasi->refresh();
+
+            // If the reminder was explicitly marked as 'Terkirim', ensure
+            // notification records are updated to success so UI reflects send.
+            if (isset($validated['status']) && $validated['status'] === 'Terkirim' && $oldStatus !== 'Terkirim') {
+                try {
+                    $this->syncNotificationStatus($vaksinasi, 'wa', 'send', null);
+                    $this->syncNotificationStatus($vaksinasi, 'email', 'send', null);
+                } catch (\Exception $e) {
+                    Log::error('Failed to sync notification status after manual Terkirim: ' . $e->getMessage());
+                }
+            }
             if (isset($validated['tanggal_vaksin'])) {
                 $daysUntilAfterUpdate = Carbon::now()->startOfDay()
                     ->diffInDays(Carbon::parse($validated['tanggal_vaksin'])->startOfDay(), false);
@@ -648,6 +747,7 @@ class ReminderVaksinasiController extends Controller
                         ->exists();
                     
                     if (!$alreadySent) {
+                        $this->prepareNotificationRecords($vaksinasi, $logReminderType);
                         $sent = $this->sendWhatsAppReminder($vaksinasi, $reminderType);
 
                         $sentEmail = $this->sendEmailReminder($vaksinasi, $reminderType);
@@ -664,33 +764,13 @@ class ReminderVaksinasiController extends Controller
                                 'status' => 'sent',
                                 'phone_number' => $vaksinasi->hewan->pasien->phone_number ?? null,
                             ]);
-
+                            
                             if ($sent) {
-                                Notification::create([
-                                    'id_vaksinasi' => $vaksinasi->id_vaksinasi,
-                                    'id_pasien' => $vaksinasi->id_pasien,
-                                    'recipient' => $vaksinasi->hewan->pasien->phone_number ?? 'N/A',
-                                    'channel' => 'wa',
-                                    'waktu_kirim' => now(),
-                                    'tipe' => 'vaksinasi',
-                                    'status' => 'sent',
-                                    'reminder_type' => $logReminderType,
-                                    'error_message' => null,
-                                ]);
+                                $this->syncNotificationStatus($vaksinasi, 'wa', 'success', $logReminderType);
                             }
 
                             if ($sentEmail) {
-                                Notification::create([
-                                    'id_vaksinasi' => $vaksinasi->id_vaksinasi,
-                                    'id_pasien' => $vaksinasi->id_pasien,
-                                    'recipient' => $vaksinasi->hewan->pasien->email ?? 'N/A',
-                                    'channel' => 'email',
-                                    'waktu_kirim' => now(),
-                                    'tipe' => 'vaksinasi',
-                                    'status' => 'sent',
-                                    'reminder_type' => $logReminderType,
-                                    'error_message' => null,
-                                ]);
+                                $this->syncNotificationStatus($vaksinasi, 'email', 'success', $logReminderType);
                             }
                             
                             Log::info('✅ Auto-sent reminder after schedule update', [

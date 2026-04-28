@@ -7,6 +7,8 @@ const TYPE_LABELS = {
 
 const STATUS_LABELS = {
   pending: 'Pending',
+  success: 'Sukses',
+  failed: 'Gagal',
   sent: 'Sukses',
   gagal: 'Gagal',
 };

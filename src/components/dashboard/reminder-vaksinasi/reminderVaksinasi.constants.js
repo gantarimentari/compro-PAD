@@ -1,4 +1,4 @@
-export const REMINDER_QUERY_KEY = ['reminder-vaksinasi-list'];
+ export const REMINDER_QUERY_KEY = ['reminder-vaksinasi-list'];
 
 export const STATUS_FILTER_OPTIONS = [
   'Semua Status',

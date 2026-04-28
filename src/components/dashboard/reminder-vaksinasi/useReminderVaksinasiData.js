@@ -156,6 +156,7 @@ export default function useReminderVaksinasiData() {
         dilakukan_oleh: formData.performedBy || 'Admin',
         id_jenis_vaksin: formData.id_jenis_vaksin,
         tanggal_vaksin: nextVaccinationDate,
+        status: 'Dijadwalkan',
         catatan: formData.notes || null,
       });
     }

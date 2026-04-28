@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Notification;
 use App\Models\ReminderVaksinasi;
 use Carbon\Carbon;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -22,7 +23,7 @@ class NotificationController extends Controller
 
             $query = Notification::with(['vaksinasi.hewan.pasien', 'vaksinasi.jenisVaksin'])
                 ->where('tipe', 'vaksinasi')
-                ->whereIn('status', ['pending', 'sent'])
+                ->whereIn('status', ['pending', 'success', 'sent'])
                 ->whereHas('vaksinasi', function ($q) use ($now) {
                     $q->whereBetween('tanggal_vaksin', [
                         $now->copy()->startOfDay(),
@@ -64,7 +65,7 @@ class NotificationController extends Controller
                     'days_until' => $daysUntil,
                     'reminder_type' => $notif->reminder_type,
                     'label' => $label,
-                    'status' => $notif->status,
+                    'status' => $this->normalizeNotificationStatus($notif->status),
                     'channel' => $notif->channel,
                     'recipient' => $notif->recipient,
                     'nama_hewan' => $vaksinasi->hewan->nama_hewan ?? '-',
@@ -91,14 +92,14 @@ class NotificationController extends Controller
     /**
      * ✅ Get notification history dengan filter
      * Route: GET /api/notifications
-     * Query params: ?id_pasien=1&channel=wa&status=sent&id_vaksinasi=5
+    * Query params: ?id_pasien=1&channel=wa&status=success&id_vaksinasi=5
      */
     public function index(Request $request)
     {
         $request->validate([
             'id_pasien' => 'sometimes|integer|exists:users,id',
             'channel' => 'sometimes|in:wa,email',
-            'status' => 'sometimes|in:pending,sent,gagal',
+            'status' => 'sometimes|in:pending,success,failed,sent,gagal',
             'id_vaksinasi' => 'sometimes|integer|exists:reminder_vaksinasi,id_vaksinasi',
             'from_date' => 'sometimes|date',
             'to_date' => 'sometimes|date|after_or_equal:from_date',
@@ -126,7 +127,15 @@ class NotificationController extends Controller
             }
 
             if ($request->filled('status')) {
-                $query->where('status', $request->status);
+                $statusFilter = $this->normalizeNotificationStatus($request->status);
+
+                if ($statusFilter === 'success') {
+                    $query->whereIn('status', ['success', 'sent']);
+                } elseif ($statusFilter === 'failed') {
+                    $query->whereIn('status', ['failed', 'gagal']);
+                } else {
+                    $query->where('status', $statusFilter);
+                }
             }
 
             if ($request->filled('id_vaksinasi')) {
@@ -141,7 +150,13 @@ class NotificationController extends Controller
                 $query->where('waktu_kirim', '<=', $request->to_date);
             }
 
-            return response()->json($query->paginate(20));
+            $page = $query->paginate(20);
+            $page->getCollection()->transform(function ($notif) {
+                $notif->status = $this->normalizeNotificationStatus($notif->status);
+                return $notif;
+            });
+
+            return response()->json($page);
         } catch (\Exception $e) {
             Log::error('Error fetching notifications: ' . $e->getMessage());
             return response()->json([
@@ -174,23 +189,34 @@ class NotificationController extends Controller
     /**
      * ✅ Update notification status
      * Route: PUT /api/notifications/{id}
-     * Body: { "status": "sent", "error_message": null }
+    * Body: { "status": "success", "error_message": null }
      */
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'status' => 'required|string|in:pending,sent,gagal',
+            'status' => 'required|string|in:pending,success,failed,sent,gagal',
             'error_message' => 'nullable|string',
         ]);
 
         try {
             $notification = Notification::findOrFail($id);
 
-            if ($validated['status'] === 'sent' && !$notification->waktu_kirim) {
+            $normalizedStatus = $this->normalizeNotificationStatus($validated['status']);
+
+            if ($normalizedStatus === 'success' && !$notification->waktu_kirim) {
                 $validated['waktu_kirim'] = now();
             }
 
-            $notification->update($validated);
+            $validated['status'] = $normalizedStatus;
+
+            try {
+                $notification->update($validated);
+            } catch (QueryException $e) {
+                $validated['status'] = $normalizedStatus === 'success'
+                    ? 'sent'
+                    : ($normalizedStatus === 'failed' ? 'gagal' : $normalizedStatus);
+                $notification->update($validated);
+            }
 
             Log::info('Notification updated', [
                 'id' => $id,
@@ -229,9 +255,10 @@ class NotificationController extends Controller
             }
 
             $stats = [
-                'total_sent' => (clone $query)->where('status', 'sent')->count(),
+                'total_success' => (clone $query)->whereIn('status', ['success', 'sent'])->count(),
+                'total_sent' => (clone $query)->whereIn('status', ['success', 'sent'])->count(),
                 'total_pending' => (clone $query)->where('status', 'pending')->count(),
-                'total_failed' => (clone $query)->where('status', 'gagal')->count(),
+                'total_failed' => (clone $query)->whereIn('status', ['failed', 'gagal'])->count(),
                 'by_channel' => [
                     'wa' => (clone $query)->where('channel', 'wa')->count(),
                     'email' => (clone $query)->where('channel', 'email')->count(),
@@ -260,6 +287,11 @@ class NotificationController extends Controller
                 ->orderBy('waktu_kirim', 'desc')
                 ->paginate(20);
 
+            $notifications->getCollection()->transform(function ($notif) {
+                $notif->status = $this->normalizeNotificationStatus($notif->status);
+                return $notif;
+            });
+
             return response()->json($notifications);
         } catch (\Exception $e) {
             Log::error('Error fetching pasien notifications: ' . $e->getMessage());
@@ -268,6 +300,15 @@ class NotificationController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    private function normalizeNotificationStatus(?string $status): string
+    {
+        return match ($status) {
+            'sent' => 'success',
+            'gagal' => 'failed',
+            default => $status ?? 'pending',
+        };
     }
     // tambah endpoin untuk search 
     
