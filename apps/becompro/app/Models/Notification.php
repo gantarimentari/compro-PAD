@@ -17,6 +17,7 @@ class Notification extends Model
         'tipe',
         'status',
         'reminder_type',
+        'message_content',
         'error_message',
     ];
     protected $casts = [

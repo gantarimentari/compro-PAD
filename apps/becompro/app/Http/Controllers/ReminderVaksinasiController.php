@@ -404,60 +404,39 @@ class ReminderVaksinasiController extends Controller
         $this->syncNotificationStatus($vaksinasi, 'email', 'pending', $reminderType);
     }
 
-    private function syncNotificationStatus(ReminderVaksinasi $vaksinasi, string $channel, string $status, ?string $reminderType = null, ?string $errorMessage = null): Notification
-    {
-        $recipient = $channel === 'email'
-            ? ($vaksinasi->hewan->pasien->email ?? 'N/A')
-            : ($vaksinasi->hewan->pasien->phone_number ?? 'N/A');
 
-        $keys = [
-            'id_vaksinasi' => $vaksinasi->id_vaksinasi,
-            'id_pasien' => $vaksinasi->id_pasien,
-            'channel' => $channel,
-        ];
-        // barusan fe tambahin ini 
-    //     $dbStatus = match ($status) {
-    //     'success' => 'sent',
-    //     'failed'  => 'gagal',
-    //     default   => $status,
-    // };
+private function syncNotificationStatus(ReminderVaksinasi $vaksinasi, string $channel, string $status, ?string $reminderType = null, ?string $errorMessage = null): Notification
+{
+    $recipient = $channel === 'email'
+        ? ($vaksinasi->hewan->pasien->email ?? 'N/A')
+        : ($vaksinasi->hewan->pasien->phone_number ?? 'N/A');
+
+    $keys = [
+        'id_vaksinasi' => $vaksinasi->id_vaksinasi,
+        'id_pasien' => $vaksinasi->id_pasien,
+        'channel' => $channel,
+    ];
+
     $dbStatus = match ($status) {
-        'success', 'sent', 'send' => 'sent',
-        'failed', 'gagal'         => 'gagal',
+        'success', 'sent', 'send' => 'success',
+        'failed', 'gagal'         => 'failed',
         default                   => 'pending',
     };
 
-        $payload = [
-            'recipient' => $recipient,
-            'waktu_kirim' => $status === 'pending' ? null : now(),
-            'tipe' => 'vaksinasi',
-            // 'status' => $status,
-            // 'status'        => $normalizedStatus,
-                'status' => $dbStatus,
-            'reminder_type' => $reminderType,
-            'error_message' => $errorMessage,
-        ];
+    $messageContent = $reminderType ? $this->generateMessage($vaksinasi, $reminderType) : null;
 
-        return Notification::updateOrCreate($keys, $payload);
+    $payload = [
+        'recipient' => $recipient,
+        'waktu_kirim' => $status === 'pending' ? null : now(),
+        'tipe' => 'vaksinasi',
+        'status' => $dbStatus,
+        'reminder_type' => $reminderType,
+        'message_content' => $messageContent,  //tambahin ini
+        'error_message' => $errorMessage,
+    ];
 
-        // try {
-        //     return Notification::updateOrCreate($keys, $payload);
-        // } catch (QueryException $e) {
-        //     // Backward compatibility: some DBs still use enum sent/gagal.
-        //     $legacyStatus = match ($status) {
-        //         'success' => 'sent',
-        //         'failed' => 'gagal',
-        //         default => $status,
-        //     };
-
-        //     if ($legacyStatus === $status) {
-        //         throw $e;
-        //     }
-
-        //     $payload['status'] = $legacyStatus;
-        //     return Notification::updateOrCreate($keys, $payload);
-        // }
-    }
+    return Notification::updateOrCreate($keys, $payload);
+}
 
     /**
      * ✅ CRUD Methods untuk Reminder Vaksinasi
@@ -838,11 +817,6 @@ class ReminderVaksinasiController extends Controller
 
     private function normalizeReminderTypeForLog(string $reminderType): string
     {
-        // Keep DB enum compatibility with existing schema in reminder_log.
-        if ($reminderType === '7_day_before') {
-            return '1_day_before';
-        }
-
         return $reminderType;
     }
 

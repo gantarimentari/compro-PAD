@@ -51,11 +51,17 @@ const normalizeNotification = (item = {}) => ({
   type: TYPE_LABELS[item.type ?? item.tipe] ?? toTitleCase(item.type ?? item.tipe ?? ''),
   status: STATUS_LABELS[item.status] ?? toTitleCase(item.status ?? ''),
   message: item.message ?? null,
+  message_content: item.message_content ?? null,
+  reminder_type: item.reminder_type ?? null,
 });
 
 const notificationService = {
   getAll: async (params = {}) => {
     const query = {};
+    if (params.id_pasien != null) query.id_pasien = params.id_pasien;
+    if (params.status != null && String(params.status).trim() !== '') query.status = params.status;
+    if (params.fromDate != null && String(params.fromDate).trim() !== '') query.from_date = params.fromDate;
+    if (params.toDate != null && String(params.toDate).trim() !== '') query.to_date = params.toDate;
     if (params.page != null) query.page = params.page;
     if (params.perPage != null) query.per_page = params.perPage;
     // backend variants: send both `search` and `q` when provided and non-empty

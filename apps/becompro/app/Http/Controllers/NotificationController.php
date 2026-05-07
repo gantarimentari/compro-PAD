@@ -49,8 +49,8 @@ class NotificationController extends Controller
 
                 if ($notif->reminder_type === '3_days_sebelum') {
                     $label = '3 hari lagi';
-                } elseif ($notif->reminder_type === '1_day_before') {
-                    $label = 'Besok';
+                } elseif ($notif->reminder_type === '7_day_before' || $notif->reminder_type === '1_day_before') {
+                    $label = '7 hari lagi';
                 } elseif ($notif->reminder_type === 'same_day') {
                     $label = 'Hari ini';
                 } else {
