@@ -14,5 +14,6 @@ class Faq extends Model
         'answer',
         'keywords',
         'context',
+        'status',
     ];
 }
