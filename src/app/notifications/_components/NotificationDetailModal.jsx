@@ -64,7 +64,7 @@ export default function NotificationDetailModal({ isOpen, onClose, notification 
             </div>
           </div>
           
-          <div className="w-full h-px bg-accent-neutral-200 mt-6" />
+          {/* <div className="w-full h-px bg-accent-neutral-200 mt-6" /> */}
         </div>
       </div>
     </div>
