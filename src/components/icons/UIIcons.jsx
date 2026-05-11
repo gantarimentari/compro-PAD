@@ -697,6 +697,21 @@ export const CalenderCheckIcon = ({ className = "w-6 h-6", color = "currentColor
 
 
 );
+export const QuestionMarkIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
+  <svg className={className} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clipPath="url(#clip0_3138_6379)">
+<path d="M10.0003 18.3337C14.6027 18.3337 18.3337 14.6027 18.3337 10.0003C18.3337 5.39795 14.6027 1.66699 10.0003 1.66699C5.39795 1.66699 1.66699 5.39795 1.66699 10.0003C1.66699 14.6027 5.39795 18.3337 10.0003 18.3337Z" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M7.5752 7.50047C7.77112 6.94353 8.15782 6.4739 8.66682 6.17475C9.17583 5.87561 9.77427 5.76626 10.3562 5.86607C10.9381 5.96588 11.4659 6.26841 11.8461 6.72008C12.2263 7.17175 12.4344 7.74341 12.4335 8.33381C12.4335 10.0005 9.93353 10.8338 9.93353 10.8338" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M10 14.167H10.0083" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+</g>
+<defs>
+<clipPath id="clip0_3138_6379">
+<rect width="20" height="20" fill={color} />
+</clipPath>
+</defs>
+</svg>
+
+);
 export const SendIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
   <svg className={className} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M12.2998 10.0003H5.69316C5.69316 9.77109 5.64566 9.54193 5.5515 9.32693L3.57066 4.84526C2.93733 3.41193 4.45233 1.97693 5.849 2.68609L17.3332 8.51443C18.5498 9.13109 18.5498 10.8694 17.3332 11.4861L5.84983 17.3144C4.45233 18.0236 2.93733 16.5878 3.57066 15.1553L5.54983 10.6736C5.64337 10.4614 5.69162 10.2321 5.6915 10.0003" 
