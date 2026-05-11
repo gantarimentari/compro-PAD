@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import dashboardService from '@/lib/services/dashboardService';
+import authService from '@/lib/services/authService';
 import PageHeader from '@/components/shared/PageHeader';
 import { 
   SearchIcon, 
@@ -40,13 +41,32 @@ export default function Home() {
   const itemsPerPage = 4;
 
   useEffect(() => {
-    fetchDashboardData();
+    verifyAuthAndFetchData();
   }, []);
 
-  const fetchDashboardData = async () => {
+  const verifyAuthAndFetchData = async () => {
     try {
       setLoading(true);
       
+      // Verify session is valid by checking current user
+      try {
+        await authService.getUser();
+      } catch (authErr) {
+        if (authErr.response?.status === 401) {
+          console.error('Session invalid. Redirecting to login...');
+          // Clear auth state
+          document.cookie = 'auth_status=; max-age=0; path=/';
+          document.cookie = 'auth_role=; max-age=0; path=/';
+          localStorage.removeItem('user');
+          // Redirect to login
+          if (typeof window !== 'undefined') {
+            window.location.href = '/auth/login';
+          }
+          return;
+        }
+        // If error is not 401, continue (guest mode)
+      }
+
       // user info from localstorage
       const userInfo = JSON.parse(localStorage.getItem('user') || '{}');
       setUserName(userInfo.username || 'User');
@@ -59,12 +79,25 @@ export default function Home() {
       const summary = await dashboardService.getClinicSummary();
       setClinicSummary(summary);
 
-      // Fet
+      // fetch recent transactions
       const transactions = await dashboardService.getRecentTransactions();
       setTransactions(transactions);
 
     } catch (err) {
-      console.error('Error fetching dashboard data:', err);
+      // Handle 401 Unauthorized - session expired or invalid
+      if (err.response?.status === 401) {
+        console.error('Session expired during data fetch. Redirecting to login...');
+        // Clear auth state
+        document.cookie = 'auth_status=; max-age=0; path=/';
+        document.cookie = 'auth_role=; max-age=0; path=/';
+        localStorage.removeItem('user');
+        // Redirect to login
+        if (typeof window !== 'undefined') {
+          window.location.href = '/auth/login';
+        }
+      } else {
+        console.error('Error fetching dashboard data:', err);
+      }
     } finally {
       setLoading(false);
     }

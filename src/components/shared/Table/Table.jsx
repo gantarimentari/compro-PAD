@@ -43,7 +43,7 @@ export default function GenericTable({ columns, data, renderCell }) {
               {columns.map((column, colIndex) => (
                 <td 
                   key={`${item.id}-${rowIndex}-${colIndex}`} 
-                  className="px-6 py-4 whitespace-nowrap text-body-2 text-accent-neutral-1000 relative"
+                  className={`px-6 py-4 whitespace-nowrap text-body-2 text-accent-neutral-1000 relative ${column.className || ''}`}
                 >
                   {/* Panggil fungsi renderCell untuk konten yang spesifik */}
                   {renderCell(item, column.key)}
