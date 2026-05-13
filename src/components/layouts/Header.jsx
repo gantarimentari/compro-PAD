@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { NotificationIcon, UserIcon, CloseIcon } from "@/components/icons";
+import { NotificationIcon, UserIcon } from "@/components/icons";
 import Link from "next/link";
 import authService from '@/lib/services/authService';
 
@@ -52,13 +52,28 @@ export default function Header() {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const headerShellClassName = `
+    fixed inset-x-0 top-0 z-50
+    transform-gpu will-change-[padding,transform]
+    transition-[padding,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
+    ${isScrolled ? "px-4 pt-4 sm:px-6" : "px-0 pt-0"}
+  `;
+
+  const headerClassName = `
+    w-full bg-white/95 backdrop-blur-md shadow-e2
+    transform-gpu origin-top
+    transition-[transform,box-shadow,border-radius,background-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
+    ${isScrolled
+      ? "scale-[0.985] rounded-[18px] shadow-e4"
+      : "scale-100 rounded-b-[14px]"
+    }
+  `;
+
   return (
-    <header className={`
-      ${isScrolled 
-        ? "fixed top-4 scale-95 rounded-[14px]" 
-        : "scale-100"
-      } w-full bg-white shadow-e2 rounded-b-[14px] shadow-e4 transition-all duration-1000 ease-in-out z-50 origin-top`}
-    >
+    <>
+      <div aria-hidden className="h-20" />
+      <div className={headerShellClassName}>
+      <header className={headerClassName}>
       <div className="mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-20">
           {/* Logo and Company Name Section */}
@@ -86,6 +101,9 @@ export default function Header() {
               <Link href="/article" className="text-body-1 text-accent-neutral-1000 transition-colors">
                 Artikel
               </Link>
+              <Link href="/faq" className="text-body-1 text-accent-neutral-1000 transition-colors">
+                FAQ
+              </Link>
             </nav>
            
 
@@ -103,12 +121,12 @@ export default function Header() {
           {/* Burger Button - Mobile */}
           <button
             onClick={toggleMenu}
-            className="lg:hidden flex flex-col justify-center items-center gap-1.5 p-2 w-10 h-10 focus:outline-none"
+            className="lg:hidden flex flex-col justify-center items-center gap-1.5 p-2 w-10 h-10 focus:outline-none transform-gpu"
             aria-label="Toggle menu"
           >
-            <span className={`block w-6 h-0.5 bg-gray-700 transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-            <span className={`block w-6 h-0.5 bg-gray-700 transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''}`}></span>
-            <span className={`block w-6 h-0.5 bg-gray-700 transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+            <span className={`block w-6 h-0.5 bg-gray-700 origin-center transition-[transform,opacity,background-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+            <span className={`block w-6 h-0.5 bg-gray-700 origin-center transition-[transform,opacity,background-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${isMenuOpen ? 'opacity-0' : ''}`}></span>
+            <span className={`block w-6 h-0.5 bg-gray-700 origin-center transition-[transform,opacity,background-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
           </button>
         </div>
 
@@ -137,6 +155,13 @@ export default function Header() {
                 onClick={toggleMenu}
               >
                 Artikel
+              </Link>
+              <Link 
+                href="/faq" 
+                className="text-body-1 text-accent-neutral-1000 py-2 transition-colors hover:text-accent-blue-300"
+                onClick={toggleMenu}
+              >
+                FAQ
               </Link>
             </nav>
 
@@ -193,7 +218,9 @@ export default function Header() {
           </div>
         </div>
       </div>
-    </header>
+      </header>
+      </div>
+    </>
   );
 }
 
