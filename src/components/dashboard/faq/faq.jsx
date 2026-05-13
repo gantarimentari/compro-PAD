@@ -1,5 +1,5 @@
 'use client';
-import {useFaq} from './_hooks/useFaq';
+import {useFaq} from './hooks/useFaq';
 import PageHeader from '@/components/shared/PageHeader';
 import SearchBar from '@/components/shared/ManagementSearch';
 import TambahFAQModal from '@/components/dashboard/faq/modals/TambahFAQModal';
@@ -15,6 +15,8 @@ export default function FAQ() {
   const {
     faqs,
     isLoading,
+     searchTerm,
+    setSearchTerm,
     isModalOpen,
     closeModal,
     openModal,
@@ -45,8 +47,8 @@ export default function FAQ() {
       <div className="space-y-4">
         <SearchBar
           placeholderText="Cari judul, atau deskripsi..."
-          value=""
-          onChange={() => {}}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
 
         {isLoading ? (

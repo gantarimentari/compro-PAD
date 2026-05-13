@@ -1,8 +1,8 @@
-import {useState} from 'react';
+import {useMemo, useState} from 'react';
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import FaqService from '@/lib/services/faqService';
 
-export const useFaq = () => {
+export const useFaq = (options = { publicOnly: false }) => {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [successToast, setSuccessToast] = useState({ show: false, message: '' });
@@ -13,12 +13,33 @@ export const useFaq = () => {
 
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedFaq, setSelectedFaq] = useState(null);
+  const[searchTerm, setSearchTerm] = useState('');
 
   const {data, isLoading} = useQuery({
-    queryKey: ['faqs'],
-    queryFn: FaqService.getAll,
+    queryKey: ['faqs', options.publicOnly],
+    queryFn: () => FaqService.getAll(),
     staleTime: 5 * 60 * 1000, // data dianggap "segar" selama 5 menit
+    keepPreviousData: true,
   });
+  const allData = data?.data || [];
+
+  const faqs = useMemo(() => {
+    const baseData = options.publicOnly
+      ? allData.filter(faq => faq.status?.toLowerCase() === 'publish')
+      : allData;
+
+    const keyword = searchTerm.trim().toLowerCase();
+    if (!keyword) return baseData;
+
+    return baseData.filter((faq) => {
+      const searchableText = [faq.question, faq.answer, faq.title, faq.description]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+
+      return searchableText.includes(keyword);
+    });
+  }, [allData, options.publicOnly, searchTerm]);
 
   const triggerSuccess = (message) => {
     setSuccessToast({ show: true, message });
@@ -80,9 +101,11 @@ export const useFaq = () => {
   };
 
   return {
-    faqs: data?.data || [],
+    faqs,
     isLoading,
     isModalOpen,
+    searchTerm,
+    setSearchTerm,
     openModal: () => {
       setEditingData(null);
       setIsModalOpen(true);
