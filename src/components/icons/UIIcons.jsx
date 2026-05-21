@@ -329,7 +329,14 @@ export const CloseCircleIcon = ({ className = "w-6 h-6", color = "currentColor" 
     <path d="M7.396 7.39575L12.6043 12.6041M12.6043 7.39575L7.396 12.6041" />
   </svg>
 );
+export const DollarIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
+  <svg className={className} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M3.33325 1.66699V18.3337L4.99992 17.5003L6.66659 18.3337L8.33325 17.5003L9.99992 18.3337L11.6666 17.5003L13.3333 18.3337L14.9999 17.5003L16.6666 18.3337V1.66699L14.9999 2.50033L13.3333 1.66699L11.6666 2.50033L9.99992 1.66699L8.33325 2.50033L6.66659 1.66699L4.99992 2.50033L3.33325 1.66699Z" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M13.3334 6.66699H8.33341C7.89139 6.66699 7.46746 6.84259 7.1549 7.15515C6.84234 7.46771 6.66675 7.89163 6.66675 8.33366C6.66675 8.77569 6.84234 9.19961 7.1549 9.51217C7.46746 9.82473 7.89139 10.0003 8.33341 10.0003H11.6667C12.1088 10.0003 12.5327 10.1759 12.8453 10.4885C13.1578 10.801 13.3334 11.225 13.3334 11.667C13.3334 12.109 13.1578 12.5329 12.8453 12.8455C12.5327 13.1581 12.1088 13.3337 11.6667 13.3337H6.66675" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M10 14.5837V5.41699" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
 
+);
 export const UserIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
  <svg 
  width="20" 

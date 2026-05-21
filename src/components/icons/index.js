@@ -52,7 +52,7 @@ export {
   RightArrowIcon,
   JarumSuntikIcon, NoteIcon, CheckCircleIcon
   ,RetryIcon, HistoryIcon, CalenderCheckIcon, SendIcon,
-  BellIcon, QuestionMarkIcon,
+  BellIcon, QuestionMarkIcon, DollarIcon
 } from './UIIcons';
 
 
