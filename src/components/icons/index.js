@@ -44,7 +44,7 @@ export {
   uiIconsMap,
   GaleryIcon,
   WarningIcon,
-  TrashIcon, PenIcon,
+  TrashIcon, PenIcon, PrinterIcon,
   AddIcon, UploadIcon,
   HomeIcon, PeopleIcon, DogIcon, PawIcon, 
   FileIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, PromoIcon, SettingsIcon, DiskSaveIcon, DBHomeIcon,

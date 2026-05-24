@@ -1,0 +1,120 @@
+[2026-05-21 21:26:07] local.INFO: 👤 Owner 55 (mutia): {"pets_count":1,"species_ids":{"Illuminate\\Support\\Collection":[35]}} 
+[2026-05-21 21:26:07] local.INFO:  Grouped Data: {"owners_count":7} 
+[2026-05-21 21:26:09] local.INFO: 📦 All Hewans: {"count":15} 
+[2026-05-21 21:26:09] local.INFO: 👤 Owner 5 (budi alexander): {"pets_count":5,"species_ids":{"Illuminate\\Support\\Collection":[6,9]}} 
+[2026-05-21 21:26:09] local.INFO: 👤 Owner 33 (Larasati Ayu Gantari): {"pets_count":2,"species_ids":{"Illuminate\\Support\\Collection":[26,27]}} 
+[2026-05-21 21:26:09] local.INFO: 👤 Owner 48 (kinkin): {"pets_count":3,"species_ids":{"Illuminate\\Support\\Collection":[28,30]}} 
+[2026-05-21 21:26:09] local.INFO: 👤 Owner 52 (lala tes pakai data beneran): {"pets_count":2,"species_ids":{"Illuminate\\Support\\Collection":[31,34]}} 
+[2026-05-21 21:26:09] local.INFO: 👤 Owner 50 (danang w): {"pets_count":1,"species_ids":{"Illuminate\\Support\\Collection":[32]}} 
+[2026-05-21 21:26:09] local.INFO: 👤 Owner 54 (dimes): {"pets_count":1,"species_ids":{"Illuminate\\Support\\Collection":[33]}} 
+[2026-05-21 21:26:09] local.INFO: 👤 Owner 55 (mutia): {"pets_count":1,"species_ids":{"Illuminate\\Support\\Collection":[35]}} 
+[2026-05-21 21:26:09] local.INFO:  Grouped Data: {"owners_count":7} 
+[2026-05-21 21:33:16] local.INFO: Gallery items fetched {"count":32,"excluded_categories":["foto-cards"]} 
+[2026-05-21 22:25:58] local.INFO: Gallery items fetched {"count":32,"excluded_categories":["foto-cards"]} 
+[2026-05-22 00:29:11] local.ERROR: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'invoice' already exists (Connection: mysql, SQL: create table `invoice` (`id_invoice` bigint unsigned not null auto_increment primary key, `id_pasien` bigint unsigned not null, `id_hewan` bigint unsigned not null, `kode_invoice` varchar(255) not null, `tanggal_invoice` date not null, `jatuh_tempo` date null, `subtotal` decimal(12, 2) not null default '0', `diskon_persen` decimal(5, 2) not null default '0', `diskon_nominal` decimal(12, 2) not null default '0', `pajak_persen` decimal(5, 2) not null default '0', `pajak_nominal` decimal(12, 2) not null default '0', `total` decimal(12, 2) not null default '0', `status` enum('belum_bayar', 'lunas') not null default 'belum_bayar', `catatan` text null, `created_at` timestamp null, `updated_at` timestamp null) default character set utf8mb4 collate 'utf8mb4_unicode_ci') {"exception":"[object] (Illuminate\\Database\\QueryException(code: 42S01): SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'invoice' already exists (Connection: mysql, SQL: create table `invoice` (`id_invoice` bigint unsigned not null auto_increment primary key, `id_pasien` bigint unsigned not null, `id_hewan` bigint unsigned not null, `kode_invoice` varchar(255) not null, `tanggal_invoice` date not null, `jatuh_tempo` date null, `subtotal` decimal(12, 2) not null default '0', `diskon_persen` decimal(5, 2) not null default '0', `diskon_nominal` decimal(12, 2) not null default '0', `pajak_persen` decimal(5, 2) not null default '0', `pajak_nominal` decimal(12, 2) not null default '0', `total` decimal(12, 2) not null default '0', `status` enum('belum_bayar', 'lunas') not null default 'belum_bayar', `catatan` text null, `created_at` timestamp null, `updated_at` timestamp null) default character set utf8mb4 collate 'utf8mb4_unicode_ci') at C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:824)
+[stacktrace]
+#0 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php(778): Illuminate\\Database\\Connection->runQueryCallback('create table `i...', Array, Object(Closure))
+#1 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php(559): Illuminate\\Database\\Connection->run('create table `i...', Array, Object(Closure))
+#2 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Schema\\Blueprint.php(121): Illuminate\\Database\\Connection->statement('create table `i...')
+#3 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Schema\\Builder.php(618): Illuminate\\Database\\Schema\\Blueprint->build()
+#4 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Schema\\Builder.php(472): Illuminate\\Database\\Schema\\Builder->build(Object(Illuminate\\Database\\Schema\\Blueprint))
+#5 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Support\\Facades\\Facade.php(363): Illuminate\\Database\\Schema\\Builder->create('invoice', Object(Closure))
+#6 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\database\\migrations\\2026_05_21_204810_create_invoice_table.php(14): Illuminate\\Support\\Facades\\Facade::__callStatic('create', Array)
+#7 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Migrations\\Migrator.php(514): Illuminate\\Database\\Migrations\\Migration@anonymous->up()
+#8 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Migrations\\Migrator.php(439): Illuminate\\Database\\Migrations\\Migrator->runMethod(Object(Illuminate\\Database\\MySqlConnection), Object(Illuminate\\Database\\Migrations\\Migration@anonymous), 'up')
+#9 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Migrations\\Migrator.php(448): Illuminate\\Database\\Migrations\\Migrator->Illuminate\\Database\\Migrations\\{closure}()
+#10 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Migrations\\Migrator.php(250): Illuminate\\Database\\Migrations\\Migrator->runMigration(Object(Illuminate\\Database\\Migrations\\Migration@anonymous), 'up')
+#11 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\View\\Components\\Task.php(41): Illuminate\\Database\\Migrations\\Migrator->Illuminate\\Database\\Migrations\\{closure}()
+#12 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Migrations\\Migrator.php(809): Illuminate\\Console\\View\\Components\\Task->render('2026_05_21_2048...', Object(Closure))
+#13 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Migrations\\Migrator.php(250): Illuminate\\Database\\Migrations\\Migrator->write('Illuminate\\\\Cons...', '2026_05_21_2048...', Object(Closure))
+#14 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Migrations\\Migrator.php(210): Illuminate\\Database\\Migrations\\Migrator->runUp('C:\\\\Users\\\\LENOVO...', 15, false)
+#15 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Migrations\\Migrator.php(137): Illuminate\\Database\\Migrations\\Migrator->runPending(Array, Array)
+#16 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Console\\Migrations\\MigrateCommand.php(116): Illuminate\\Database\\Migrations\\Migrator->run(Array, Array)
+#17 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Migrations\\Migrator.php(666): Illuminate\\Database\\Console\\Migrations\\MigrateCommand->Illuminate\\Database\\Console\\Migrations\\{closure}()
+#18 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Console\\Migrations\\MigrateCommand.php(109): Illuminate\\Database\\Migrations\\Migrator->usingConnection(NULL, Object(Closure))
+#19 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Console\\Migrations\\MigrateCommand.php(88): Illuminate\\Database\\Console\\Migrations\\MigrateCommand->runMigrations()
+#20 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(36): Illuminate\\Database\\Console\\Migrations\\MigrateCommand->handle()
+#21 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Util.php(43): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#22 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(96): Illuminate\\Container\\Util::unwrapIfClosure(Object(Closure))
+#23 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod(Object(Illuminate\\Foundation\\Application), Array, Object(Closure))
+#24 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php(836): Illuminate\\Container\\BoundMethod::call(Object(Illuminate\\Foundation\\Application), Array, Array, NULL)
+#25 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php(211): Illuminate\\Container\\Container->call(Array)
+#26 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\symfony\\console\\Command\\Command.php(335): Illuminate\\Console\\Command->execute(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Illuminate\\Console\\OutputStyle))
+#27 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php(180): Symfony\\Component\\Console\\Command\\Command->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Illuminate\\Console\\OutputStyle))
+#28 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\symfony\\console\\Application.php(1103): Illuminate\\Console\\Command->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#29 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\symfony\\console\\Application.php(356): Symfony\\Component\\Console\\Application->doRunCommand(Object(Illuminate\\Database\\Console\\Migrations\\MigrateCommand), Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#30 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\symfony\\console\\Application.php(195): Symfony\\Component\\Console\\Application->doRun(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#31 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(197): Symfony\\Component\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#32 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#33 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\artisan(16): Illuminate\\Foundation\\Application->handleCommand(Object(Symfony\\Component\\Console\\Input\\ArgvInput))
+#34 {main}
+
+[previous exception] [object] (PDOException(code: 42S01): SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'invoice' already exists at C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:570)
+[stacktrace]
+#0 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php(570): PDOStatement->execute()
+#1 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php(811): Illuminate\\Database\\Connection->Illuminate\\Database\\{closure}('create table `i...', Array)
+#2 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php(778): Illuminate\\Database\\Connection->runQueryCallback('create table `i...', Array, Object(Closure))
+#3 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php(559): Illuminate\\Database\\Connection->run('create table `i...', Array, Object(Closure))
+#4 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Schema\\Blueprint.php(121): Illuminate\\Database\\Connection->statement('create table `i...')
+#5 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Schema\\Builder.php(618): Illuminate\\Database\\Schema\\Blueprint->build()
+#6 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Schema\\Builder.php(472): Illuminate\\Database\\Schema\\Builder->build(Object(Illuminate\\Database\\Schema\\Blueprint))
+#7 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Support\\Facades\\Facade.php(363): Illuminate\\Database\\Schema\\Builder->create('invoice', Object(Closure))
+#8 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\database\\migrations\\2026_05_21_204810_create_invoice_table.php(14): Illuminate\\Support\\Facades\\Facade::__callStatic('create', Array)
+#9 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Migrations\\Migrator.php(514): Illuminate\\Database\\Migrations\\Migration@anonymous->up()
+#10 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Migrations\\Migrator.php(439): Illuminate\\Database\\Migrations\\Migrator->runMethod(Object(Illuminate\\Database\\MySqlConnection), Object(Illuminate\\Database\\Migrations\\Migration@anonymous), 'up')
+#11 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Migrations\\Migrator.php(448): Illuminate\\Database\\Migrations\\Migrator->Illuminate\\Database\\Migrations\\{closure}()
+#12 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Migrations\\Migrator.php(250): Illuminate\\Database\\Migrations\\Migrator->runMigration(Object(Illuminate\\Database\\Migrations\\Migration@anonymous), 'up')
+#13 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\View\\Components\\Task.php(41): Illuminate\\Database\\Migrations\\Migrator->Illuminate\\Database\\Migrations\\{closure}()
+#14 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Migrations\\Migrator.php(809): Illuminate\\Console\\View\\Components\\Task->render('2026_05_21_2048...', Object(Closure))
+#15 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Migrations\\Migrator.php(250): Illuminate\\Database\\Migrations\\Migrator->write('Illuminate\\\\Cons...', '2026_05_21_2048...', Object(Closure))
+#16 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Migrations\\Migrator.php(210): Illuminate\\Database\\Migrations\\Migrator->runUp('C:\\\\Users\\\\LENOVO...', 15, false)
+#17 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Migrations\\Migrator.php(137): Illuminate\\Database\\Migrations\\Migrator->runPending(Array, Array)
+#18 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Console\\Migrations\\MigrateCommand.php(116): Illuminate\\Database\\Migrations\\Migrator->run(Array, Array)
+#19 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Migrations\\Migrator.php(666): Illuminate\\Database\\Console\\Migrations\\MigrateCommand->Illuminate\\Database\\Console\\Migrations\\{closure}()
+#20 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Console\\Migrations\\MigrateCommand.php(109): Illuminate\\Database\\Migrations\\Migrator->usingConnection(NULL, Object(Closure))
+#21 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Console\\Migrations\\MigrateCommand.php(88): Illuminate\\Database\\Console\\Migrations\\MigrateCommand->runMigrations()
+#22 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(36): Illuminate\\Database\\Console\\Migrations\\MigrateCommand->handle()
+#23 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Util.php(43): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#24 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(96): Illuminate\\Container\\Util::unwrapIfClosure(Object(Closure))
+#25 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod(Object(Illuminate\\Foundation\\Application), Array, Object(Closure))
+#26 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php(836): Illuminate\\Container\\BoundMethod::call(Object(Illuminate\\Foundation\\Application), Array, Array, NULL)
+#27 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php(211): Illuminate\\Container\\Container->call(Array)
+#28 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\symfony\\console\\Command\\Command.php(335): Illuminate\\Console\\Command->execute(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Illuminate\\Console\\OutputStyle))
+#29 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php(180): Symfony\\Component\\Console\\Command\\Command->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Illuminate\\Console\\OutputStyle))
+#30 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\symfony\\console\\Application.php(1103): Illuminate\\Console\\Command->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#31 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\symfony\\console\\Application.php(356): Symfony\\Component\\Console\\Application->doRunCommand(Object(Illuminate\\Database\\Console\\Migrations\\MigrateCommand), Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#32 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\symfony\\console\\Application.php(195): Symfony\\Component\\Console\\Application->doRun(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#33 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(197): Symfony\\Component\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#34 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#35 C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\artisan(16): Illuminate\\Foundation\\Application->handleCommand(Object(Symfony\\Component\\Console\\Input\\ArgvInput))
+#36 {main}
+"} 
+[2026-05-22 01:02:09] local.ERROR: Namespace declaration statement has to be the very first statement or after any declare call in the script {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Namespace declaration statement has to be the very first statement or after any declare call in the script at C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\app\\Http\\Controllers\\InvoiceController.php:5)
+[stacktrace]
+#0 {main}
+"} 
+[2026-05-22 01:06:35] local.INFO: Gallery items fetched {"count":32,"excluded_categories":["foto-cards"]} 
+[2026-05-22 01:10:57] local.ERROR: Namespace declaration statement has to be the very first statement or after any declare call in the script {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Namespace declaration statement has to be the very first statement or after any declare call in the script at C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\app\\Http\\Controllers\\InvoiceController.php:5)
+[stacktrace]
+#0 {main}
+"} 
+[2026-05-22 01:11:04] local.ERROR: Namespace declaration statement has to be the very first statement or after any declare call in the script {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Namespace declaration statement has to be the very first statement or after any declare call in the script at C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\app\\Http\\Controllers\\InvoiceController.php:5)
+[stacktrace]
+#0 {main}
+"} 
+[2026-05-22 01:12:10] local.ERROR: Namespace declaration statement has to be the very first statement or after any declare call in the script {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Namespace declaration statement has to be the very first statement or after any declare call in the script at C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\app\\Http\\Controllers\\InvoiceController.php:5)
+[stacktrace]
+#0 {main}
+"} 
+[2026-05-22 01:16:31] local.ERROR: Namespace declaration statement has to be the very first statement or after any declare call in the script {"userId":51,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Namespace declaration statement has to be the very first statement or after any declare call in the script at C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\app\\Models\\Invoice.php:4)
+[stacktrace]
+#0 {main}
+"} 
+[2026-05-22 01:17:11] local.ERROR: Namespace declaration statement has to be the very first statement or after any declare call in the script {"userId":51,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Namespace declaration statement has to be the very first statement or after any declare call in the script at C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\app\\Models\\Invoice.php:4)
+[stacktrace]
+#0 {main}
+"} 
+[2026-05-22 01:17:26] local.ERROR: Namespace declaration statement has to be the very first statement or after any declare call in the script {"userId":51,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Namespace declaration statement has to be the very first statement or after any declare call in the script at C:\\Users\\LENOVO\\my-compro\\apps\\becompro\\app\\Models\\Invoice.php:4)
+[stacktrace]
+#0 {main}
+"} 

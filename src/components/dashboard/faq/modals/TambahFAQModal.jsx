@@ -1,7 +1,7 @@
 // "use client";
 import React from 'react';
 import BaseModal from '../../shared-modals/BaseModal';
-import ButtonSaveandClose from '../_components/ButtonSaveandClose';
+import ButtonSaveandClose from '../../shared-modals/ButtonSaveandClose';
 
 const TambahFAQModal = ({ isOpen, onClose, onSave, editingData, isSubmitting }) => {
   const [formData, setFormData] = React.useState({
@@ -10,7 +10,7 @@ const TambahFAQModal = ({ isOpen, onClose, onSave, editingData, isSubmitting }) 
     answer: '',
   });
 
-  React.useEffect(() => {
+  React.useEffect(() => { // tanpa harus import useEffect, karena sudah import React
     if (isOpen && editingData) {
       setFormData({
         question: editingData.question || '',
@@ -42,7 +42,7 @@ const TambahFAQModal = ({ isOpen, onClose, onSave, editingData, isSubmitting }) 
     >
       <form 
         onSubmit={handleSubmit}
-        className="space-y-4 p-6"
+        className="space-y-2 px-6 pt-2 pb-6"
       >
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">

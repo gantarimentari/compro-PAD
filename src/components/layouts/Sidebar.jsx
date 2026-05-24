@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { GaleryIcon, FileIcon, PromoIcon, PeopleIcon, DogIcon, PawIcon, CalendarIcon, SettingsIcon, DBHomeIcon, 
-  BellIcon, JarumSuntikIcon, NoteIcon, QuestionMarkIcon
+  BellIcon, JarumSuntikIcon, NoteIcon, QuestionMarkIcon, DollarIcon
 } from "@/components/icons"; 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -23,6 +23,7 @@ export default function Sidebar() {
     { href: '/dashboard/admin',            icon: PeopleIcon,     label: 'Manajemen Admin' },
     { href: '/dashboard/promo',            icon: PromoIcon,      label: 'Managemen Promo' },
     { href: '/dashboard/faq',              icon: QuestionMarkIcon, label: 'FAQ' },
+    { href: '/dashboard/invoice',          icon: DollarIcon,     label: 'Invoice' },
     { href: '/dashboard/system',           icon: SettingsIcon,   label: 'System Info' },
   ];
 

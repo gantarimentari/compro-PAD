@@ -22,6 +22,8 @@ use App\Http\Controllers\ReminderVaksinasiController;
 use App\Http\Controllers\JenisVaksinController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\InvoiceController;
+
 
 Route::get('/articles', [ArticleController::class, 'index']);
 Route::get('/media', [MediaController::class, 'index']);
@@ -90,7 +92,15 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::get('/reminder-vaksinasi/logs', [ReminderVaksinasiController::class, 'getReminderLogs']);
     
 });
-
+Route::prefix('invoice')->group(function () {
+    Route::get('/invoice/hewan/pasien/{id_pasien}', [InvoiceController::class, 'getHewanByPasien']);
+    Route::post('/invoice/{id}/confirm-payment', [InvoiceController::class, 'confirmPayment']);
+    Route::apiResource('invoice', InvoiceController::class);
+    Route::post('/{id}/confirm-payment', [InvoiceController::class, 'confirmPayment']);
+    Route::put('/invoices/{id}', [InvoiceController::class, 'update']);
+    Route::get('/invoice/search', [InvoiceController::class, 'search']);
+    });
+    
 
 Route::middleware(['auth:sanctum'])->group(function () {
     // Get current user
@@ -108,4 +118,6 @@ Route::get('/notifications/vaksinasi', [NotificationController::class, 'getUpcom
     // Route::post('/reminder-vaksinasi', [ReminderVaksinasiController::class, 'store']);
     // Route::put('/reminder-vaksinasi/{id}', [ReminderVaksinasiController::class, 'update']);
     // Route::delete('/reminder-vaksinasi/{id}', [ReminderVaksinasiController::class, 'destroy']);
-});
+}
+);
+

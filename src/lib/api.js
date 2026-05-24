@@ -58,11 +58,12 @@ api.interceptors.response.use(
   },
   (error) => {
     //  Don't log 401 errors from /api/user (expected for guests)
-    const is401UserCheck = error.response?.status === 401 && 
+    const is401Error = error.response?.status === 401;
+    const is401UserCheck = is401Error && 
                           error.config?.url?.includes('/api/user');
     
-    if (!is401UserCheck) {
-      //  Only log non-401 errors or 401 from other endpoints
+    if (!is401Error) {
+      //  Only log non-401 errors
       console.error('❌ API Error:', {
         url: error.config?.url,
         status: error.response?.status,
@@ -71,8 +72,10 @@ api.interceptors.response.use(
         message: error.message
       });
     } else {
-      //  Silent log for expected 401 from /api/user
-      console.log('👤 User check: Not authenticated (guest mode)');
+      //  Silent for 401 responses; individual callers can handle it if needed
+      if (is401UserCheck) {
+        console.log('👤 User check: Not authenticated (guest mode)');
+      }
     }
 
     return Promise.reject(error);

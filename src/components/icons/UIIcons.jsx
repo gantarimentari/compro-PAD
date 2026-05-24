@@ -484,6 +484,15 @@ export const PenIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
   </svg>
 
 );
+export const PrinterIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M7 8V4H17V8" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M7 17H6C4.34315 17 3 15.6569 3 14V11C3 9.34315 4.34315 8 6 8H18C19.6569 8 21 9.34315 21 11V14C21 15.6569 19.6569 17 18 17H17" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    <rect x="7" y="13" width="10" height="7" rx="1" stroke={color} strokeWidth="1.8" />
+    <path d="M8.5 11H15.5" stroke={color} strokeWidth="1.8" strokeLinecap="round" />
+  </svg>
+);
+
 export const HomeIcon = ({ className = "w-6 h-6", color = "currentColor" }) => (
   <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M7.5 2.5H3.33333C2.8731 2.5 2.5 2.8731 2.5 3.33333V9.16667C2.5 9.6269 2.8731 10 3.33333 10H7.5C7.96024 10 8.33333 9.6269 8.33333 9.16667V3.33333C8.33333 2.8731 7.96024 2.5 7.5 2.5Z" 
