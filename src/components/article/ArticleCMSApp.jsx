@@ -128,7 +128,7 @@ const ArticleModal = ({ article, isOpen, onClose }) => {
                         </div>
 
                         <div className="md:w-2/3 flex flex-col gap-4">
-                            <div className="relative bg-white p-6 rounded-lg border-2 border-accent-yellow-300">
+                            <div className="relative bg-white p-6 rounded-lg border-2 border-accent-yellow-300 lg:min-h-[275px]">
                                 <ModalDashedBorder className="absolute inset-0 pointer-events-none p-1 stroke-accent-yellow-300" />
                                 
                                 {/* whitespace buat spacing */}
