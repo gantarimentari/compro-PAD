@@ -5,7 +5,7 @@ import articleService from '@/lib/services/articleService';
 import Button from '@/components/ui/Button/Button';
 import { ModalDashedBorder } from '@/components/ui/frame/garisputus';
 import { CloseCircleIcon, ChevronLeftIcon, ChevronRightIcon } from '@/components/icons/UIIcons';
-
+import { LoadingCondition } from '../shared/LoadingCondition';
 const ARTICLES_PER_PAGE = 6;
 
 
@@ -381,8 +381,8 @@ const ArticleCMSApp = () => {
     //loading state
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-yellow-300"></div>
+            <div className="flex justify-center items-center lg:min-h-[600px]">
+               <LoadingCondition/>
             </div>
         );
     }

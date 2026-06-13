@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import mediaService from '@/lib/services/mediaService';
 import { CloseCircleIcon, ChevronLeftIcon, ChevronRightIcon, ExternalLinkIcon }  from '@/components/icons/UIIcons';
-
+import { LoadingCondition } from '../shared/LoadingCondition';
 const IMAGES_PER_PAGE = 6;
 
 // --- Image/Video Modal Component ---
@@ -354,8 +354,8 @@ const GaleryApp = ({ activeFilter }) => {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-yellow-300"></div>
+            <div className="flex justify-center items-center lg:min-h-[600px]">
+                <LoadingCondition/>
             </div>
         );
     }

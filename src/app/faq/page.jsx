@@ -8,7 +8,7 @@ import {useFaq} from "@/components/dashboard/faq/hooks/useFaq";
 import {useState} from "react";
 import React from "react";
 import FaqItem from "./_components/FaqItem";
-
+import { LoadingCondition } from "@/components/shared/LoadingCondition";
 
 const backgroundStyle = {
   backgroundImage: "url('/Background/bg-yellow-paw.svg')",
@@ -38,9 +38,9 @@ export default function FAQPage(question, answer) {
       <SectionWrapper bgImage="/Background/bg-bone-orange.svg">
         <div className="max-w-4xl mx-auto py-12 px-4 lg:min-h-[600px] ">
           {isLoading ? (
-            <div className="flex items-center justify-center space-x-2">
-              <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-              <p className="text-white font-medium">Loading...</p>
+            <div className="flex justify-center items-center lg:min-h-[600px]">
+             <LoadingCondition/>
+           
             </div>
           ) : (
                       <div>
