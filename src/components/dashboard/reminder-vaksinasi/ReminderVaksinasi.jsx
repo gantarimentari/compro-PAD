@@ -13,7 +13,7 @@ import VaccinationHistoryModal from './modals/VaccinationHistoryModal';
 import RescheduleModal from './modals/Reschedule';
 import EditReminderModal from './modals/EditReminderModal';
 import SendReminderModal from './modals/SendReminderModal';
-
+import { LoadingTable } from '../shared-modals/LoadingStatement';
 const REMINDER_QUEUE_STORAGE_KEY = 'reminder-vaksinasi-schedule-queue';
 const REMINDER_TYPE_BY_DAY = {
   7: '7_day_before',
@@ -484,9 +484,7 @@ export default function ReminderVaksinasi() {
         </div>
         
         {isLoading ? (
-          <div className="bg-white rounded-lg shadow-xl p-6 space-y-3">
-            {[1, 2, 3, 4, 5].map(i => <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />)}
-          </div>
+          <LoadingTable/>
         ) : (
           <Table columns={VACCINATION_COLUMNS} data={filteredData} renderCell={renderCell} />
         )}

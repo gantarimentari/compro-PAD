@@ -10,7 +10,7 @@ import Table from '@/components/shared/Table';
 import SearchBar from '@/components/shared/ManagementSearch';
 import PageHeader from '@/components/shared/PageHeader';
 import {TambahPasienModal,EditPasienModal,PreviewPasienModal,DeleteConfirmModal,} from '@/components/dashboard';
-
+import { LoadingTable } from '../shared-modals/LoadingStatement';
 
 
 // buat kolom table
@@ -237,11 +237,7 @@ const { data: jenisHewanOptions = [] } = useQuery({
           onChange={(e) => setSearchQuery(e.target.value)}
         />
         {isLoading ? (
-          <div className="bg-white rounded-lg shadow-xl p-6 space-y-3">
-            {[1,2,3,4,5].map(i => (
-              <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />
-            ))}
-          </div>
+          <LoadingTable/>
         ) : (
           <Table
             columns={PATIENT_COLUMNS}

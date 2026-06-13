@@ -9,10 +9,12 @@ export const FAQ_COLUMNS = [
 export const FAQ_STATUS_BADGE_CLASS = {
   Publish: {
     text: 'text-accent-green-450', 
-    bg: 'bg-accent-green-50'
+    bg: 'bg-accent-green-50',
+    label: 'Publish'
   },
   Draft: {
     text: 'text-[#A65F00]', 
-    bg: 'bg-[#FEF9C2]' 
+    bg: 'bg-[#FEF9C2]' ,
+    label: 'Draft'
   },
 };

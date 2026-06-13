@@ -1,14 +1,18 @@
-import { FAQ_STATUS_BADGE_CLASS} from '../faq.constants';
-import { ButtonAction } from './ButtonAction';
+import { FAQ_STATUS_BADGE_CLASS } from '../faq.constants';
+import { TableActions } from '../../shared-modals/ButtonAction';
 
-const renderTag = (label, configMap) => {
-  const config = configMap[label] || {};
+export const renderTag = (label, configMap) => {
+  const cleanKey = typeof label === 'string' ? label.replace(/[\s_]/g, '').toLowerCase() : '';
+  const matchingKey = Object.keys(configMap).find(key => 
+    key.replace(/[\s_]/g, '').toLowerCase() === cleanKey
+  );
+  const config = configMap[matchingKey || label] || {};
   return (
     <div className={`text-center whitespace-normal max-w-xs  ${config.bg || 'bg-gray-100'} rounded-lg`}>
-    <span className={`inline-flex px-4 py-2  text-body-2 rounded-lg  ${config.text || ' text-gray-700'}`}>    
-    {label}
-  </span>
-  </div>
+      <span className={`inline-flex px-4 py-2  text-body-2 rounded-lg  ${config.text || ' text-gray-700'}`}>
+        {label}
+      </span>
+    </div>
   );
 };
 
@@ -22,8 +26,8 @@ const renderTextWithTooltip = (text, maxLength = 50) => {
   );
 };
 
-export const tableRenderers = (onOpenEdit, onOpenDelete, onOpenDetail) => {
-  return (item, key)=>{
+export const tableRenderers = ({ onOpenEdit, onOpenDelete, onOpenDetail }) => {
+  return (item, key) => {
     switch (key) {
       case 'question':
         return renderTextWithTooltip(item.question, 50);
@@ -33,11 +37,11 @@ export const tableRenderers = (onOpenEdit, onOpenDelete, onOpenDetail) => {
         return renderTag(item.status, FAQ_STATUS_BADGE_CLASS);
       case 'actions': {
         return (
-          <ButtonAction
+          <TableActions
             item={item}
             onEdit={() => onOpenEdit?.(item)}
             onDelete={() => onOpenDelete?.(item.id ?? item.id_faq)}
-            onOpenDetail={() => onOpenDetail?.(item)}
+            onDetail={() => onOpenDetail?.(item)}
           />
         );
       }

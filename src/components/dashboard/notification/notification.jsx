@@ -8,7 +8,7 @@ import { tableRenderers } from './_components/TabelCells';
 import NotificationDetailModal from './_components/NotificationDetailModal';
 import { Pagination } from './_components/Pagination';
 import { useNotification } from './_hooks/useNotification';
-
+import { LoadingTable } from '../shared-modals/LoadingStatement';
 export default function Notification() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -65,13 +65,14 @@ export default function Notification() {
         />
 
         {isLoading ? (
-          <div className="bg-white rounded-lg shadow-xl p-6 space-y-3">
-            {[1, 2, 3, 4, 5].map(i => <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />)}
-          </div>
+          <LoadingTable/>
         ) : (
           <Table columns={NOTIFICATION_COLUMNS} 
            data={notifications}
-           renderCell={tableRenderers(handleOpenDetail, handleResend)} />
+           renderCell={tableRenderers({
+             onOpenDetail: handleOpenDetail,
+             onResend: handleResend,
+           })} />
         )}
         </div>
 

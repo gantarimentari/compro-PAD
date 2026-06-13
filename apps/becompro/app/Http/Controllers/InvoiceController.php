@@ -301,7 +301,7 @@ class InvoiceController extends Controller
 
             'pajak_persen' => 'nullable|numeric|min:0',
 
-            'status' => 'nullable|in:lunas,belum_bayar',
+            'status' => 'nullable|in:lunas,belum_lunas',
 
             'catatan' => 'nullable|string',
 
@@ -515,16 +515,22 @@ public function search(Request $request)
         ]);
     }
 
-    /**
+/**
      * =========================================================
      * KONFIRMASI PEMBAYARAN
      * =========================================================
      */
-    public function confirmPayment($id)
+    public function confirmPayment(Request $request, $id)
     {
+
+        $request->validate([
+            'metode_pembayaran' => 'required|in:transfer_bank,qris,tunai'
+        ]);
         $invoice = Invoice::findOrFail($id);
 
         $invoice->status = 'lunas';
+        $invoice->metode_pembayaran = $request->metode_pembayaran;
+        $invoice->tanggal_pembayaran = now()->toDateString();
 
         $invoice->save();
 

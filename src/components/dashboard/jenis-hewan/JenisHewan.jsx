@@ -8,7 +8,7 @@ import Table from '@/components/shared/Table';
 import SearchBar from '@/components/shared/ManagementSearch';
 import PageHeader from '@/components/shared/PageHeader';
 import { TambahJenisHewanModal, EditJenisHewanModal, DeleteConfirmModal } from '@/components/dashboard';
-
+import { LoadingTable } from '../shared-modals/LoadingStatement';
 const Species_COLUMNS = [
   { key: 'species', header: 'Jenis Hewan' },
   { key: 'ownerName', header: 'Nama Pemilik' },
@@ -171,9 +171,7 @@ export default function JenisHewan() {
         <SearchBar placeholderText="Cari jenis hewan..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
         
         {isLoading ? (
-          <div className="bg-white rounded-lg shadow-xl p-6 space-y-3">
-            {[1,2,3,4,5].map(i => <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />)}
-          </div>
+          <LoadingTable/>
         ) : (
           <Table columns={Species_COLUMNS} data={filteredData} renderCell={renderCell} />
         )}

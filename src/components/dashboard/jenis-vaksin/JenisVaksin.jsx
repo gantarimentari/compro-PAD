@@ -10,7 +10,7 @@ import PageHeader from '@/components/shared/PageHeader';
 import { TambahJenisVaksinModal, DeleteConfirmModal, EditJenisVaksinModal, PreviewJenisVaksinModal } from '@/components/dashboard';
 import StatusToggleButton from '@/components/ui/StatusToggleButton';
 // import Edit from 'apps/becompro/vendor/laravel/breeze/stubs/inertia-react/resources/js/Pages/Profile/Edit';
-
+import { LoadingTable } from '../shared-modals/LoadingStatement';
 const JENIS_VAKSIN_COLUMNS = [
   { key: 'type', header: 'Jenis Vaksin' },
   { key:'interval', header: 'Interval Booster' },
@@ -259,11 +259,7 @@ export default function JenisVaksin() {
         />
 
         {isLoading ? (
-          <div className="bg-white rounded-lg shadow-xl p-6 space-y-3">
-            {[1, 2, 3, 4, 5].map((item) => (
-              <div key={item} className="h-10 bg-gray-100 rounded animate-pulse" />
-            ))}
-          </div>
+          <LoadingTable/>
         ) : (
           <Table columns={JENIS_VAKSIN_COLUMNS} data={filteredData} renderCell={renderCell} />
         )}

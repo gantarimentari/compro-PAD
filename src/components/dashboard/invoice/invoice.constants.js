@@ -1,9 +1,9 @@
-export const STATUS =[
+export const STATUS = [
   'Lunas', 'Belum Lunas'
 ];
 
 export const COLUMN = [
-{ key: 'kode_invoice', header: 'No. Invoice' },
+  { key: 'kode_invoice', header: 'No. Invoice' },
   { key: 'tanggal', header: 'Tanggal' },
   { key: 'pemilik', header: 'Pemilik / Hewan' },
   { key: 'items', header: 'Item' },
@@ -12,16 +12,23 @@ export const COLUMN = [
   { key: 'actions', header: 'Aksi', isAction: true },
 ];
 export const STATUS_BADGE_CLASS = {
-  Lunas: { 
-    text: 'text-accent-green-450', 
-    bg: 'bg-accent-green-50' 
+  Lunas: {
+    text: 'text-accent-green-450',
+    bg: 'bg-accent-green-50',
+
   },
-  BelumLunas: { 
-    text: 'text-[#1447E6]', 
-    bg: 'bg-[#DBEAFE]' 
+  'belum lunas': {
+    text: 'text-[#A65F00]',
+    bg: 'bg-[#FEF9C2]',
+
   },
-  
+
 };
+export const PAYMENT_OPTIONS = [
+  { value: 'tunai', label: 'Tunai' },
+  { value: 'transfer_bank', label: 'Transfer Bank' },
+  { value: 'qris', label: 'QRIS' },
+];
 
 // Default export for compatibility with InvoiceDashboard import
 export default COLUMN;

@@ -93,12 +93,12 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     
 });
 Route::prefix('invoice')->group(function () {
+    Route::get('/invoice/search', [InvoiceController::class, 'search']);
     Route::get('/invoice/hewan/pasien/{id_pasien}', [InvoiceController::class, 'getHewanByPasien']);
     Route::post('/invoice/{id}/confirm-payment', [InvoiceController::class, 'confirmPayment']);
     Route::apiResource('invoice', InvoiceController::class);
     Route::post('/{id}/confirm-payment', [InvoiceController::class, 'confirmPayment']);
     Route::put('/invoices/{id}', [InvoiceController::class, 'update']);
-    Route::get('/invoice/search', [InvoiceController::class, 'search']);
     });
     
 

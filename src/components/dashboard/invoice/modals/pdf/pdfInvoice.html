@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Invoice {{kode_invoice}}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="pdfInvoice.css"/>
+  <style>
+    {{styles}}
+  </style>
+</head>
+<body>
+
+<div class="invoice-card" id="invoice-content">
+  <div class="top-bar"></div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="brand-block">
+      <div class="brand-section">
+        <div class="logo-container" style="background: none; box-shadow: none; border-radius: 0;">
+          <img src="{{logo_base64}}" alt="Logo Klinik" style="width: 50px; height: 50px; object-fit: contain;">
+        </div>
+        <div class="brand-details">
+          <h1>{{clinic_name}}</h1>
+        </div>
+      </div>
+      <div class="clinic-info">
+        {{clinic_address}}<br>
+        Telepon: {{clinic_phone}}<br>
+        Jam Operasional: {{clinic_hours}}
+      </div>
+    </div>
+
+    <div class="invoice-title-section">
+      <div class="invoice-badge">Invoice</div>
+      <div class="invoice-code">{{kode_invoice}}</div>
+      <!-- <div class="status-badge {{status_class}}">{{status_label}}</div> -->
+    </div>
+  </div>
+
+  <!-- Client & Patient Info -->
+  <div class="metadata-section">
+    <div class="meta-block">
+      <h3>Ditagihkan Kepada</h3>
+      <div class="meta-value">
+        <strong>{{pasien_name}}</strong>
+        Telepon: {{pasien_phone}}<br>
+        Email: {{pasien_email}}
+      </div>
+    </div>
+    <div class="meta-block">
+      <div class="dates-container" style="margin-bottom: 12px;">
+        <div class="date-item">
+          <h4>Tanggal Invoice</h4>
+          <p>{{tanggal_invoice}}</p>
+        </div>
+        <div class="date-item">
+          <h4>Jatuh Tempo</h4>
+          <p>{{jatuh_tempo}}</p>
+        </div>
+      </div>
+      <h3>Detail Pasien (Hewan)</h3>
+      <div class="meta-value">
+        Nama Hewan: <strong>{{hewan_name}}</strong>
+        Jenis/Ras: {{hewan_jenis}}
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-section">
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 5%;">No</th>
+          <th style="width: 45%;">Layanan / Produk</th>
+          <th style="width: 10%; text-align: center;">Qty</th>
+          <th style="width: 20%; text-align: right;">Harga Satuan</th>
+          <th style="width: 20%; text-align: right;">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{item_rows}}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Summary -->
+  <div class="summary-section">
+    <div class="notes-card">
+      <h4>Catatan</h4>
+      <p>{{catatan}}</p>
+    </div>
+
+    <div class="totals-container">
+      <div class="total-row">
+        <span>Subtotal</span>
+        <span>{{subtotal}}</span>
+      </div>
+      {{diskon_section}}
+      {{pajak_section}}
+      <div class="total-row grand-total">
+        <span>Grand Total</span>
+        <span class="total-val">{{total}}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Signature Area -->
+  <div class="signature-section justify-end">
+    <div class="signature-area">
+      <div class="signature-space">
+        <div class="signature-stamp">Klinik Terverifikasi</div>
+      </div>
+      <div class="signature-name">drh. Fanina</div>
+      <div class="signature-title">Dokter Hewan Penanggung Jawab</div>
+    </div>
+  </div>
+
+  <!-- Footer Muted -->
+  <div class="invoice-footer">
+    Terima kasih telah memercayakan kesehatan hewan peliharaan Anda kepada drh. Fanina.
+  </div>
+</div>
+
+</body>
+</html>

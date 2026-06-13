@@ -6,7 +6,7 @@ import { AddIcon, CloseIcon } from '@/components/icons';
 import patientService from '@/lib/services/patientService';
 import InvoiceService from '@/lib/services/invoiceService';
 
-const TambahInvoiceModals = ({ editingData, isOpen, onClose, onSave, isSubmitting, formData, setFormData }) => {
+const TambahInvoiceModals = ({ editingData, isOpen, onClose, onSave, isSubmitting, isDetailLoading, formData, setFormData }) => {
   const [draftItem, setDraftItem] = useState({
     nama_item: '',
     kategori: '',
@@ -131,6 +131,7 @@ const TambahInvoiceModals = ({ editingData, isOpen, onClose, onSave, isSubmittin
   const title = editingData ? 'Edit Invoice' : 'Buat Invoice Baru';
   const description = editingData ? 'Edit' : 'Tambahkan';
 
+
   return (
     <BaseModal
       maxWidth="max-w-2xl"
@@ -139,7 +140,23 @@ const TambahInvoiceModals = ({ editingData, isOpen, onClose, onSave, isSubmittin
       title={title}
       description={`${description} item layanan/obat, sistem akan menghitung total otomatis.`}
     >
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4 px-6 pb-6 pt-2">
+      <form onSubmit={handleSubmit} className="relative flex flex-col gap-4 px-6 pb-6 pt-2">
+        {isDetailLoading ? (
+          <div className="absolute inset-0 z-10 rounded-b-lg bg-white/80 backdrop-blur-[1px]">
+            <div className="flex h-full flex-col gap-4 p-6">
+              <div className="h-4 w-40 animate-pulse rounded bg-slate-200" />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="h-10 animate-pulse rounded-lg bg-slate-200" />
+                <div className="h-10 animate-pulse rounded-lg bg-slate-200" />
+                <div className="h-10 animate-pulse rounded-lg bg-slate-200" />
+                <div className="h-10 animate-pulse rounded-lg bg-slate-200" />
+              </div>
+              <div className="h-40 animate-pulse rounded-xl bg-slate-200" />
+              <div className="h-10 animate-pulse rounded-xl bg-slate-200" />
+            </div>
+          </div>
+        ) : null}
+
         <div className="grid grid-cols-2 gap-4">
           <label className="space-y-1">
             <span className="block text-sm font-medium text-accent-neutral-1000">Pemilik (Pasien)</span>
@@ -243,7 +260,7 @@ const TambahInvoiceModals = ({ editingData, isOpen, onClose, onSave, isSubmittin
                 value={draftItem.harga_satuan}
                 onChange={(e) => setDraftItem((prev) => ({ ...prev, harga_satuan: e.target.value }))}
                 className="w-full rounded-lg bg-accent-neutral-275 px-4 py-2.5 text-body-2 text-accent-neutral-1000 outline-none transition focus:ring-2 focus:ring-blue-500"
-                placeholder="150000"
+                placeholder="0"
               />
             </label>
 
@@ -271,11 +288,6 @@ const TambahInvoiceModals = ({ editingData, isOpen, onClose, onSave, isSubmittin
                 <div key={item.id} className="grid grid-cols-[minmax(0,1.6fr)_72px_minmax(0,0.9fr)_minmax(0,0.9fr)_32px] items-center gap-3 px-4 py-3 text-sm text-accent-neutral-1000">
                   <div>
                     <p className="font-medium">{item.nama_item}</p>
-                    {item.kategori ? (
-                      <span className="mt-1 inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
-                        {item.kategori}
-                      </span>
-                    ) : null}
                   </div>
                   <div className="w-fit rounded-lg bg-accent-neutral-275 px-3 py-1.5 text-center text-sm">{item.qty}</div>
                   <span>{currencyFormat(item.harga_satuan)}</span>
@@ -336,8 +348,8 @@ const TambahInvoiceModals = ({ editingData, isOpen, onClose, onSave, isSubmittin
         </div>
 
         <ButtonSaveandClose
-          buttonLabel="Buat Invoice"
-          buttonLabelProcessing="Membuat invoice..."
+          buttonLabel={editingData ? "Edit Invoice" : "Buat Invoice"}
+          buttonLabelProcessing={editingData ? "Menyimpan perubahan..." : "Membuat invoice..."}
           onClose={onClose}
           isSubmitting={isSubmitting}
         />

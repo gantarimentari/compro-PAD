@@ -10,7 +10,7 @@ import Table from '@/components/shared/Table';
 import SearchBar from '@/components/shared/ManagementSearch';
 import PageHeader from '@/components/shared/PageHeader';
 import { TambahHewanModal, EditHewanModal, DeleteConfirmModal } from '@/components/dashboard';
-
+import { LoadingTable } from '../shared-modals/LoadingStatement';
 const HEWAN_COLUMNS = [
   { key: 'petName', header: 'Nama Hewan' },
   { key: 'species', header: 'Jenis Hewan' },
@@ -198,9 +198,7 @@ export default function ManagementHewan() {
         
         {/* Sekarang pakai isLoading yang sesuai dengan useQuery */}
         {isLoading ? (
-          <div className="bg-white rounded-lg shadow-xl p-6 space-y-3">
-            {[1,2,3,4,5].map(i => <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />)}
-          </div>
+          <LoadingTable/>
         ) : (
           <Table columns={HEWAN_COLUMNS} data={filteredData} renderCell={renderCell} />
         )}

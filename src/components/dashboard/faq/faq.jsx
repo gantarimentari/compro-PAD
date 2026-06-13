@@ -9,7 +9,7 @@ import {FAQ_COLUMNS} from './faq.constants';
 import { tableRenderers } from './_components/TableCell';
 import SuccessToast from '@/components/ui/SuccessToast';
 import PreviewFAQModal from './modals/PreviewFAQModal';
-
+import { LoadingTable } from '../shared-modals/LoadingStatement';
 export default function FAQ() {
 
   const {
@@ -52,15 +52,15 @@ export default function FAQ() {
         />
 
         {isLoading ? (
-          <div className="space-y-3 rounded-lg bg-white p-6 shadow-xl">
-            {[1,2,3,4,5].map(i => (
-              <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />
-            ))}
-          </div>
+         <LoadingTable />
         ) : (
           <Table
             columns={FAQ_COLUMNS}
-            renderCell={tableRenderers(openEditModal, openDeleteModal, openPreviewModal)}
+            renderCell={tableRenderers({
+              onOpenEdit: openEditModal,
+              onOpenDelete: openDeleteModal,
+              onOpenDetail: openPreviewModal,
+            })}
             data={faqs}
           />
         )}

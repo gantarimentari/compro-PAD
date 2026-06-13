@@ -9,7 +9,7 @@ import Table from '@/components/shared/Table';
 import SearchBar from '@/components/shared/ManagementSearch';
 import PageHeader from '@/components/shared/PageHeader';
 import { TambahMediaModal, PreviewMediaModal, DeleteConfirmModal } from '@/components/dashboard';
-
+import { LoadingTable } from '../shared-modals/LoadingStatement';
 const MEDIA_COLUMNS = [
   { key: 'name', header: 'Nama Gambar' },
   { key: 'date', header: 'Tanggal Ditambahkan' },
@@ -142,11 +142,7 @@ export default function ManagemenMedia() {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
         {isLoading ? (
-          <div className="bg-white rounded-lg shadow-xl p-6 space-y-3">
-            {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />
-            ))}
-          </div>
+          <LoadingTable/>
         ) : (
           <Table
             columns={MEDIA_COLUMNS}

@@ -9,7 +9,7 @@ import SearchBar from '@/components/shared/ManagementSearch';
 import PageHeader from '@/components/shared/PageHeader';
 import { TambahAdminModal, DeleteConfirmModal, EditAdminModal } from '@/components/dashboard';
 import adminService from '@/lib/services/adminService';
-
+import { LoadingTable } from '../shared-modals/LoadingStatement';
 const ADMIN_COLUMNS = [
   { key: 'adminName', header: 'Nama Admin' },
   { key: 'userName', header: 'Username' },
@@ -153,11 +153,7 @@ export default function ManagemenAdmin() {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
         {isLoading ? (
-          <div className="bg-white rounded-lg shadow-xl p-6 space-y-3">
-            {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />
-            ))}
-          </div>
+          <LoadingTable/>
         ) : (
           <Table
             columns={ADMIN_COLUMNS}

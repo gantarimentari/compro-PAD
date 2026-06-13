@@ -237,6 +237,11 @@ function validateFooterData(data) {
     errors.phoneDisplay = 'Nomor telepon display harus diisi';
   }
 
+  // // Email
+  // if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+  //   errors.email = 'Format email tidak valid';
+  // }
+
   // Social Media
   if (!Array.isArray(data.socialMedia) || data.socialMedia.length === 0) {
     errors.socialMedia = 'Minimal satu social media harus diisi';

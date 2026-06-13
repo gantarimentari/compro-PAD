@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import InvoiceService from '@/lib/services/invoiceService';
 
+const invoiceCache = {
+  rows: null,
+  selectedInvoiceId: null,
+  loaded: false,
+};
+
 const defaultFormData = {
   id_pasien: '',
   id_hewan: '',
@@ -44,6 +50,8 @@ const normalizeInvoice = (invoice) => {
     kode_invoice: invoice?.kode_invoice ?? invoice?.invoice_number ?? '-',
     tanggal_invoice: invoice?.tanggal_invoice ?? '',
     jatuh_tempo: invoice?.jatuh_tempo ?? '',
+    tanggal_bayar: invoice?.tanggal_bayar ?? invoice?.tanggal_pembayaran ?? invoice?.paid_at ?? invoice?.dibayar_pada ?? '',
+    metode_pembayaran: invoice?.metode_pembayaran ?? invoice?.payment_method ?? invoice?.paymentMethod ?? '',
     subtotal: Number(invoice?.subtotal ?? 0),
     diskon_persen: Number(invoice?.diskon_persen ?? 0),
     diskon_nominal: Number(invoice?.diskon_nominal ?? 0),
@@ -65,18 +73,57 @@ const normalizeRows = (response) => {
   return [];
 };
 
+const normalizeClinicSettings = (settings) => {
+  if (!settings) return null;
+
+  return {
+    clinicName: settings.clinicName ?? settings.clinic_name ?? 'KLINIK DOKTER HEWAN FANINA',
+    address: settings.address ?? '-',
+    operatingHours: settings.operatingHours ?? settings.operating_hours ?? '-',
+    phone: settings.phoneDisplay ?? settings.phone ?? '-',
+    email: settings.email ?? '-',
+  };
+};
+
 export const useInvoice = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isDetailLoading, setIsDetailLoading] = useState(false);
   const [formData, setFormData] = useState(defaultFormData);
   const [searchQuery, setSearchQuery] = useState('');
-  const [invoices, setInvoices] = useState([]);
-  const [selectedInvoice, setSelectedInvoice] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [invoices, setInvoices] = useState(() => invoiceCache.rows || []);
+  const [selectedInvoice, setSelectedInvoice] = useState(() => {
+    if (!invoiceCache.rows?.length) return null;
+
+    if (!invoiceCache.selectedInvoiceId) return invoiceCache.rows[0] || null;
+
+    return invoiceCache.rows.find((item) => String(item.id_invoice) === String(invoiceCache.selectedInvoiceId)) || invoiceCache.rows[0] || null;
+  });
+  const [isLoading, setIsLoading] = useState(() => !invoiceCache.loaded);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isConfirming, setIsConfirming] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('');
+  const [invoiceToPay, setInvoiceToPay] = useState(null);
+  const [invoiceToDelete, setInvoiceToDelete] = useState(null);
+  const [invoiceToEdit, setInvoiceToEdit] = useState(null);
+
+  const syncInvoiceState = (rows) => {
+    setInvoices(rows);
+    invoiceCache.rows = rows;
+    invoiceCache.loaded = true;
+
+    const nextSelectedInvoice = selectedInvoice
+      ? rows.find((item) => String(item.id_invoice) === String(selectedInvoice.id_invoice)) || rows[0] || null
+      : rows[0] || null;
+
+    setSelectedInvoice(nextSelectedInvoice);
+    invoiceCache.selectedInvoiceId = nextSelectedInvoice?.id_invoice ?? null;
+  };
 
   const loadInvoices = async (silent = false) => {
     if (silent) {
@@ -88,32 +135,52 @@ export const useInvoice = () => {
     try {
       const response = await InvoiceService.getAll();
       const rows = normalizeRows(response).map(normalizeInvoice);
-      setInvoices(rows);
-
-      if (rows.length > 0 && !selectedInvoice) {
-        setSelectedInvoice(rows[0]);
-      }
-
-      if (selectedInvoice) {
-        const matchedInvoice = rows.find((item) => String(item.id_invoice) === String(selectedInvoice.id_invoice));
-        setSelectedInvoice(matchedInvoice || rows[0] || null);
-      }
+      syncInvoiceState(rows);
     } catch (error) {
       console.error('Gagal memuat invoice:', error);
       setInvoices([]);
+      invoiceCache.rows = [];
+      invoiceCache.selectedInvoiceId = null;
+      invoiceCache.loaded = true;
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
     }
   };
 
+  const loadInvoiceDetail = async (invoice) => {
+    if (!invoice) return null;
+
+    const invoiceId = invoice.id_invoice ?? invoice.id;
+    if (!invoiceId) {
+      return normalizeInvoice(invoice);
+    }
+
+    const response = await InvoiceService.getById(invoiceId);
+    return normalizeInvoice(response?.data ?? response ?? invoice);
+  };
+
   useEffect(() => {
+    if (invoiceCache.loaded && Array.isArray(invoiceCache.rows)) {
+      setInvoices(invoiceCache.rows);
+      setSelectedInvoice(() => {
+        const cachedSelectedInvoice = invoiceCache.selectedInvoiceId
+          ? invoiceCache.rows.find((item) => String(item.id_invoice) === String(invoiceCache.selectedInvoiceId))
+          : null;
+
+        return cachedSelectedInvoice || invoiceCache.rows[0] || null;
+      });
+      setIsLoading(false);
+      return;
+    }
+
     loadInvoices();
   }, []);
 
   const resetFormData = () => {
     setFormData(defaultFormData);
     setIsEditing(false);
+    setInvoiceToEdit(null);
   };
 
   const openModal = () => {
@@ -121,23 +188,49 @@ export const useInvoice = () => {
     setIsModalOpen(true);
   };
 
+  const openPaymentModal = (invoice) => {
+    if (!invoice) return;
+
+    setInvoiceToPay(invoice);
+    setPaymentMethod('');
+    setIsPaymentModalOpen(true);
+  };
+
+  const closePaymentModal = () => {
+    setIsPaymentModalOpen(false);
+    setInvoiceToPay(null);
+    setPaymentMethod('');
+  };
+
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return '';
+
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '';
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  };
+
   const handleEditInvoice = async (invoice) => {
     if (!invoice) return;
 
+    setInvoiceToEdit(invoice);
     setIsEditing(true);
+    setIsDetailLoading(true);
     setIsModalOpen(true);
 
     try {
-      const invoiceId = invoice.id_invoice ?? invoice.id;
-      const detailResponse = invoiceId ? await InvoiceService.getById(invoiceId) : invoice;
-      const invoiceDetail = detailResponse?.data ?? detailResponse ?? invoice;
+      const invoiceDetail = await loadInvoiceDetail(invoice);
       const details = Array.isArray(invoiceDetail?.details) ? invoiceDetail.details : [];
 
       setFormData({
         id_pasien: invoiceDetail?.pasien?.id ?? invoiceDetail?.id_pasien ?? '',
         id_hewan: invoiceDetail?.hewan?.id_hewan ?? invoiceDetail?.id_hewan ?? '',
-        tanggal_invoice: invoiceDetail?.tanggal_invoice ?? '',
-        jatuh_tempo: invoiceDetail?.jatuh_tempo ?? '',
+        tanggal_invoice: formatDateForInput(invoiceDetail?.tanggal_invoice),
+        jatuh_tempo: formatDateForInput(invoiceDetail?.jatuh_tempo),
         item: details.map((d) => ({
           id: d.id ?? `${Date.now()}-${Math.random()}`,
           id_jenis_vaksin: null,
@@ -148,12 +241,16 @@ export const useInvoice = () => {
         })),
         diskon_persen: invoiceDetail?.diskon_persen ?? 0,
         pajak_persen: invoiceDetail?.pajak_persen ?? 0,
-        status: invoiceDetail?.status ?? 'belum_lunas',
+        status: String(invoiceDetail?.status ?? 'belum_lunas')
+          .toLowerCase()
+          .replace(/\s+/g, '_'),
         catatan: invoiceDetail?.catatan ?? '',
       });
     } catch (error) {
       console.error('Gagal memuat detail invoice untuk edit:', error);
       alert(error?.response?.data?.message || error?.message || 'Gagal memuat detail invoice');
+    } finally {
+      setIsDetailLoading(false);
     }
   };
 
@@ -166,7 +263,23 @@ export const useInvoice = () => {
     setIsSubmitting(true);
 
     try {
-      await InvoiceService.create(payload);
+      const invoiceId = invoiceToEdit?.id_invoice ?? invoiceToEdit?.id;
+      // Normalize status to lowercase with underscores (e.g. "Belum Lunas" -> "belum_lunas")
+      // to satisfy backend validation
+      const cleanStatus = String(payload.status || '')
+        .toLowerCase()
+        .replace(/\s+/g, '_');
+
+      const formattedPayload = {
+        ...payload,
+        status: cleanStatus,
+      };
+
+      if (isEditing && invoiceId) {
+        await InvoiceService.update(invoiceId, formattedPayload);
+      } else {
+        await InvoiceService.create(formattedPayload);
+      }
       await loadInvoices(true);
       closeModal();
     } catch (error) {
@@ -180,22 +293,80 @@ export const useInvoice = () => {
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
+  const handleSearch = async (keyword) => {
+    const trimmed = (keyword || '').trim();
+    if (!trimmed) {
+      loadInvoices(true);
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await InvoiceService.search(trimmed);
+      const rows = normalizeRows(response).map(normalizeInvoice);
+      syncInvoiceState(rows);
+    } catch (error) {
+      console.error("Gagal search invoice:", error);
+      syncInvoiceState([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const openDeleteModal = (invoice) => {
+    if (!invoice) return;
+
+    setInvoiceToDelete(invoice);
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setInvoiceToDelete(null);
+  };
 
   const handleSelectInvoice = (invoice) => {
     setSelectedInvoice(invoice);
   };
 
-  const handleConfirmPayment = async (invoiceId) => {
-    if (!invoiceId) return;
+  const openDetailModal = (invoice) => {
+    if (!invoice) return;
 
-    const confirmed = window.confirm('Tandai invoice ini sebagai lunas?');
-    if (!confirmed) return;
+    setSelectedInvoice(invoice);
+    setIsDetailModalOpen(true);
+
+    loadInvoiceDetail(invoice)
+      .then((detailInvoice) => {
+        if (!detailInvoice) return;
+
+        setSelectedInvoice(detailInvoice);
+        invoiceCache.selectedInvoiceId = detailInvoice.id_invoice ?? null;
+      })
+      .catch((error) => {
+        console.warn('Gagal memuat detail invoice untuk modal, menggunakan data tabel:', error);
+        setSelectedInvoice(invoice);
+      });
+  };
+
+  const closeDetailModal = () => {
+    setIsDetailModalOpen(false);
+  };
+
+  const handleConfirmPayment = (invoice) => {
+    openPaymentModal(invoice);
+  };
+
+  const handleSubmitPayment = async () => {
+    const invoiceId = invoiceToPay?.id_invoice ?? invoiceToPay?.id;
+    if (!invoiceId) return;
 
     setIsConfirming(true);
 
     try {
-      await InvoiceService.confirmPayment(invoiceId);
+      await InvoiceService.confirmPayment(invoiceId, {
+        metode_pembayaran: paymentMethod,
+      });
       await loadInvoices(true);
+      closePaymentModal();
     } catch (error) {
       console.error('Gagal mengonfirmasi pembayaran invoice:', error);
       alert(error?.response?.data?.message || error?.message || 'Gagal mengonfirmasi pembayaran invoice');
@@ -204,11 +375,13 @@ export const useInvoice = () => {
     }
   };
 
-  const handleDeleteInvoice = async (invoiceId) => {
-    if (!invoiceId) return;
+  const handleDeleteInvoice = (invoice) => {
+    openDeleteModal(invoice);
+  };
 
-    const confirmed = window.confirm('Hapus invoice ini? Tindakan ini tidak bisa dibatalkan.');
-    if (!confirmed) return;
+  const handleConfirmDeleteInvoice = async () => {
+    const invoiceId = invoiceToDelete?.id_invoice ?? invoiceToDelete?.id;
+    if (!invoiceId) return;
 
     setIsDeleting(true);
 
@@ -219,108 +392,28 @@ export const useInvoice = () => {
       if (selectedInvoice?.id_invoice && String(selectedInvoice.id_invoice) === String(invoiceId)) {
         setSelectedInvoice(null);
       }
+
+      closeDeleteModal();
     } catch (error) {
       console.error('Gagal menghapus invoice:', error);
-      alert(error?.response?.data?.message || error?.message || 'Gagal menghapus invoice');
     } finally {
       setIsDeleting(false);
     }
   };
 
-  const handlePrintInvoice = (invoice) => {
-    if (typeof window === 'undefined' || !invoice) return;
-
-    const printWindow = window.open('', '_blank', 'width=900,height=700');
-    if (!printWindow) return;
-
-    const items = Array.isArray(invoice.details) ? invoice.details : [];
-    const itemRows = items
-      .map(
-        (item) => `
-          <tr>
-            <td>${item.nama_item ?? '-'}</td>
-            <td>${item.qty ?? 0}</td>
-            <td>${currencyFormat(item.harga_satuan ?? 0)}</td>
-            <td>${currencyFormat(item.subtotal ?? 0)}</td>
-          </tr>
-        `
-      )
-      .join('');
-
-    printWindow.document.write(`
-      <html>
-        <head>
-          <title>${invoice.kode_invoice}</title>
-          <style>
-            body { font-family: Arial, sans-serif; padding: 24px; color: #111827; }
-            h1 { margin: 0 0 8px; }
-            .muted { color: #6b7280; }
-            table { width: 100%; border-collapse: collapse; margin-top: 16px; }
-            th, td { border: 1px solid #e5e7eb; padding: 10px; text-align: left; }
-            th { background: #f9fafb; }
-            .summary { margin-top: 20px; display: grid; gap: 8px; max-width: 320px; }
-          </style>
-        </head>
-        <body>
-          <h1>${invoice.kode_invoice}</h1>
-          <div class="muted">${invoice.pasien?.username ?? '-'} / ${invoice.hewan?.nama_hewan ?? '-'}</div>
-          <table>
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>Qty</th>
-                <th>Harga</th>
-                <th>Subtotal</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${itemRows || '<tr><td colspan="4">Tidak ada item</td></tr>'}
-            </tbody>
-          </table>
-          <div class="summary">
-            <div><strong>Total:</strong> ${currencyFormat(invoice.total)}</div>
-            <div><strong>Status:</strong> ${invoice.status === 'lunas' ? 'Lunas' : 'Belum Bayar'}</div>
-          </div>
-          <script>window.onload = function(){ window.print(); }</script>
-        </body>
-      </html>
-    `);
-    printWindow.document.close();
-  };
-
-  const filteredInvoices = useMemo(() => {
-    const normalizedQuery = searchQuery.trim().toLowerCase();
-
-    if (!normalizedQuery) return invoices;
-
-    return invoices.filter((invoice) => {
-      const searchValues = [
-        invoice.kode_invoice,
-        invoice.pasien?.username,
-        invoice.pasien?.name,
-        invoice.hewan?.nama_hewan,
-        invoice.hewan?.petName,
-        invoice.status,
-      ]
-        .filter(Boolean)
-        .join(' ')
-        .toLowerCase();
-
-      return searchValues.includes(normalizedQuery);
-    });
-  }, [invoices, searchQuery]);
 
   const selectedInvoiceSummary = selectedInvoice
     ? {
-        ...selectedInvoice,
-        tanggalLabel: dateFormat(selectedInvoice.tanggal_invoice),
-        jatuhTempoLabel: dateFormat(selectedInvoice.jatuh_tempo),
-      }
+      ...selectedInvoice,
+      tanggalLabel: dateFormat(selectedInvoice.tanggal_invoice),
+      jatuhTempoLabel: dateFormat(selectedInvoice.jatuh_tempo),
+      // dibayarLabel: dateFormat(selectedInvoice.tanggal_pembayaran),
+    }
     : null;
 
   const stats = useMemo(() => {
     const total = invoices.length;
-    const lunas = invoices.filter((invoice) => invoice.status === 'lunas').length;
+    const lunas = invoices.filter((invoice) => String(invoice.status || '').toLowerCase() === 'lunas').length;
     const belumLunas = total - lunas;
 
     return {
@@ -330,12 +423,21 @@ export const useInvoice = () => {
     };
   }, [invoices]);
 
+
+
   return {
     isModalOpen,
+    isDeleteModalOpen,
+    isDetailModalOpen,
+    isPaymentModalOpen,
     openModal: () => {
       resetFormData();
       setIsModalOpen(true);
     },
+    closeDeleteModal,
+    closeDetailModal,
+    formatDateForInput,
+    closePaymentModal,
     closeModal: () => {
       setIsModalOpen(false);
       resetFormData();
@@ -343,25 +445,33 @@ export const useInvoice = () => {
     formData,
     setFormData,
     resetFormData,
-    invoices: filteredInvoices,
+    invoices,
     rawInvoices: invoices,
     selectedInvoice: selectedInvoiceSummary,
     searchQuery,
     handleSearchChange,
+    handleSearch,
     handleSelectInvoice,
+    openDetailModal,
+    openPaymentModal,
     handleConfirmPayment,
+    handleSubmitPayment,
     handleDeleteInvoice,
-    handlePrintInvoice,
+    handleConfirmDeleteInvoice,
     handleEditInvoice,
     handleSave,
     isLoading,
     isEditing,
     isRefreshing,
     isSubmitting,
+    isDetailLoading,
     isDeleting,
     isConfirming,
+    paymentMethod,
+    setPaymentMethod,
+    invoiceToPay,
+    invoiceToDelete,
     stats,
   };
 
 };
- 
