@@ -73,7 +73,7 @@ const ArticleCard = ({
         </div>
 
         {/* Content Section */}
-        <div className='flex flex-col gap-2 flex-1 z-10 '>
+        <div className='flex flex-col gap-2 flex-1 z-10 lg:min-h-[200px] '>
           <h3 className='sm:text-h-7 text-body-2 font-bold text-white leading-tight line-clamp-2'>
             {judul}
           </h3>
