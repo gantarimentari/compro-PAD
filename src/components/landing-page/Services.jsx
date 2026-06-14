@@ -1,52 +1,23 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import TagLabel from '../ui/Button/TagLabel';
-import systemInfoService from '@/lib/services/systemInfoService';
 import Link from "next/link";
 import Button from '@/components/ui/Button';
 import { RightArrowIcon } from '@/components/icons';
 import ServicesCard from './components/ServicesCard';
+import { useSystemInfo } from './hooks/useLandingPage';
 
 export default function Services() {
-  const [judulLayanan, setJudulLayanan] = useState("Kami Hadir untuk Memberi Perawatan Terbaik!");
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: systemInfoData, isLoading } = useSystemInfo();
+
+  const judulLayanan = systemInfoData?.systemInfo?.judul_layanan_tersedia || "Kami Hadir untuk Memberi Perawatan Terbaik!";
 
   const [selectedService, setSelectedService] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [whatsappData, setWhatsappData] = useState({
-    phone: '',
-    template: ''
-  });
-
-  useEffect(() => {
-    fetchSystemInfo();
-  }, []);
-
-  const fetchSystemInfo = async () => {
-    try {
-      setIsLoading(true);
-      const response = await systemInfoService.get();
-      
-      console.log('System Info Response:', response);
-      
-      const judul = response.systemInfo?.judul_layanan_tersedia;
-      if (judul) {
-        setJudulLayanan(judul);
-        console.log('Judul Layanan from DB:', judul);
-      }
-
-      setWhatsappData({
-        phone: response.systemInfo?.phone || '',
-        template: response.systemInfo?.whatsapp_template || ''
-      });
-
-    } catch (error) {
-      console.error('Error fetching system info:', error);
-      // Gunakan default jika error
-    } finally {
-      setIsLoading(false);
-    }
+  const whatsappData = {
+    phone: systemInfoData?.systemInfo?.phone || '',
+    template: systemInfoData?.systemInfo?.whatsapp_template || ''
   };
 
   const handleOpenWhatsApp = () => {

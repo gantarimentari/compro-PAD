@@ -49,10 +49,10 @@ export default function SystemInfo() {
       setIsLoading(true);
       const res = await systemInfoService.get();
 
-      console.log('System Info Response:', res.data);
-      console.log('Social Media from systemInfo:', res.data.systemInfo?.socialMedia);
+      console.log('System Info Response:', res);
+      console.log('Social Media from systemInfo:', res.systemInfo?.socialMedia);
 
-      const fetchedData = res.data.systemInfo || {};
+      const fetchedData = res.systemInfo || {};
       
       //  Map snake_case from backend
       setSystemData({
@@ -130,8 +130,7 @@ export default function SystemInfo() {
       [field]: value || ''
     }));
   };
-
-  const handleFileChange = async (e) => {
+const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     
@@ -156,9 +155,18 @@ export default function SystemInfo() {
 
       const res = await mediaService.create(formData);
 
-      console.log(' Upload response:', res.data);
+      console.log(' Upload response:', res);
 
-      const uploadedUrl = res.data.data.imageUrl;
+      const body = res?.data ?? res ?? {};
+      const uploadedUrl =
+        body?.data?.imageUrl ??
+        body?.imageUrl ??
+        body?.image_url ??
+        body?.data?.image_url;
+
+      if (!uploadedUrl) {
+        throw new Error('Tidak menemukan imageUrl pada response upload');
+      }
 
       setSystemData(prev => ({
         ...prev,
@@ -174,6 +182,7 @@ export default function SystemInfo() {
       setIsUploading(false);
     }
   };
+
 
   const handleDeleteSocialMedia = async (id, platform) => {
     try{

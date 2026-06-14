@@ -18,6 +18,15 @@ const profileService = {
     const response = await api.put('/api/profile', data);
     return response.data;
   },
+
+  /**
+   * Update current user's password
+   * @param {{ current_password?: string, password?: string, password_confirmation?: string }} data
+   */
+  updatePassword: async (data) => {
+    const response = await api.put('/api/profile/password', data);
+    return response.data;
+  },
 };
 
 export default profileService;

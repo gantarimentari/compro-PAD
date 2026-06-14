@@ -1,43 +1,18 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-import systemInfoService from '@/lib/services/systemInfoService';
+import React, { useState } from 'react';
 import { DashedBorder } from '@/components/ui/frame/garisputus';
 import TagLabel from '../ui/Button/TagLabel';
+import { useSystemInfo } from './hooks/useLandingPage';
 
 export default function About() {
-  const [aboutUs, setAboutUs] = useState({
-    aboutUs: "Loading...",
+  const { data: systemInfoData, isLoading } = useSystemInfo();
+  
+  const aboutUs = {
+    aboutUs: systemInfoData?.systemInfo?.about_us || '',
     image: "/images/dummy-aboutus.png"
-  })
-  const [isLoading, setIsLoading]= useState(true);
+  };
+
   const [isCardHovered, setIsCardHovered] = useState(false);
-
-  useEffect(()=>{
-    const fetchAboutUs = async ()=>{
-      try{
-        setIsLoading(true);
-
-        const res = await systemInfoService.get();
-
-        console.log('system info(about us):', res);
-
-        setAboutUs({
-          aboutUs: res.systemInfo.about_us,
-          image: "/images/dummy-aboutus.png",
-        });
-
-      }catch(err){
-        console.log('error fetching about:us', err);
-        setAboutUs({
-          aboutUs:"error",
-          image:"/images/dummy-aboutus.png"
-        });
-      } finally{
-        setIsLoading(false);
-      }
-    };
-    fetchAboutUs();
-  }, []);
 
   return (
 

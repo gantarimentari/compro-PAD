@@ -1,19 +1,35 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 import * as Icons from "@/components/icons";
 import { socialIconsMap } from "@/components/icons";
 import systemInfoService from '@/lib/services/systemInfoService';
-
+import {defaultData} from './dummyData';
 export default function Footer({
   footerClass = "bg-accent-blue-600 text-white",
   footerStyle = null,
   footerSvg = null,
 }) {
-  // ✅ Local state untuk footer data
-  const [footerData, setFooterData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+
+  const{ data, isLoading} = useQuery({
+    queryKey: ['footerData'],
+    queryFn: async () => {
+      console.log("🔄 Fetching footer data via TanStack Query...");
+      const response = await systemInfoService.get();
+      console.log("✅ Footer data loaded:", response.systemInfo);
+
+      return {
+        ...defaultData,
+        ...response.systemInfo
+      };
+    },
+    staleTime: 10 * 60 * 1000, 
+    gcTime: 15 * 60 * 1000,
+    enabled: typeof window !== 'undefined',
+  });
+  const footer = data || defaultData;
 
   const svgStyle = footerSvg
     ? {
@@ -25,53 +41,6 @@ export default function Footer({
     : {};
 
   const combinedStyle = { ...svgStyle, ...(footerStyle || {}) };
-
-  // ✅ Default fallback data with dummy map link
-  const defaultData = {
-    clinic_name: "KLINIK DOKTER HEWAN FANINA",
-    address: "Jl Bedoet No.74, Mangunan, Caturharjo, Kec. Sleman, Kabupaten Sleman, Daerah Istimewa Yogyakarta 55515",
-    operating_hours: "Senin - Jumat: 08:00 - 17:00 WIB",
-    phone: "+6212345678999",
-    phoneDisplay: "+62-123-4567-899",
-    socialMedia: [
-      { name: "Youtube", href: "https://youtube.com/@klinikfanina", icon: "youtube" },
-      { name: "Instagram", href: "https://instagram.com/klinikfanina", icon: "instagram" },
-      { name: "Twitter", href: "https://twitter.com/klinikfanina", icon: "twitter" },
-      { name: "TikTok", href: "https://tiktok.com/@klinikfanina", icon: "tiktok" },
-      { name: "LinkedIn", href: "https://linkedin.com/company/klinikfanina", icon: "linkedin" },
-    ],
-    mapEmbedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3953.904444911084!2d110.32193617476497!3d-7.6934035923239446!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7af57539ffd671%3A0xf3d3215cd4aaa977!2sDokter%20Hewan%20Fanina!5e0!3m2!1sen!2sid!4v1761895087182!5m2!1sen!2sid",
-    mapLink: "https://maps.app.goo.gl/9QNmVqgikQwbGQgu8",
-  };
-
-  // ✅ Fetch footer data on mount
-  useEffect(() => {
-    const fetchFooterData = async () => {
-      try {
-        setIsLoading(true);
-        console.log('🔄 Fetching footer data...');
-        
-        const response = await systemInfoService.get();
-        console.log('✅ Footer data loaded:', response.systemInfo);
-        
-        setFooterData({
-          ...defaultData,
-          ...response.systemInfo,
-        });
-      } catch (error) {
-        console.error('❌ Error fetching footer data:', error);
-        // ✅ Use default data on error
-        setFooterData(defaultData);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchFooterData();
-  }, []); // ✅ Run once on mount
-
-  // ✅ Use fetched data or default
-  const data = footerData || defaultData;
 
   return (
     <footer
@@ -85,7 +54,7 @@ export default function Footer({
           <div className="flex flex-col items-start gap-6">
             {/* Clinic Name */}
             <h3 className="text-xl md:text-2xl font-extrabold text-white uppercase tracking-tight break-words whitespace-normal max-w-full">
-              {data.clinic_name}
+              {footer.clinic_name}
             </h3>
 
               {/* Contact Details */}
@@ -100,7 +69,7 @@ export default function Footer({
                     </div>
                   ) : (
                     <p className="text-sm md:text-base text-white/90 leading-relaxed">
-                      {data.address}
+                      {footer.address}
                     </p>
                   )}
                 </div>
@@ -112,7 +81,7 @@ export default function Footer({
                     <div className="h-4 bg-white/20 rounded w-48 animate-pulse"></div>
                   ) : (
                     <p className="text-sm md:text-base text-white/90">
-                      {data.operating_hours}
+                      {footer.operating_hours}
                     </p>
                   )}
                 </div>
@@ -125,12 +94,12 @@ export default function Footer({
                   </div>
                 ) : (
                   <Link
-                    href={`tel:${data.phone.replace(/[^0-9+]/g, "")}`}
+                    href={`tel:${(footer.phone || "").replace(/[^0-9+]/g, "")}`}
                     className="flex items-center gap-3 hover:text-accent-yellow-300 transition-colors"
                   >
                     <Icons.PhoneIcon className="w-6 h-6 shrink-0" />
                     <span className="text-sm md:text-base font-medium">
-                      {data.phoneDisplay || data.phone}
+                      {footer.phoneDisplay || footer.phone}
                     </span>
                   </Link>
                 )}
@@ -148,7 +117,7 @@ export default function Footer({
                     ))}
                   </>
                 ) : (
-                  data.socialMedia?.map((social, index) => {
+                  footer.socialMedia?.map((social, index) => {
                     const IconComponent = socialIconsMap[social.icon.toLowerCase()];
                     return (
                       <Link
@@ -171,25 +140,25 @@ export default function Footer({
             <div className="w-full">
               {isLoading ? (
                 <div className="w-full h-[280px] md:h-[320px] lg:h-[340px] bg-white/20 rounded animate-pulse"></div>
-              ) : data.mapEmbedUrl && data.mapEmbedUrl.trim() !== "" ? (
+              ) : footer.mapEmbedUrl && footer.mapEmbedUrl.trim() !== "" ? (
                 <>
                   <div className="w-full h-[280px] md:h-[320px] lg:h-[340px] overflow-hidden shadow-e3 rounded">
                     <iframe
-                      src={data.mapEmbedUrl}
+                      src={footer.mapEmbedUrl}
                       width="100%"
                       height="100%"
                       style={{ border: 0 }}
                       allowFullScreen
                       loading="lazy"
                       referrerPolicy="no-referrer-when-downgrade"
-                      title={`Lokasi ${data.clinic_name}`}
+                      title={`Lokasi ${footer.clinic_name}`}
                       className="w-full h-full"
                     />
                   </div>
-                  {data.mapLink && data.mapLink.trim() !== "" && (
+                  {footer.mapLink && footer.mapLink.trim() !== "" && (
                     <div className="mt-2 text-right">
                       <a
-                        href={data.mapLink}
+                        href={footer.mapLink}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-sm font-medium underline text-white/90 hover:text-accent-yellow-300 transition-colors"
@@ -218,11 +187,11 @@ export default function Footer({
               {isLoading ? (
                 <div className="h-5 bg-white/20 rounded w-64 mx-auto animate-pulse"></div>
               ) : (
-                `${data.judul_footer}`
+                `${footer.judul_footer || ""}`
               )}
             </div>
           </div>
         </div>
-    </footer> 
+    </footer>
   );
 }

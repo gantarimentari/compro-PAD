@@ -1,102 +1,66 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import TagLabel from '../ui/Button/TagLabel';
 import Button from '@/components/ui/Button';
-import systemInfoService from '@/lib/services/systemInfoService';
-import articleService from '@/lib/services/articleService';
 import Link from 'next/link';
 import { RightArrowIcon } from '@/components/icons';
 import ArticleCard from './components/ArticleCard';
+import { useSystemInfo, usePublicArticles } from './hooks/useLandingPage';
 
 export default function Article() {
-  const [articleData, setArticleData] = useState({
-    deskripsi_artikel: "Artikel adalah halaman yang memuat informasi, pengetahuan, dan edukasi seputar topik tertentu agar Pawrents mendapatkan wawasan baru terkait hewan kesayangannya."
-  });
   const [isCardHovered, setIsCardHovered] = useState(false);
 
-  const [recentArticles, setRecentArticles] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: systemInfoData } = useSystemInfo();
+  const { data: rawArticlesData, isLoading } = usePublicArticles();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
+  const articleData = {
+    deskripsi_artikel: systemInfoData?.systemInfo?.deskripsi_artikel || 
+      "Artikel adalah halaman yang memuat informasi, pengetahuan, dan edukasi seputar topik tertentu agar Pawrents mendapatkan wawasan baru terkait hewan kesayangannya."
+  };
 
-        const res = await systemInfoService.get();
-        console.log('System Info (Article):', res);
+  const stripHtmlPreserveSpace = (html) => {
+    if (!html) return '';
+    return html
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<\/p>/gi, '\n')
+      .replace(/<[^>]*>/g, '')
+      .replace(/\n+/g, '\n')
+      .trim();
+  };
 
-        setArticleData({
-          deskripsi_artikel: res.systemInfo?.deskripsi_artikel || 
-            "Artikel adalah halaman yang memuat informasi, pengetahuan, dan edukasi seputar topik tertentu agar Pawrents mendapatkan wawasan baru terkait hewan kesayangannya."
-        });
-
-        const articleRes = await articleService.getAll();
-        console.log('Articles Response:', articleRes);
-        
-        //  FILTER: Hanya ambil artikel dengan status 'Publish'
-        const publishedArticles = articleRes.filter(article => article.status === 'Publish');
-        console.log(' Published articles only:', publishedArticles);
-
-        const stripHtmlPreserveSpace = (html) => {
-          return html
-            .replace(/<br\s*\/?>/gi, '\n')
-            .replace(/<\/p>/gi, '\n')
-            .replace(/<[^>]*>/g, '')
-            .replace(/\n+/g, '\n')
-            .trim();
-        };
-
-        //  Process articles: use imageUrl from backend & strip HTML
-        const processedArticles = publishedArticles.slice(0, 2).map(article => {
-          console.log('Processing article:', article.id, 'ImageURL:', article.imageUrl);
-          
-          return {
-            id: article.id,
-            title: article.title,
-            content: article.content,
-            category: article.category,
-            status: article.status,
-            created_at: article.created_at,
-            updated_at: article.updated_at,
-            //  Use imageUrl from backend (already full URL)
-            imageUrl: article.imageUrl || '/images/placeholder-article.png',
-            //  Strip HTML tags from content (for preview)
-            contentPreview: stripHtmlPreserveSpace(article.content).substring(0, 200) + '...',
-          };
-        });
-
-        console.log(' Processed articles:', processedArticles);
-        setRecentArticles(processedArticles);
-
-      } catch (err) {
-        console.error('Error fetching articles:', err);
-        
-        //  Fallback to dummy data
-        setRecentArticles([
-          {
-            id: 1,
-            title: "Cara Merawat Kucing Persia dengan Baik dan Benar",
-            content: "Kucing Persia merupakan salah satu ras kucing yang paling populer di dunia.",
-            contentPreview: "Kucing Persia merupakan salah satu ras kucing yang paling populer di dunia. Dengan bulu yang panjang dan lebat, kucing Persia memerlukan perawatan khusus agar tetap sehat dan cantik...",
-            imageUrl: "/images/gambarkucingarticle.png",
-            created_at: "2024-12-02"
-          },
-          {
-            id: 2,
-            title: "Pentingnya Vaksinasi Rutin untuk Hewan Peliharaan",
-            content: "Vaksinasi adalah salah satu langkah preventif paling penting.",
-            contentPreview: "Vaksinasi adalah salah satu langkah preventif paling penting dalam menjaga kesehatan hewan peliharaan Anda. Vaksin membantu melindungi hewan dari berbagai penyakit menular yang berbahaya...",
-            imageUrl: "/images/hamster.png",
-            created_at: "2024-12-01"
-          }
-        ]);
-      } finally {
-        setIsLoading(false);
+  //  FILTER & PROCESS: Hanya ambil artikel dengan status 'Publish'
+  const recentArticles = rawArticlesData ? rawArticlesData
+    .filter(article => article.status === 'Publish')
+    .slice(0, 2)
+    .map(article => ({
+      id: article.id,
+      title: article.title,
+      content: article.content,
+      category: article.category,
+      status: article.status,
+      created_at: article.created_at,
+      updated_at: article.updated_at,
+      imageUrl: article.imageUrl || '/images/placeholder-article.png',
+      contentPreview: stripHtmlPreserveSpace(article.content).substring(0, 200) + '...',
+    }))
+    : [
+      {
+        id: 1,
+        title: "Cara Merawat Kucing Persia dengan Baik dan Benar",
+        content: "Kucing Persia merupakan salah satu ras kucing yang paling populer di dunia.",
+        contentPreview: "Kucing Persia merupakan salah satu ras kucing yang paling populer di dunia. Dengan bulu yang panjang dan lebat, kucing Persia memerlukan perawatan khusus agar tetap sehat dan cantik...",
+        imageUrl: "/images/gambarkucingarticle.png",
+        created_at: "2024-12-02"
+      },
+      {
+        id: 2,
+        title: "Pentingnya Vaksinasi Rutin untuk Hewan Peliharaan",
+        content: "Vaksinasi adalah salah satu langkah preventif paling penting.",
+        contentPreview: "Vaksinasi adalah salah satu langkah preventif paling penting dalam menjaga kesehatan hewan peliharaan Anda. Vaksin membantu melindungi hewan dari berbagai penyakit menular yang berbahaya...",
+        imageUrl: "/images/hamster.png",
+        created_at: "2024-12-01"
       }
-    };
-    
-    fetchData();
-  }, []);
+    ];
 
   return (
     <div className='min-h-screen flex flex-col relative overflow-hidden'

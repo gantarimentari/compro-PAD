@@ -1,55 +1,24 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-import systemInfoService from '@/lib/services/systemInfoService';
+import React, { useState } from 'react';
 import Button from '@/components/ui/Button';
 import { RightArrowIcon } from '@/components/icons';
 import Image from 'next/image';
+import { useSystemInfo } from './hooks/useLandingPage';
+
 export default function Profile() {
-  // System data
-  const [systemData, setSystemData] = useState({
-    deskripsi_hero: 'Buat pawrent, nggak ada yang lebih tenang selain tahu hewan kesayangannya sehat. Klinik Dokter Fanina hadir buat bantu jaga mereka tetap ceria. Mulai dari vaksin, check-up, sampai perawatan kecil yang sering terlupa.',
-    foto_card: '/images/foto-dokter.png',
-    phone: '',
-    whatsapp_template: '' //  Add template field
-  });
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: systemInfoData, isLoading } = useSystemInfo();
+  
+  const systemData = {
+    deskripsi_hero: systemInfoData?.systemInfo?.deskripsi_hero || 'Buat pawrent, nggak ada yang lebih tenang selain tahu hewan kesayangannya sehat. Klinik Dokter Fanina hadir buat bantu jaga mereka tetap ceria. Mulai dari vaksin, check-up, sampai perawatan kecil yang sering terlupa.',
+    foto_card: systemInfoData?.systemInfo?.foto_card || '/images/foto-dokter.png',
+    phone: systemInfoData?.systemInfo?.phone || '',
+    whatsapp_template: systemInfoData?.systemInfo?.whatsapp_template || '',
+  };
+
   const [isHovered, setIsHovered] = useState(false);
   const [isTextHovered, setIsTextHovered] = useState(false);
 
   const photoCardBorder = '/Assets/photoCard-border-only.svg';
-
-  //  Fetch system info
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-
-        const sysRes = await systemInfoService.get();
-        console.log('System Info:', sysRes);
-
-        setSystemData({
-          deskripsi_hero: sysRes.systemInfo?.deskripsi_hero || 'Buat pawrent...',
-          foto_card: sysRes.systemInfo?.foto_card || '/images/foto-dokter.png',
-          phone: sysRes.systemInfo?.phone || '',
-          whatsapp_template: sysRes.systemInfo?.whatsapp_template || '',
-        });
-
-      } catch (err) {
-        console.error('Error fetching system info:', err);
-        
-        setSystemData({
-          deskripsi_hero: 'Buat pawrent...',
-          foto_card: '/images/foto-dokter.png',
-          phone: '',
-          whatsapp_template: '', //  Default empty
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   //  Handle Direct WhatsApp - Use Dynamic Template
   const handleOpenWhatsApp = () => {

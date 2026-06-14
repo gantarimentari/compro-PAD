@@ -1,10 +1,9 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import TagLabel from "@/components/ui/Button/TagLabel";
 import { DashedBorder } from '@/components/ui/frame/garisputus';
 import PromoCard from './components/PromoCard';
-import systemInfoService from '@/lib/services/systemInfoService';
-import promoService from '@/lib/services/promoService';
+import { useSystemInfo, usePublicPromos } from './hooks/useLandingPage';
 
 export default function Promo() {
   const svgBackground = "/Background/bg-bone-blue.svg";
@@ -18,82 +17,41 @@ export default function Promo() {
   };
   const [isCardHovered, setIsCardHovered] = useState(false);
 
-  const [promoData, setPromoData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: systemInfoData } = useSystemInfo();
+  const { data: rawPromosData, isLoading } = usePublicPromos();
 
-  useEffect(() => {
-    fetchPromos();
-    fetchSystemInfo();
-  }, []);
-
-  // Fetch judul promo dari system info (Logic HEAD)
-  const fetchSystemInfo = async () => {
-    try {
-      const response = await systemInfoService.get();
-      
-      const judul = response.systemInfo?.judul_promo_tersedia;
-      if (judul) {
-        console.log('Judul Promo from DB:', judul);
-      }
-    } catch (error) {
-      console.error('Error fetching system info:', error);
+  // Format data dari backend atau fallback ke dummy data jika empty/error
+  const promoData = rawPromosData ? rawPromosData.map(promo => ({
+    id: promo.id,
+    title: promo.title,
+    description: promo.description,
+    status: promo.status,
+    tanggalDibuat: promo.created_at,
+    startDate: promo.start_date,
+    endDate: promo.end_date,
+  })) : [
+    {
+      id: 1,
+      title: "Diskon 90%",
+      description: "Nikmati promo terbesar kami dalam rangka 11.11. Jangan sampai kelewatan Pawrents!",
+      status: "available",
+      tanggalDibuat: "2024-12-03T10:00:00Z"
+    },
+    {
+      id: 2,
+      title: "Gratis Konsultasi",
+      description: "Konsultasi gratis dengan dokter hewan berpengalaman selama bulan Desember.",
+      status: "available",
+      tanggalDibuat: "2024-12-02T14:30:00Z"
+    },
+    {
+      id: 3,
+      title: "Vaksinasi Hemat",
+      description: "Paket vaksinasi lengkap dengan harga spesial hingga akhir tahun.",
+      status: "available",
+      tanggalDibuat: "2024-12-01T09:15:00Z"
     }
-  };
-
-  // Fetch promos (Logic HEAD)
-  const fetchPromos = async () => {
-    try {
-      setIsLoading(true);
-      console.log('Fetching promos from API...');
-      
-      const response = await promoService.getPublic();
-      console.log('Promos Response:', response);
-      
-      // Format data dari backend
-      const formattedPromos = response.map(promo => ({
-        id: promo.id,
-        title: promo.title,
-        description: promo.description,
-        status: promo.status,
-        tanggalDibuat: promo.created_at,
-        startDate: promo.start_date,
-        endDate: promo.end_date,
-      }));
-      
-      console.log('Formatted promos:', formattedPromos);
-      setPromoData(formattedPromos);
-      
-    } catch (error) {
-      console.error('Error fetching promos:', error);
-      
-      // Fallback to dummy data
-      setPromoData([
-        {
-          id: 1,
-          title: "Diskon 90%",
-          description: "Nikmati promo terbesar kami dalam rangka 11.11. Jangan sampai kelewatan Pawrents!",
-          status: "available",
-          tanggalDibuat: "2024-12-03T10:00:00Z"
-        },
-        {
-          id: 2,
-          title: "Gratis Konsultasi",
-          description: "Konsultasi gratis dengan dokter hewan berpengalaman selama bulan Desember.",
-          status: "available",
-          tanggalDibuat: "2024-12-02T14:30:00Z"
-        },
-        {
-          id: 3,
-          title: "Vaksinasi Hemat",
-          description: "Paket vaksinasi lengkap dengan harga spesial hingga akhir tahun.",
-          status: "available",
-          tanggalDibuat: "2024-12-01T09:15:00Z"
-        }
-      ]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  ];
 
   // Filter promo (Logic HEAD): available, sort by tanggalDibuat, max 3
   const availablePromos = promoData

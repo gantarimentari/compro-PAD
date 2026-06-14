@@ -1,45 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { UserIcon, LogOutDoor, PencilIcon, DocumentIcon } from '@/components/icons/UIIcons';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import profileService from '@/lib/services/profileService';
-import authService from '@/lib/services/authService';
-import { clearFrontendAuthState } from '@/lib/frontendAuth';
-
-// SVG Component untuk border putus-putus
-const ModalDashedBorder = ({ className, style = {} }) => (
-    <svg 
-        className={className}
-        style={{
-            ...style,
-            left: '4px',
-            top: '4px',
-            right: '4px',
-            bottom: '4px',
-            width: 'calc(100% - 8px)',
-            height: 'calc(100% - 8px)',
-        }}
-        preserveAspectRatio="none"
-    >
-        <rect 
-            x="1"
-            y="1"
-            width="calc(100% - 2px)"
-            height="calc(100% - 2px)"
-            rx="5"
-            ry="5"
-            stroke="rgb(255, 171, 47)"
-            strokeWidth="1.5"
-            strokeLinecap="square"
-            strokeLinejoin="round"
-            strokeDasharray="20 4 3 6 6 4"
-            fill="none"
-            vectorEffect="non-scaling-stroke"
-        />
-    </svg>
-);
+import React from 'react';
+import { LogOutDoor, PencilIcon, DocumentIcon } from '@/components/icons/UIIcons';
+import { InputGroup } from './_components/InputGroup';
+import { useUserProfile } from './hooks/useUserProfile';
 
 // --- Profile Details Component ---
 const ProfileDetails = ({ user, formData, isEditing, onChange, errors }) => {
@@ -60,6 +24,7 @@ const ProfileDetails = ({ user, formData, isEditing, onChange, errors }) => {
                 isEditing={isEditing}
                 onChange={onChange}
                 error={errors.phone_number}
+                placeholder="Masukkan nomor telepon"
             />
             <InputGroup 
                 label="E-mail" 
@@ -67,219 +32,84 @@ const ProfileDetails = ({ user, formData, isEditing, onChange, errors }) => {
                 isEditing={false}
                 readOnly 
             />
-        </div>
+
+            {isEditing ? (
+                <>
+                <p className="sm:text-h-6 text-body-1 font-bold text-accent-neutral-1000">
+                        Ubah Password
+                    </p>
+                    {/* <div className="space-y-6"> */}
+                        <InputGroup
+                            label="Password Lama"
+                            name="current_password"
+                            value={formData.current_password || ''}
+                            isEditing={true}
+                            type="password"
+                            onChange={onChange}
+                            error={errors.current_password}
+                            placeholder="Masukkan password lama"
+                        />
+                        <InputGroup
+                            label="Password Baru"
+                            name="password"
+                            value={formData.password || ''}
+                            isEditing={true}
+                            type="password"
+                            onChange={onChange}
+                            error={errors.password}
+                            placeholder="Masukkan password baru"
+                        />
+                        <InputGroup
+                            label="Konfirmasi Password Baru"
+                            name="password_confirmation"
+                            value={formData.password_confirmation || ''}
+                            isEditing={true}
+                            type="password"
+                            onChange={onChange}
+                            error={errors.password_confirmation}
+                            placeholder="Konfirmasi password baru"
+                        />
+                    {/* </div> */}
+                    </>
+                
+            ) : (
+                <InputGroup
+                    label="Password"
+                    value="••••••••"
+                    isEditing={false}
+                    type="password"
+                    readOnly
+                />
+                 )}
+                
+                
+           
+            
+           
+                  </div>
     );
 };
 
-// --- Input Group Component ---
-const InputGroup = ({ label, name, value, isEditing, readOnly, onChange, error }) => (
-    <div>
-        <label className="block sm:text-h-6 text-body-1 font-medium text-accent-neutral-1000 mb-2">
-            {label}
-        </label>
-        {isEditing && !readOnly ? (
-            <>
-                <div className="relative bg-white rounded-lg border-2 border-accent-yellow-300 p-1">
-                    <ModalDashedBorder className="absolute inset-0 w-full h-full z-0 pointer-events-none p-1" />
-                    <input 
-                        type="text"
-                        name={name}
-                        value={value}
-                        onChange={onChange}
-                        className="relative pl-4 z-10 sm:text-h-7 text-body-1 font-medium text-accent-neutral-1000 w-full p-3 bg-transparent rounded-lg focus:outline-none"
-                    />
-                </div>
-                {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
-            </>
-        ) : (
-            <div className="relative bg-white rounded-lg border-2 border-accent-yellow-300">
-                <ModalDashedBorder className="absolute inset-0 pointer-events-none rounded-lg p-1" />
-                <div className={`relative z-10 w-full pl-6 p-3 sm:text-h-7 text-body-1 font-medium ${readOnly ? 'text-gray-500' : 'text-accent-neutral-1000'}`}>
-                    {value}
-                </div>
-            </div>
-        )}
-    </div>
-);
-
 // --- Main Component ---
 export default function UserProfile() {
-    const router = useRouter();
-    const [userProfile, setUserProfile] = useState(null);
-    const [isEditing, setIsEditing] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isSaving, setIsSaving] = useState(false);
-    const [errors, setErrors] = useState({});
-    const [successMessage, setSuccessMessage] = useState('');
-
-    // Form data - hanya username dan phone_number
-    const [formData, setFormData] = useState({
-        username: '',
-        phone_number: '',
-    });
-
-    //  Fetch user profile from API
-    useEffect(() => {
-        fetchUserProfile();
-    }, []);
-
-    const fetchUserProfile = async () => {
-        try {
-            setIsLoading(true);
-            const res = await profileService.get();
-            
-            setUserProfile(res.user);
-            setFormData({
-                username: res.user.username,
-                phone_number: res.user.phone_number || '',
-            });
-        } catch (err) {
-            console.error('❌ Error fetching profile:', err);
-            
-            // If unauthorized, redirect to login
-            if (err.response?.status === 401) {
-                router.push('/auth/login');
-            }
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    // Handle input change
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        
-        // ✅ Validasi khusus untuk phone_number
-        if (name === 'phone_number') {
-            // Cek apakah ada karakter selain angka, +, -, spasi, atau tanda kurung
-            if (value && !/^[\d\s\-\+\(\)]*$/.test(value)) {
-                setErrors(prev => ({ 
-                    ...prev, 
-                    [name]: 'Format nomor telepon tidak valid' 
-                }));
-                return; // Stop, jangan update formData
-            }
-            
-            // Cek apakah ada huruf
-            if (/[a-zA-Z]/.test(value)) {
-                setErrors(prev => ({ 
-                    ...prev, 
-                    [name]: 'Nomor telepon tidak boleh mengandung huruf' 
-                }));
-                return;
-            }
-            
-            // Validasi panjang (opsional, sesuaikan dengan kebutuhan)
-            if (value.length > 15) {
-                setErrors(prev => ({ 
-                    ...prev, 
-                    [name]: 'Nomor telepon maksimal 15 digit' 
-                }));
-                return;
-            }
-        }
-        
-        setFormData(prev => ({ ...prev, [name]: value }));
-        
-        // Clear error for this field jika valid
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: '' }));
-        }
-    };
-
-    // Toggle edit mode
-    const handleToggleEdit = () => {
-        if (isEditing) {
-            // Reset form
-            setFormData({
-                username: userProfile.username,
-                phone_number: userProfile.phone_number || '',
-            });
-            setErrors({});
-        }
-        setIsEditing(!isEditing);
-    };
-
-    //  Save profile changes
-    const handleSaveProfile = async () => {
-        try {
-            setIsSaving(true);
-            setErrors({});
-            setSuccessMessage('');
-
-            // ✅ Validasi frontend sebelum submit
-            const newErrors = {};
-            
-            // Validasi username
-            if (!formData.username || formData.username.trim() === '') {
-                newErrors.username = 'Username tidak boleh kosong';
-            }
-            
-            // Validasi phone_number
-            if (formData.phone_number) {
-                if (/[a-zA-Z]/.test(formData.phone_number)) {
-                    newErrors.phone_number = 'Nomor telepon tidak boleh mengandung huruf';
-                } else if (!/^[\d\s\-\+\(\)]*$/.test(formData.phone_number)) {
-                    newErrors.phone_number = 'Format nomor telepon tidak valid';
-                } else if (formData.phone_number.replace(/[\s\-\+\(\)]/g, '').length < 10) {
-                    newErrors.phone_number = 'Nomor telepon minimal 10 digit';
-                } else if (formData.phone_number.length > 15) {
-                    newErrors.phone_number = 'Nomor telepon maksimal 15 digit';
-                }
-            }
-            
-            // Jika ada error, tampilkan dan stop
-            if (Object.keys(newErrors).length > 0) {
-                setErrors(newErrors);
-                return;
-            }
-
-            // Update profile
-            const res = await profileService.update({
-                username: formData.username,
-                phone_number: formData.phone_number,
-            });
-
-            setUserProfile(res.user);
-            setSuccessMessage('Profile berhasil diperbarui!');
-            setIsEditing(false);
-
-            setTimeout(() => setSuccessMessage(''), 3000);
-
-        } catch (err) {
-            console.error('❌ Error updating profile:', err);
-            
-            if (err.response?.data?.errors) {
-                setErrors(err.response.data.errors);
-            } else {
-                setErrors({ general: 'Gagal memperbarui profile. Silakan coba lagi.' });
-            }
-        } finally {
-            setIsSaving(false);
-        }
-    };
-
-    //  Handle logout
-    const handleLogout = async () => {
-        try {
-            await authService.logout();
-            clearFrontendAuthState();
-            localStorage.removeItem('user');
-            sessionStorage.clear();
-            router.push('/');
-        } catch (err) {
-            console.error('❌ Logout error:', err);
-            // Force logout anyway
-            clearFrontendAuthState();
-            localStorage.removeItem('user');
-            sessionStorage.clear();
-            router.push('/');
-        }
-    };
+    const {
+        userProfile,
+        isLoading,
+        isEditing,
+        isSaving,
+        errors,
+        successMessage,
+        formData,
+        handleChange,
+        handleToggleEdit,
+        handleSaveProfile,
+        handleLogout,
+    } = useUserProfile();
 
     if (isLoading || !userProfile) {
         return (
             <div className="p-8 text-center text-gray-500 min-h-[500px] flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent-yellow-400"></div>
                 Memuat data profile... 
             </div>
         );
@@ -290,8 +120,8 @@ export default function UserProfile() {
             <div className="max-w-2xl mx-auto">
                 
                 {/* Header */}
-                <div className="mb-8">
-                    <p className="sm:text-h-3 text-h-5 font-bold text-accent-neutral-1000">
+                <div className="mb-4">
+                    <p className="sm:text-h-4 text-h-5 font-bold text-accent-neutral-1000">
                         Hai, {userProfile.username}
                     </p>
                 </div>
