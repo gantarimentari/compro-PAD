@@ -362,7 +362,7 @@ const GaleryApp = ({ activeFilter }) => {
 
     return (
         <>
-            <div className="w-full flex justify-center py-8">
+            <div className="w-full flex justify-center py-8 lg:min-h-[600px]">
                 <div className="w-full max-w-7xl flex flex-col items-center gap-10 px-4">
                     
                     {/* Image Grid */}
@@ -378,7 +378,7 @@ const GaleryApp = ({ activeFilter }) => {
                         </div>
                     ) : (
                         <div className="text-center py-12">
-                            <p className="text-body-1 text-accent-neutral-700">
+                            <p className="text-body-1 text-accent-neutral-100">
                                 Tidak ada media untuk ditampilkan
                             </p>
                         </div>

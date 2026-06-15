@@ -86,7 +86,7 @@ const ServicesCard = ({
                 <ModalDashedBorder className="absolute inset-0 pointer-events-none p-1 stroke-accent-red-400 z-20" />
                 
                 {/* Content area - tidak perlu scroll karena sudah dipaginasi */}
-                <div className="p-6 md:p-8">
+                <div className="p-6 md:p-8 lg:min-h-[250px]">
                   <div className="relative z-10 text-base text-accent-neutral-1000 leading-relaxed">
                     {/* Tampilkan konten halaman saat ini */}
                     <div className="whitespace-pre-line">

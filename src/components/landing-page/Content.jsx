@@ -4,6 +4,8 @@ import systemInfoService from '@/lib/services/systemInfoService';
 import mediaService from '@/lib/services/mediaService';
 import { CardDashedBorder } from '@/components/ui/frame/garisputus';
 // import { CardDashedBorder } from '@ds/frame/garisputus';
+import { VideoCarouselSkeleton } from './components/LoadingSkeleton';
+import { ContentBorderDashed } from './components/ContentBorderDashed';
 
 // Fungsi helper untuk convert YouTube link jadi embed URL
 const getYoutubeEmbedUrl = (youtubeLink) => {
@@ -328,8 +330,8 @@ export default function Content() {
                           className="w-[250px] cursor-pointer"
                         >
                           <div className="relative bg-accent-yellow-300 rounded-xl shadow-lg overflow-hidden w-full aspect-video">
-                            <CardDashedBorder className="absolute inset-0 pointer-events-none z-20 stroke-white"/>
-                            
+                            {/* <CardDashedBorder className="absolute inset-0 pointer-events-none z-20 stroke-white"/> */}
+                            <ContentBorderDashed/>
                             <div className="relative p-2 z-10 rounded-sm overflow-hidden w-full h-full">
                               <iframe
                                 className="w-full h-full rounded-md"
@@ -409,8 +411,8 @@ export default function Content() {
                           ${isCenter ? 'shadow-2xl' : ''}
                         `}
                       >
-                        <CardDashedBorder className="absolute inset-0 pointer-events-none z-20 stroke-white"/>
-                        
+                        {/* <CardDashedBorder className="absolute inset-0 pointer-events-none z-20 stroke-white"/> */}
+                        <ContentBorderDashed/>
                         <div className="relative p-3 z-10 rounded-sm overflow-hidden w-full h-full">
                           <iframe
                             className="w-full h-full rounded-md"
@@ -434,53 +436,4 @@ export default function Content() {
   );
 }
 
-// Loading Skeleton Component
-const VideoCarouselSkeleton = () => {
-  return (
-    <div className="hidden md:flex gap-3 overflow-hidden p-6">
-      {[1, 2, 3].map((i) => (
-        <div
-          key={i}
-          className={`
-            flex-shrink-0 transition-all duration-500
-            w-[calc((100vw-5rem)/3)] max-w-[400px]
-            ${i === 2 ? 'scale-125' : 'scale-75'}
-          `}
-          style={{
-            transformOrigin: 'center center',
-          }}
-        >
-          <div className="relative bg-accent-yellow-300/50 rounded-xl shadow-lg overflow-hidden w-full h-[200px]">
-            <svg
-              className="absolute inset-0 w-full h-full pointer-events-none z-20"
-              viewBox="0 0 400 200"
-              fill="none"
-              preserveAspectRatio="none"
-            >
-              <rect
-                x="12"
-                y="12"
-                width="376"
-                height="176"
-                rx="12"
-                stroke="white"
-                strokeWidth="2"
-                strokeDasharray="18 4 3 6 6 4"
-                fill="none"
-                opacity="0.5"
-              />
-            </svg>
-            
-            <div className="relative p-3 z-10 w-full h-full flex items-center justify-center">
-              <div className="w-full h-full bg-white/30 rounded-md animate-pulse flex items-center justify-center">
-                <svg className="w-16 h-16 text-white/50" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
+

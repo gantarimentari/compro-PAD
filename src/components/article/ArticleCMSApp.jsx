@@ -389,8 +389,8 @@ const ArticleCMSApp = () => {
 
     return (
         <>
-            <div className="p-4 sm:p-8 flex justify-center">
-                <div className="w-full max-w-6xl flex flex-col items-center gap-10">
+            <div className="p-4 sm:p-8 flex justify-center lg:min-h-[600px]">
+                <div className="w-full max-w-6xl flex flex-col items-center gap-10 ">
                     {/* Article Grid */}
                     {articles.length > 0 ? (
                         <div className="w-full grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -403,8 +403,8 @@ const ArticleCMSApp = () => {
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-12">
-                            <p className="text-body-1 text-accent-neutral-700">
+                        <div className="text-center py-12  ">
+                            <p className="text-body-1 text-accent-neutral-100">
                                 Belum ada artikel yang dipublikasikan
                             </p>
                         </div>

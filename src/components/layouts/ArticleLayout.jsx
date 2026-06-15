@@ -18,15 +18,16 @@ export default function ArticleLayout({ children }) {
   };
 
   return (
-    <div 
-      className="min-h-screen w-full py-2"
-      style={backgroundStyle}
-    >
-       < DashedBorder className="w-full h-5 relative z-[5]" />
+    <div className="relative w-full">
+      <div style={backgroundStyle} className='w-full py-2'
+      >
+      < DashedBorder className="w-full h-5 relative z-[5]" />
       <div className="container mx-auto px-4">
         {children}
       </div>
        < DashedBorder className="w-full h-5 relative z-[5]" />
+      </div>
+ 
     </div>
   );
 }
