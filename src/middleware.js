@@ -7,6 +7,10 @@ export function middleware(request) {
   const protectedPaths = ["/notifications", "/profile", "/dashboard"];
   const isProtectedPath = protectedPaths.some((p) => path.startsWith(p));
 
+  const isAuthPath = path.startsWith("/auth");
+  if (isAuthPath && isAuthenticated) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
   if (isProtectedPath && !isAuthenticated) {
     return NextResponse.redirect(new URL("/", request.url));
   }
@@ -22,6 +26,6 @@ export function middleware(request) {
 
 
 export const config = {
-  matcher: ['/notifications/:path*', '/profile/:path*', '/dashboard/:path*'], 
+  matcher: ['/notifications/:path*', '/profile/:path*', '/dashboard/:path*', '/auth/:path*'], 
   
 };

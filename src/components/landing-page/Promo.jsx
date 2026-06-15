@@ -56,13 +56,13 @@ export default function Promo() {
   // Filter promo (Logic HEAD): available, sort by tanggalDibuat, max 3
   const availablePromos = promoData
     .filter(promo => {
-      console.log('🔍 Filtering promo:', promo.title, 'status:', promo.status);
+      // console.log('🔍 Filtering promo:', promo.title, 'status:', promo.status);
       return promo.status?.toLowerCase() === "available";
     })
     .sort((a, b) => new Date(b.tanggalDibuat) - new Date(a.tanggalDibuat))
     .slice(0, 3);
 
-  console.log('Available promos after filter:', availablePromos);
+  // console.log('Available promos after filter:', availablePromos);
 
   return (
     <div className="relative w-full bg-accent-blue-500 py-2" style={backgroundStyle}>

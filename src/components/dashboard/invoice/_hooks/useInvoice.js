@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import InvoiceService from '@/lib/services/invoiceService';
+import { useCallback } from 'react';
 
 const invoiceCache = {
   rows: null,
@@ -112,20 +113,22 @@ export const useInvoice = () => {
   const [invoiceToDelete, setInvoiceToDelete] = useState(null);
   const [invoiceToEdit, setInvoiceToEdit] = useState(null);
 
-  const syncInvoiceState = (rows) => {
+  const syncInvoiceState = useCallback((rows) => {
     setInvoices(rows);
     invoiceCache.rows = rows;
     invoiceCache.loaded = true;
 
-    const nextSelectedInvoice = selectedInvoice
-      ? rows.find((item) => String(item.id_invoice) === String(selectedInvoice.id_invoice)) || rows[0] || null
-      : rows[0] || null;
+    setSelectedInvoice((prevSelectedInvoice) => {
+      const nextSelectedInvoice = prevSelectedInvoice
+        ? rows.find((item) => String(item.id_invoice) === String(prevSelectedInvoice.id_invoice)) || rows[0] || null
+        : rows[0] || null;
 
-    setSelectedInvoice(nextSelectedInvoice);
-    invoiceCache.selectedInvoiceId = nextSelectedInvoice?.id_invoice ?? null;
-  };
+      invoiceCache.selectedInvoiceId = nextSelectedInvoice?.id_invoice ?? null;
+      return nextSelectedInvoice;
+    });
+  }, []);
 
-  const loadInvoices = async (silent = false) => {
+  const loadInvoices = useCallback( async (silent = false) => {
     if (silent) {
       setIsRefreshing(true);
     } else {
@@ -146,7 +149,7 @@ export const useInvoice = () => {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  };
+  }, [syncInvoiceState]);
 
   const loadInvoiceDetail = async (invoice) => {
     if (!invoice) return null;
@@ -175,7 +178,7 @@ export const useInvoice = () => {
     }
 
     loadInvoices();
-  }, []);
+  }, [loadInvoices]);
 
   const resetFormData = () => {
     setFormData(defaultFormData);

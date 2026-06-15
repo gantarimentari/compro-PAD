@@ -21,9 +21,10 @@ export const useFaq = (options = { publicOnly: false }) => {
     staleTime: 5 * 60 * 1000, // data dianggap "segar" selama 5 menit
     keepPreviousData: true,
   });
-  const allData = data?.data || [];
+  
 
   const faqs = useMemo(() => {
+    const allData = data?.data || [];
     const baseData = options.publicOnly
       ? allData.filter(faq => faq.status?.toLowerCase() === 'publish')
       : allData;
@@ -39,7 +40,7 @@ export const useFaq = (options = { publicOnly: false }) => {
 
       return searchableText.includes(keyword);
     });
-  }, [allData, options.publicOnly, searchTerm]);
+  }, [data?.data, options.publicOnly, searchTerm]);
 
   const triggerSuccess = (message) => {
     setSuccessToast({ show: true, message });
@@ -101,7 +102,7 @@ export const useFaq = (options = { publicOnly: false }) => {
   };
 
   return {
-    faqs,
+    faqs,allData: data?.data || [],
     isLoading,
     isModalOpen,
     searchTerm,
