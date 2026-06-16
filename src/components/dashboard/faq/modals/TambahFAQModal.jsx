@@ -1,4 +1,3 @@
-// "use client";
 import React from 'react';
 import BaseModal from '../../shared-modals/BaseModal';
 import ButtonSaveandClose from '../../shared-modals/ButtonSaveandClose';
@@ -53,9 +52,16 @@ const TambahFAQModal = ({ isOpen, onClose, onSave, editingData, isSubmitting }) 
             value={formData.question}
             onChange={(e) => setFormData({ ...formData, question: e.target.value })}
             placeholder="Masukkan judul FAQ"
-            className="whitespace-normal w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 text-body-2 placeholder:text-accent-neutral-800"
+            className={`whitespace-normal w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 transition duration-150 text-body-2 placeholder:text-accent-neutral-800 ${
+              formData.question.length > 255 ? 'border border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
+            }`}
             required              
           />
+          {formData.question.length > 255 && (
+            <p className="text-red-500 text-xs mt-1 font-medium">
+              Judul terlalu panjang, maksimal 255 karakter (saat ini: {formData.question.length} karakter)
+            </p>
+          )}
         </div>
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
@@ -66,9 +72,16 @@ const TambahFAQModal = ({ isOpen, onClose, onSave, editingData, isSubmitting }) 
             onChange={(e) => setFormData({ ...formData, answer: e.target.value })}
             placeholder="Tuliskan Deskripsi FAQ di sini..."
             rows={4}
-            className="whitespace-normal w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 text-body-2 placeholder:text-accent-neutral-800"
+            className={`whitespace-normal w-full bg-accent-neutral-200 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 transition duration-150 text-body-2 placeholder:text-accent-neutral-800 ${
+              formData.answer.length > 255 ? 'border border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
+            }`}
             required              
           />
+          {formData.answer.length > 255 && (
+            <p className="text-red-500 text-xs mt-1 font-medium">
+              Deskripsi terlalu panjang, maksimal 255 karakter (saat ini: {formData.answer.length} karakter)
+            </p>
+          )}
         </div>
         <div>
           <label className="block text-h-8 font-bold text-accent-neutral-1000">
@@ -90,7 +103,7 @@ const TambahFAQModal = ({ isOpen, onClose, onSave, editingData, isSubmitting }) 
           </select>
         </div>
 
-        <ButtonSaveandClose onClose={onClose} isSubmitting={isSubmitting} />
+        <ButtonSaveandClose onClose={onClose} isSubmitting={isSubmitting || formData.question.length > 255 || formData.answer.length > 255} />
       </form>
     </BaseModal>
   );

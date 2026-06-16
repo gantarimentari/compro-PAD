@@ -6,6 +6,7 @@ export const useFaq = (options = { publicOnly: false }) => {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [successToast, setSuccessToast] = useState({ show: false, message: '' });
+  const [errorToast, setErrorToast] = useState({ show: false, message: '' });
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
@@ -49,6 +50,13 @@ export const useFaq = (options = { publicOnly: false }) => {
       setSuccessToast({ show: false, message: '' });
     }, 2000);
   };
+  const triggerError = (message) => {
+    setErrorToast({ show: true, message });
+    window.clearTimeout(triggerError.timerId);
+    triggerError.timerId = window.setTimeout(() => {
+      setErrorToast({ show: false, message: '' });
+    }, 3000);
+  };
 
   const createMutation = useMutation({
     mutationFn: (newFaq) => FaqService.create(newFaq),
@@ -57,6 +65,11 @@ export const useFaq = (options = { publicOnly: false }) => {
       setIsModalOpen(false);
       setEditingData(null);
       triggerSuccess('FAQ berhasil ditambahkan');
+    },
+    onError: (error) => {
+      console.error('Gagal menambahkan FAQ:', error);
+      const errorMsg = error.response?.data?.message || error.message || 'Gagal menambahkan FAQ';
+      triggerError(errorMsg);
     }
   });
 
@@ -67,6 +80,11 @@ export const useFaq = (options = { publicOnly: false }) => {
       setIsModalOpen(false);
       setEditingData(null);
       triggerSuccess('FAQ berhasil diperbarui');
+    },
+    onError: (error) => {
+      console.error('Gagal memperbarui FAQ:', error);
+      const errorMsg = error.response?.data?.message || error.message || 'Gagal memperbarui FAQ';
+      triggerError(errorMsg);
     }
   });
 
@@ -76,6 +94,11 @@ export const useFaq = (options = { publicOnly: false }) => {
       queryClient.invalidateQueries({queryKey: ['faqs']});
       setIsDeleteModalOpen(false);
       setSelectedId(null);
+    },
+    onError: (error) => {
+      console.error('Gagal menghapus FAQ:', error);
+      const errorMsg = error.response?.data?.message || error.message || 'Gagal menghapus FAQ';
+      triggerError(errorMsg);
     }
   });
 
@@ -128,7 +151,7 @@ export const useFaq = (options = { publicOnly: false }) => {
 
     editingData,
     openEditModal,
-    successToast,
+    successToast, errorToast,
     isPreviewOpen,
     selectedFaq,
     openPreviewModal,

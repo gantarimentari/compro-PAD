@@ -1,3 +1,4 @@
+
 'use client';
 import {useFaq} from './hooks/useFaq';
 import PageHeader from '@/components/shared/PageHeader';
@@ -8,6 +9,7 @@ import { DeleteConfirmModal} from '@/components/dashboard';
 import {FAQ_COLUMNS} from './faq.constants';
 import { tableRenderers } from './_components/TableCell';
 import SuccessToast from '@/components/ui/SuccessToast';
+import ErrorToast from '@/components/ui/ErrorToast';
 import PreviewFAQModal from './modals/PreviewFAQModal';
 import { LoadingTable } from '../shared-modals/LoadingStatement';
 export default function FAQ() {
@@ -29,6 +31,7 @@ export default function FAQ() {
     handleSave,
     isSaving,
     successToast,
+    errorToast,
     isPreviewOpen,
     selectedFaq,
     openPreviewModal,
@@ -88,7 +91,9 @@ export default function FAQ() {
 
 
       <SuccessToast show={successToast.show} message={successToast.message} />
+      <ErrorToast show={errorToast.show} message={errorToast.message} />
 
     </div>
   );
 }
+
