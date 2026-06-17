@@ -24,51 +24,31 @@ export const useFaq = (options = { publicOnly: false }) => {
   });
   
 
-  // const faqs = useMemo(() => {
-  //   const allData = data?.data || [];
-  //   const baseData = options.publicOnly
-  //     ? allData.filter(faq => faq.status?.toLowerCase() === 'publish')
-  //     : allData;
-
-  //   const keyword = searchTerm.trim().toLowerCase();
-  //   if (!keyword) return baseData;
-
-  //   return baseData.filter((faq) => {
-  //     const searchableText = [faq.question, faq.answer, faq.title, faq.description]
-  //       .filter(Boolean)
-  //       .join(' ')
-  //       .toLowerCase();
-
-  //     return searchableText.includes(keyword);
-  //   });
-  // }, [data?.data, options.publicOnly, searchTerm]);
-
-
-const faqs = useMemo(() => {
+  const faqs = useMemo(() => {
+    const allData = data?.data || [];
     const baseData = options.publicOnly
       ? allData.filter(faq => faq.status?.toLowerCase() === 'publish')
       : allData;
 
-    // 🔑 KUNCI JAWABAN UAT:
-    // Jika admin sengaja mengetik spasi berkali-kali (searchTerm tidak kosong, tapi setelah di-trim jadi kosong)
-    if (searchTerm !== '' && searchTerm.trim() === '') {
+
+        if (searchTerm !== '' && searchTerm.trim() === '') {
       return []; // 🟢 Paksa return array kosong agar UI otomatis menampilkan empty state!
     }
 
-    // Kondisi normal: Jika kolom pencarian benar-benar kosong beneran (belum ketik apa-apa / dihapus)
     if (!searchTerm) return baseData;
 
-    // Proses pencarian keyword normal seperti biasa
-    const keyword = searchTerm.trim().toLowerCase();
     return baseData.filter((faq) => {
       const searchableText = [faq.question, faq.answer, faq.title, faq.description]
         .filter(Boolean)
         .join(' ')
         .toLowerCase();
-
+ const keyword = searchTerm.trim().toLowerCase();
       return searchableText.includes(keyword);
     });
-  }, [allData, options.publicOnly, searchTerm]);
+  }, [data?.data, options.publicOnly, searchTerm]);
+
+
+
 
 
 
