@@ -54,7 +54,7 @@ const normalizeInvoice = (invoice) => {
   };
 };
 
-export const usePrintInvoice = () => {
+export const usePrintInvoice = (options = {}) => {
   const [isPrinting, setIsPrinting] = useState(false);
 
   const loadClinicSettings = async () => {
@@ -256,7 +256,12 @@ export const usePrintInvoice = () => {
       document.body.removeChild(tempDiv);
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Gagal mengunduh PDF invoice: ' + error.message);
+      const errorMsg = 'Gagal mengunduh PDF invoice: ' + error.message;
+      if (options.onError) {
+        options.onError(errorMsg);
+      } else {
+        alert(errorMsg);
+      }
     } finally {
       setIsPrinting(false);
     }

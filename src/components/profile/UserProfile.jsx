@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { LogOutDoor, PencilIcon, DocumentIcon } from '@/components/icons/UIIcons';
 import { InputGroup } from './_components/InputGroup';
 import { useUserProfile } from './hooks/useUserProfile';
@@ -106,7 +106,12 @@ export default function UserProfile() {
         handleLogout,
     } = useUserProfile();
 
-    if (isLoading || !userProfile) {
+    const [isMounted, setIsMounted] = useState(false);
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    if (!isMounted || isLoading || !userProfile) {
         return (
             <div className="p-8 text-center text-gray-500 min-h-[500px] flex items-center justify-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent-yellow-400"></div>

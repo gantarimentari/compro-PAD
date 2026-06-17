@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TagLabel from '../ui/Button/TagLabel';
 import Link from "next/link";
 import Button from '@/components/ui/Button';
@@ -9,6 +9,11 @@ import { useSystemInfo } from './hooks/useLandingPage';
 
 export default function Services() {
   const { data: systemInfoData, isLoading } = useSystemInfo();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const judulLayanan = systemInfoData?.systemInfo?.judul_layanan_tersedia || "Kami Hadir untuk Memberi Perawatan Terbaik!";
 
@@ -205,7 +210,7 @@ export default function Services() {
           onMouseLeave={() => setIsCardHovered(false)} />
           
           {/* ✅ Dynamic Title from DB with Loading + Responsive Size */}
-          {isLoading ? (
+          {(isMounted && isLoading) ? (
             <div className="h-10 w-2/3 bg-gray-200 rounded animate-pulse" />
           ) : (
             <p className='text-h-7 lg:text-h-6 font-bold text-center max-w-3xl px-4'>

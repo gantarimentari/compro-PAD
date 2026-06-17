@@ -113,6 +113,25 @@ export const useInvoice = () => {
   const [invoiceToDelete, setInvoiceToDelete] = useState(null);
   const [invoiceToEdit, setInvoiceToEdit] = useState(null);
 
+  const [successToast, setSuccessToast] = useState({ show: false, message: '' });
+  const [errorToast, setErrorToast] = useState({ show: false, message: '' });
+
+  const triggerSuccess = useCallback((message) => {
+    setSuccessToast({ show: true, message });
+    window.clearTimeout(triggerSuccess.timerId);
+    triggerSuccess.timerId = window.setTimeout(() => {
+      setSuccessToast({ show: false, message: '' });
+    }, 2000);
+  }, []);
+
+  const triggerError = useCallback((message) => {
+    setErrorToast({ show: true, message });
+    window.clearTimeout(triggerError.timerId);
+    triggerError.timerId = window.setTimeout(() => {
+      setErrorToast({ show: false, message: '' });
+    }, 3000);
+  }, []);
+
   const syncInvoiceState = useCallback((rows) => {
     setInvoices(rows);
     invoiceCache.rows = rows;
@@ -145,11 +164,13 @@ export const useInvoice = () => {
       invoiceCache.rows = [];
       invoiceCache.selectedInvoiceId = null;
       invoiceCache.loaded = true;
+      const errorMsg = error?.response?.data?.message || error?.message || 'Gagal memuat data invoice';
+      triggerError(errorMsg);
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, [syncInvoiceState]);
+  }, [syncInvoiceState, triggerError]);
 
   const loadInvoiceDetail = async (invoice) => {
     if (!invoice) return null;
@@ -251,7 +272,9 @@ export const useInvoice = () => {
       });
     } catch (error) {
       console.error('Gagal memuat detail invoice untuk edit:', error);
-      alert(error?.response?.data?.message || error?.message || 'Gagal memuat detail invoice');
+      const errorMsg = error?.response?.data?.message || error?.message || 'Gagal memuat detail invoice';
+      triggerError(errorMsg);
+      closeModal();
     } finally {
       setIsDetailLoading(false);
     }
@@ -280,14 +303,17 @@ export const useInvoice = () => {
 
       if (isEditing && invoiceId) {
         await InvoiceService.update(invoiceId, formattedPayload);
+        triggerSuccess('Invoice berhasil diperbarui');
       } else {
         await InvoiceService.create(formattedPayload);
+        triggerSuccess('Invoice berhasil dibuat');
       }
       await loadInvoices(true);
       closeModal();
     } catch (error) {
       console.error('Gagal menyimpan invoice:', error);
-      alert(error?.response?.data?.message || error?.message || 'Gagal menyimpan invoice');
+      const errorMsg = error?.response?.data?.message || error?.message || 'Gagal menyimpan invoice';
+      triggerError(errorMsg);
     } finally {
       setIsSubmitting(false);
     }
@@ -311,6 +337,8 @@ export const useInvoice = () => {
     } catch (error) {
       console.error("Gagal search invoice:", error);
       syncInvoiceState([]);
+      const errorMsg = error?.response?.data?.message || error?.message || 'Gagal mencari invoice';
+      triggerError(errorMsg);
     } finally {
       setIsLoading(false);
     }
@@ -368,11 +396,13 @@ export const useInvoice = () => {
       await InvoiceService.confirmPayment(invoiceId, {
         metode_pembayaran: paymentMethod,
       });
+      triggerSuccess('Pembayaran berhasil dikonfirmasi');
       await loadInvoices(true);
       closePaymentModal();
     } catch (error) {
       console.error('Gagal mengonfirmasi pembayaran invoice:', error);
-      alert(error?.response?.data?.message || error?.message || 'Gagal mengonfirmasi pembayaran invoice');
+      const errorMsg = error?.response?.data?.message || error?.message || 'Gagal mengonfirmasi pembayaran invoice';
+      triggerError(errorMsg);
     } finally {
       setIsConfirming(false);
     }
@@ -390,6 +420,7 @@ export const useInvoice = () => {
 
     try {
       await InvoiceService.delete(invoiceId);
+      triggerSuccess('Invoice berhasil dihapus');
       await loadInvoices(true);
 
       if (selectedInvoice?.id_invoice && String(selectedInvoice.id_invoice) === String(invoiceId)) {
@@ -399,6 +430,8 @@ export const useInvoice = () => {
       closeDeleteModal();
     } catch (error) {
       console.error('Gagal menghapus invoice:', error);
+      const errorMsg = error?.response?.data?.message || error?.message || 'Gagal menghapus invoice';
+      triggerError(errorMsg);
     } finally {
       setIsDeleting(false);
     }
@@ -475,6 +508,10 @@ export const useInvoice = () => {
     invoiceToPay,
     invoiceToDelete,
     stats,
+    successToast,
+    errorToast,
+    triggerSuccess,
+    triggerError,
   };
 
 };

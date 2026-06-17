@@ -14,6 +14,8 @@ import Table from '@/components/shared/Table';
 import COLUMNS from './invoice.constants';
 import { LoadingTable } from '../shared-modals/LoadingStatement';
 import {tableRenderers} from './_components/TableCell';
+import SuccessToast from '@/components/ui/SuccessToast';
+import ErrorToast from '@/components/ui/ErrorToast';
 
 
 
@@ -55,10 +57,13 @@ export default function InvoiceDashboard() {
     invoiceToDelete,
     selectedInvoice,
     handleSubmitPayment,
-    stats
+    stats,
+    successToast,
+    errorToast,
+    triggerError
   } = useInvoice();
 
-  const { handlePrintInvoice } = usePrintInvoice();
+  const { handlePrintInvoice } = usePrintInvoice({ onError: triggerError });
   const [query, setQuery] = useState('');
 // const [invoices, setInvoices] = useState([]); 
 
@@ -140,7 +145,8 @@ export default function InvoiceDashboard() {
         isConfirming={isConfirming}
       />
 
- 
+      <SuccessToast show={successToast.show} message={successToast.message} />
+      <ErrorToast show={errorToast.show} message={errorToast.message} />
     </div>
   );
 }

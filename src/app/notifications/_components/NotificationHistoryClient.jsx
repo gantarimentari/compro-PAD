@@ -113,14 +113,20 @@ export default function NotificationHistoryClient({ activeFilter = 'all' }) {
   const [page, setPage] = useState(1);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [openedIds, setOpenedIds] = useState(() => {
+  const [openedIds, setOpenedIds] = useState([]);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
     try {
       const raw = localStorage.getItem('openedNotifications');
-      return raw ? JSON.parse(raw) : [];
+      if (raw) {
+        setOpenedIds(JSON.parse(raw));
+      }
     } catch (e) {
-      return [];
+      // ignore
     }
-  });
+  }, []);
 
   const profileQuery = useQuery({
     queryKey: ['current-user-profile'],
@@ -150,7 +156,7 @@ export default function NotificationHistoryClient({ activeFilter = 'all' }) {
   const notifications = notificationsQuery.data?.data || [];
   const totalPages = notificationsQuery.data?.meta?.totalPages || 1;
   const totalItems = notificationsQuery.data?.meta?.totalItems || 0;
-  const isLoading = profileQuery.isLoading || notificationsQuery.isLoading;
+  const isLoading = !isMounted || profileQuery.isLoading || notificationsQuery.isLoading;
   const error = profileQuery.error || notificationsQuery.error;
 
   const totalVisibleNotifications = useMemo(() => notifications.length, [notifications]);
@@ -178,7 +184,7 @@ export default function NotificationHistoryClient({ activeFilter = 'all' }) {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto py-8 sm:py-10">
+    <div className="w-full max-w-3xl mx-auto py-8 sm:py-10 min-h-[600px]">
       {isLoading ? (
         <div className="space-y-4">
           {Array.from({ length: 5 }).map((_, index) => (

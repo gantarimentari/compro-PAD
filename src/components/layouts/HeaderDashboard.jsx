@@ -4,7 +4,7 @@ import { AdminUserIcon } from "@/components/icons";
 import authService from '@/lib/services/authService';
 import { useRouter } from "next/navigation";
 import { clearFrontendAuthState } from "@/lib/frontendAuth";
-
+import Link from "next/link";
 const MOCK_ADMIN_PROFILE={
     name: "Admin",
     role: "Administrator",
@@ -72,7 +72,16 @@ export default function HeaderDashboard(){
 
                 {/* Dropdown Menu */}
                 {isDropdownOpen && (
+                  
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-20">
+                    <Link
+                    href="/profile"
+
+                      className="w-full text-left px-4 py-2 text-body-1 text-accent-neutral-1000 hover:bg-accent-neutral-225 transition-colors"
+                    >
+                      Profile
+                    </Link>
+                    
                     <button
                       onClick={handleLogout}
                       className="w-full text-left px-4 py-2 text-body-1 text-accent-neutral-1000 hover:bg-accent-neutral-225 transition-colors"

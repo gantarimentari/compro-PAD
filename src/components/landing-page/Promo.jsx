@@ -1,11 +1,17 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TagLabel from "@/components/ui/Button/TagLabel";
 import { DashedBorder } from '@/components/ui/frame/garisputus';
 import PromoCard from './components/PromoCard';
 import { useSystemInfo, usePublicPromos } from './hooks/useLandingPage';
 
 export default function Promo() {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const svgBackground = "/Background/bg-bone-blue.svg";
   
   const backgroundStyle = {
@@ -84,7 +90,7 @@ export default function Promo() {
 
         {/* Promo Cards Section - UI Baru dengan Logic HEAD */}
         <div className="w-full max-w-6xl mx-auto lg:mt-8">
-          {isLoading ? (
+          {(isMounted && isLoading) ? (
             // Loading State (Logic HEAD) dengan UI Baru
             <>
               {/* Desktop Loading */}

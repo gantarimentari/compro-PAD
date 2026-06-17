@@ -14,7 +14,7 @@ export default function Article() {
   const { data: rawArticlesData, isLoading } = usePublicArticles();
 
   const articleData = {
-    deskripsi_artikel: systemInfoData?.systemInfo?.deskripsi_artikel || 
+    deskripsi_artikel: systemInfoData?.systemInfo?.deskripsi_artikel ||
       "Artikel adalah halaman yang memuat informasi, pengetahuan, dan edukasi seputar topik tertentu agar Pawrents mendapatkan wawasan baru terkait hewan kesayangannya."
   };
 
@@ -74,7 +74,7 @@ export default function Article() {
       }}
     >
       {/* Ornamen Kiri */}
-      <div 
+      <div
         className="hidden lg:block absolute pointer-events-none z-[1]"
         style={{
           left: '20px',
@@ -88,9 +88,9 @@ export default function Article() {
           animation: 'rotate 12s linear infinite',
         }}
       />
-      
+
       {/* Ornamen Kanan */}
-      <div 
+      <div
         className="hidden lg:block absolute pointer-events-none z-[1]"
         style={{
           right: '40px',
@@ -104,19 +104,19 @@ export default function Article() {
           animation: 'rotate 12s linear infinite reverse',
         }}
       />
-      
+
       <div className="container max-w-7xl mx-auto p-8 lg:pb-8 pb-32 relative z-[5] min-h-[85vh]">
         {/* Header Section */}
         <div className='flex flex-col lg:flex-row items-center gap-4 lg:gap-6 py-10 px-0'>
-          <TagLabel label='Artikel' className='shadow-e4' 
-          style={{
-            transformOrigin: 'center',
-            transform: isCardHovered ? 'rotate(3deg)' : 'rotate(-3deg)',
-          }}
-          onMouseEnter={() => setIsCardHovered(true)}
-          onMouseLeave={() => setIsCardHovered(false)}
+          <TagLabel label='Artikel' className='shadow-e4'
+            style={{
+              transformOrigin: 'center',
+              transform: isCardHovered ? 'rotate(3deg)' : 'rotate(-3deg)',
+            }}
+            onMouseEnter={() => setIsCardHovered(true)}
+            onMouseLeave={() => setIsCardHovered(false)}
           />
-          
+
           {/* Show loading state + responsive text */}
           {isLoading ? (
             <div className="h-6 bg-gray-200 rounded animate-pulse flex-1"></div>
@@ -125,14 +125,14 @@ export default function Article() {
               {articleData.deskripsi_artikel}
             </p>
           )}
-          
+
           {/* Button - hanya tampil di lg+ */}
           <Link href='/article' className='hidden lg:block'>
-            <Button 
-              icon={<RightArrowIcon className="h-4 w-4" />} 
+            <Button
+              icon={<RightArrowIcon className="h-4 w-4" />}
               iconPosition="right"
               roundedClass="rounded-md"
-              color="bg-accent-yellow-300" 
+              color="bg-accent-yellow-300"
               hoverColor="hover:bg-accent-yellow-500"
               focusColor="focus:bg-accent-yellow-400"
               label="Lihat Artikel"
@@ -191,11 +191,11 @@ export default function Article() {
         {/* Button - hanya tampil di mobile (lg ke bawah), di bawah cards */}
         <div className='lg:hidden mt-6 flex justify-center'>
           <Link href='/article' className='w-full'>
-            <Button 
-              icon={<RightArrowIcon className="h-4 w-4" />} 
+            <Button
+              icon={<RightArrowIcon className="h-4 w-4" />}
               iconPosition="right"
               roundedClass="rounded-md"
-              color="bg-accent-yellow-300" 
+              color="bg-accent-yellow-300"
               hoverColor="hover:bg-accent-yellow-500"
               focusColor="focus:bg-accent-yellow-400"
               label="Lihat Artikel"
@@ -211,11 +211,11 @@ export default function Article() {
         {/* Button - hanya tampil di lg ke bawah, di bawah cards */}
         <div className='lg:hidden mt-6 flex justify-center'>
           <Link href='/article' className='w-full '>
-            <Button 
-              icon={<RightArrowIcon className="h-4 w-4" />} 
+            <Button
+              icon={<RightArrowIcon className="h-4 w-4" />}
               iconPosition="right"
               roundedClass="rounded-md"
-              color="bg-accent-yellow-300" 
+              color="bg-accent-yellow-300"
               hoverColor="hover:bg-accent-yellow-500"
               focusColor="focus:bg-accent-yellow-400"
               label="Lihat Artikel"

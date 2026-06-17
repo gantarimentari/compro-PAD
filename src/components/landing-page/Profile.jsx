@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from '@/components/ui/Button';
 import { RightArrowIcon } from '@/components/icons';
 import Image from 'next/image';
@@ -7,6 +7,11 @@ import { useSystemInfo } from './hooks/useLandingPage';
 
 export default function Profile() {
   const { data: systemInfoData, isLoading } = useSystemInfo();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   
   const systemData = {
     deskripsi_hero: systemInfoData?.systemInfo?.deskripsi_hero || 'Buat pawrent, nggak ada yang lebih tenang selain tahu hewan kesayangannya sehat. Klinik Dokter Fanina hadir buat bantu jaga mereka tetap ceria. Mulai dari vaksin, check-up, sampai perawatan kecil yang sering terlupa.',
@@ -103,7 +108,7 @@ export default function Profile() {
               </span> 
             </h1>
 
-            {isLoading ? (
+            {(isMounted && isLoading) ? (
               <div className="space-y-2 w-full">
                 <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
                 <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
@@ -175,7 +180,7 @@ export default function Profile() {
                     zIndex: 1,
                   }}
                 >
-                  {isLoading ? (
+                  {(isMounted && isLoading) ? (
                     <div className="w-full h-full bg-gray-200 animate-pulse flex items-center justify-center">
                       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-yellow-400"></div>
                     </div>

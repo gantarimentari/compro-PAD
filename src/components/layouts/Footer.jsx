@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useState, useEffect } from 'react';
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import * as Icons from "@/components/icons";
@@ -12,6 +13,7 @@ export default function Footer({
   footerStyle = null,
   footerSvg = null,
 }) {
+  const [isMounted, setIsMounted] = useState(false);
 
   const{ data, isLoading} = useQuery({
     queryKey: ['footerData'],
@@ -27,8 +29,11 @@ export default function Footer({
     },
     staleTime: 10 * 60 * 1000, 
     gcTime: 15 * 60 * 1000,
-    enabled: typeof window !== 'undefined',
+    // enabled: typeof window !== 'undefined',
   });
+  useEffect(() => {
+  setIsMounted(true);
+}, []);
   const footer = data || defaultData;
 
   const svgStyle = footerSvg
@@ -53,9 +58,9 @@ export default function Footer({
           {/* Left Column: Contact Information */}
           <div className="flex flex-col items-start gap-6">
             {/* Clinic Name */}
-            <h3 className="text-xl md:text-2xl font-extrabold text-white uppercase tracking-tight break-words whitespace-normal max-w-full">
+            <div className="text-xl md:text-2xl font-extrabold text-white uppercase tracking-tight break-words whitespace-normal max-w-full">
               {footer.clinic_name}
-            </h3>
+            </div>
 
               {/* Contact Details */}
               <div className="flex flex-col items-start gap-4 w-full">
@@ -68,9 +73,9 @@ export default function Footer({
                       <div className="h-4 bg-white/20 rounded w-3/4 animate-pulse"></div>
                     </div>
                   ) : (
-                    <p className="text-sm md:text-base text-white/90 leading-relaxed">
+                    <span className="text-sm md:text-base text-white/90 leading-relaxed">
                       {footer.address}
-                    </p>
+                    </span>
                   )}
                 </div>
 

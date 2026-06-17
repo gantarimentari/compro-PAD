@@ -1,11 +1,16 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DashedBorder } from '@/components/ui/frame/garisputus';
 import TagLabel from '../ui/Button/TagLabel';
 import { useSystemInfo } from './hooks/useLandingPage';
 
 export default function About() {
   const { data: systemInfoData, isLoading } = useSystemInfo();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   
   const aboutUs = {
     aboutUs: systemInfoData?.systemInfo?.about_us || '',
@@ -74,7 +79,7 @@ export default function About() {
             </div>
 
             {/*Teks panjang - hanya tampil di lg+ dengan loading state */}
-            {isLoading ? (
+            {(isMounted && isLoading) ? (
               <div className="hidden lg:block space-y-2">
                 <div className="h-4 bg-white/20 rounded w-full animate-pulse"></div>
                 <div className="h-4 bg-white/20 rounded w-5/6 animate-pulse"></div>
@@ -91,7 +96,7 @@ export default function About() {
           {/* Gambar - order-2 di mobile (tengah), order-1 di lg (kiri) */}
           <div className="w-full lg:w-[40%] flex justify-center order-2 lg:order-1">
             <div className="bg-white lg:border-4 rounded-2xl shadow-lg overflow-hidden lg:max-w-md w-full">
-              {isLoading ? (
+              {(isMounted && isLoading) ? (
                 <div className="w-full md:h-[350px] lg:h-[450px] bg-white/20 animate-pulse"></div>
               ) : (
                 <img
@@ -105,7 +110,7 @@ export default function About() {
 
           {/* Teks panjang untuk mobile - order-3 (paling bawah), hidden di lg+ dengan loading state */}
           <div className="w-full order-3 lg:hidden">
-            {isLoading ? (
+            {(isMounted && isLoading) ? (
               <div className="space-y-2">
                 <div className="h-4 bg-white/20 rounded w-full animate-pulse"></div>
                 <div className="h-4 bg-white/20 rounded w-11/12 animate-pulse"></div>

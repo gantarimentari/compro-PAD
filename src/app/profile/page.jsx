@@ -15,10 +15,10 @@ export default function RootLayout({ children }) {
 
    
        <Header />
-        <main className="flex-grow relative">
+        <div className="flex-grow relative">
           <UserProfile
            />
-        </main>
+        </div>
         
         <div>
        
