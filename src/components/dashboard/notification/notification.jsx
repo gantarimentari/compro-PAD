@@ -48,9 +48,21 @@ export default function Notification() {
     console.log('Resend notification:', item);
   };
 
-  const handleSearchChange = (event) => {
+  // const handleSearchChange = (event) => {
     
-    setSearch(event.target.value);
+  //   setSearch(event.target.value);
+  // };
+
+  const handleSearchChange = (event) => {
+
+    const value = event.target.value;
+
+    if (value.length > 255) {
+      alert("Teks pencarian terlalu panjang! Maksimal adalah 255 karakter.");
+      return; // Stop eksekusi, jangan masukkan karakter tambahan ke state search
+    }
+
+    setSearch(value);
   };
 
   return (

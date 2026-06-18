@@ -79,8 +79,68 @@ const TambahInvoiceModals = ({ editingData, isOpen, onClose, onSave, isSubmittin
     loadHewan();
   }, [formData.id_pasien, isOpen]);
 
-  const addItem = () => {
-    if (!draftItem.nama_item.trim()) return;
+  // const addItem = () => {
+  //   if (!draftItem.nama_item.trim()) return;
+
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     item: [
+  //       ...(prev.item || []),
+  //       {
+  //         id: `${Date.now()}`,
+  //         id_jenis_vaksin: null,
+  //         nama_item: draftItem.nama_item,
+  //         kategori: draftItem.kategori,
+  //         qty: Number(draftItem.qty || 0),
+  //         harga_satuan: Number(draftItem.harga_satuan || 0),
+  //       },
+  //     ],
+  //   }));
+
+  //   setDraftItem({
+  //     nama_item: '',
+  //     kategori: '',
+  //     qty: 1,
+  //     harga_satuan: 0,
+  //   });
+  // };
+  
+
+const addItem = () => {
+    // Validasi Nama Item tidak boleh kosong
+    if (!draftItem.nama_item.trim()) {
+      alert('Nama item tidak boleh kosong!');
+      return;
+    }
+
+    // 🔑 KUNCI VALIDASI HARGA SATUAN:
+    const rawHarga = draftItem.harga_satuan;
+    const parsedHarga = Number(rawHarga);
+
+    // Cek jika input kosong atau menghasilkan NaN (bukan angka murni)
+    if (rawHarga === '' || rawHarga === null || isNaN(parsedHarga)) {
+      alert('Harga Satuan harus diisi dengan angka numerik yang valid!');
+      return;
+    }
+
+    // Cek jika nilai berharga minus
+    if (parsedHarga < 0) {
+      alert('Harga Satuan tidak boleh kurang dari 0 atau bernilai minus!');
+      return;
+    }
+
+    // Cek jika yang diinput berupa karakter strip tunggal '-' atau eksponen 'e'
+    if (String(rawHarga).trim() === '-' || String(rawHarga).toLowerCase().includes('e')) {
+      alert('Format harga tidak valid. Harap masukkan angka murni!');
+      return;
+    }
+
+    // 🔑 KUNCI VALIDASI QTY:
+    const parsedQty = parseInt(draftItem.qty, 10);
+    if (isNaN(parsedQty) || parsedQty < 1) {
+      alert('Jumlah Qty minimal harus 1!');
+      return;
+    }
 
     setFormData((prev) => ({
       ...prev,
@@ -91,8 +151,8 @@ const TambahInvoiceModals = ({ editingData, isOpen, onClose, onSave, isSubmittin
           id_jenis_vaksin: null,
           nama_item: draftItem.nama_item,
           kategori: draftItem.kategori,
-          qty: Number(draftItem.qty || 0),
-          harga_satuan: Number(draftItem.harga_satuan || 0),
+          qty: parsedQty,
+          harga_satuan: parsedHarga,
         },
       ],
     }));
