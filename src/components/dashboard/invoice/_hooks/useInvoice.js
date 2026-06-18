@@ -333,6 +333,12 @@ export const useInvoice = () => {
   
   const handleSearch = async (keyword) => {
     const trimmed = (keyword || '').trim();
+    
+    // 🔑 JIKA DI-PASTE / ENTER TEKS > 255: Langsung gagalkan, jangan tembak API backend
+    if (trimmed.length > 255) {
+      return; 
+    }
+
     if (!trimmed) {
       loadInvoices(true);
       return;
