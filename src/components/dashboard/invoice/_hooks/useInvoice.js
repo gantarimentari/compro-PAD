@@ -320,8 +320,17 @@ export const useInvoice = () => {
   };
 
   const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+    const value = event.target.value;
+
+    // 🔑 KUNCI JAWABAN UAT: Batasi input jika melebihi 255 karakter
+    if (value.length > 255) {
+      alert("Teks pencarian terlalu panjang! Maksimal adalah 255 karakter.");
+      return; // Stop eksekusi, karakter lebih tidak akan dimasukkan ke state
+    }
+
+    setSearchQuery(value);
   };
+  
   const handleSearch = async (keyword) => {
     const trimmed = (keyword || '').trim();
     if (!trimmed) {
