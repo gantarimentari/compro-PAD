@@ -72,31 +72,31 @@ export const useUserProfile = () => {
     const { name, value } = e.target;
 
     // Validation for phone_number to align with original component's behavior
-    if (name === 'phone_number') {
-      if (value && !/^[\d\s\-\+\(\)]*$/.test(value)) {
-        setErrors((prev) => ({
-          ...prev,
-          [name]: 'Format nomor telepon tidak valid',
-        }));
-        return;
-      }
+    // if (name === 'phone_number') {
+    //   if (value && !/^[\d\s\-\+\(\)]*$/.test(value)) {
+    //     setErrors((prev) => ({
+    //       ...prev,
+    //       [name]: 'Format nomor telepon tidak valid',
+    //     }));
+    //     return;
+    //   }
 
-      if (/[a-zA-Z]/.test(value)) {
-        setErrors((prev) => ({
-          ...prev,
-          [name]: 'Nomor telepon tidak boleh mengandung huruf',
-        }));
-        return;
-      }
+    //   if (/[a-zA-Z]/.test(value)) {
+    //     setErrors((prev) => ({
+    //       ...prev,
+    //       [name]: 'Nomor telepon tidak boleh mengandung huruf',
+    //     }));
+    //     return;
+    //   }
 
-      if (value.length > 15) {
-        setErrors((prev) => ({
-          ...prev,
-          [name]: 'Nomor telepon maksimal 15 digit',
-        }));
-        return;
-      }
-    }
+    //   if (value.length > 15) {
+    //     setErrors((prev) => ({
+    //       ...prev,
+    //       [name]: 'Nomor telepon maksimal 15 digit',
+    //     }));
+    //     return;
+    //   }
+    // }
 
     setFormData((prev) => ({ ...prev, [name]: value }));
 
